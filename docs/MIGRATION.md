@@ -25,7 +25,7 @@ pnpm migrate-blog
 ```
 
 This script will:
-- Fetch the RSS feed from weblogs.asp.net/dixin
+- Fetch post URLs by paginating through all 15 blog listing pages (https://weblogs.asp.net/dixin?page=1 through page=15)
 - Download each blog post
 - Convert HTML content to Markdown
 - Generate proper frontmatter with:
