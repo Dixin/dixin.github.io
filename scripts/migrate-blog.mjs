@@ -15,7 +15,8 @@ import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
 const OUTPUT_DIR = './src/content/posts';
-const RSS_URL = 'https://weblogs.asp.net/dixin/rss.aspx';
+const BLOG_BASE_URL = 'https://weblogs.asp.net/dixin';
+const TOTAL_PAGES = 15;
 
 // Initialize Turndown for HTML to Markdown conversion
 const turndownService = new TurndownService({
@@ -123,38 +124,161 @@ async function fetchWithRetry(url, retries = 3) {
     }
 }
 
-async function fetchRSSFeed() {
-    console.log('Fetching RSS feed from:', RSS_URL);
-    const xml = await fetchWithRetry(RSS_URL);
-    const dom = new JSDOM(xml, { contentType: 'text/xml' });
-    const items = dom.window.document.querySelectorAll('item');
+async function fetchPostUrlsFromPage(pageNum) {
+    const url = `${BLOG_BASE_URL}?page=${pageNum}`;
+    console.log(`Fetching post URLs from page ${pageNum}:`, url);
     
-    const posts = [];
-    items.forEach(item => {
-        const title = item.querySelector('title')?.textContent || '';
-        const link = item.querySelector('link')?.textContent || '';
-        const pubDate = item.querySelector('pubDate')?.textContent || '';
-        const description = item.querySelector('description')?.textContent || '';
-        const categories = Array.from(item.querySelectorAll('category')).map(c => c.textContent);
-        
-        posts.push({
-            title,
-            link,
-            pubDate: new Date(pubDate),
-            description,
-            categories,
+    const html = await fetchWithRetry(url);
+    const dom = new JSDOM(html);
+    const doc = dom.window.document;
+    
+    const postUrls = [];
+    
+    // Find all post links on the page - common selectors for ASP.NET blog listing pages
+    const linkSelectors = [
+        '.post-title a',
+        '.entry-title a',
+        'h2.title a',
+        'h3.title a',
+        '.blog-post-title a',
+        'article h2 a',
+        'article h3 a',
+        '.post h2 a',
+        '.post h3 a',
+        'a.post-link',
+    ];
+    
+    for (const selector of linkSelectors) {
+        const links = doc.querySelectorAll(selector);
+        if (links.length > 0) {
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && !postUrls.includes(href)) {
+                    // Handle relative URLs
+                    const fullUrl = href.startsWith('http') ? href : `https://weblogs.asp.net${href}`;
+                    postUrls.push(fullUrl);
+                }
+            });
+            break; // Found posts with this selector, no need to try others
+        }
+    }
+    
+    // If no posts found with specific selectors, try to find all links that look like post URLs
+    if (postUrls.length === 0) {
+        const allLinks = doc.querySelectorAll('a[href*="/dixin/"]');
+        allLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            // Filter to only include post URLs (typically have a slug after /dixin/)
+            if (href && href.match(/\/dixin\/[a-z0-9-]+$/i) && !href.includes('?page=')) {
+                const fullUrl = href.startsWith('http') ? href : `https://weblogs.asp.net${href}`;
+                if (!postUrls.includes(fullUrl)) {
+                    postUrls.push(fullUrl);
+                }
+            }
         });
-    });
+    }
     
-    console.log(`Found ${posts.length} posts in RSS feed`);
-    return posts;
+    console.log(`  Found ${postUrls.length} post URLs on page ${pageNum}`);
+    return postUrls;
 }
 
-async function fetchPostContent(url) {
+async function fetchAllPostUrls() {
+    console.log(`Fetching post URLs from ${TOTAL_PAGES} pages...`);
+    const allUrls = [];
+    
+    for (let page = 1; page <= TOTAL_PAGES; page++) {
+        try {
+            const urls = await fetchPostUrlsFromPage(page);
+            urls.forEach(url => {
+                if (!allUrls.includes(url)) {
+                    allUrls.push(url);
+                }
+            });
+            
+            // Rate limiting between page fetches
+            await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (error) {
+            console.error(`Failed to fetch page ${page}:`, error.message);
+        }
+    }
+    
+    console.log(`\nTotal unique post URLs found: ${allUrls.length}`);
+    return allUrls;
+}
+
+async function fetchPostData(url) {
     console.log('Fetching post:', url);
     const html = await fetchWithRetry(url);
     const dom = new JSDOM(html);
     const doc = dom.window.document;
+    
+    // Extract post title
+    const titleSelectors = [
+        '.post-title',
+        '.entry-title',
+        'h1.title',
+        'h2.title',
+        'article h1',
+        '.blog-post-title',
+        'h1',
+    ];
+    
+    let title = '';
+    for (const selector of titleSelectors) {
+        const titleEl = doc.querySelector(selector);
+        if (titleEl && titleEl.textContent.trim()) {
+            title = titleEl.textContent.trim();
+            break;
+        }
+    }
+    
+    // Extract post date
+    const dateSelectors = [
+        '.post-date',
+        '.entry-date',
+        '.date',
+        'time',
+        '.published',
+        '.post-meta time',
+        '.meta time',
+    ];
+    
+    let pubDate = new Date();
+    for (const selector of dateSelectors) {
+        const dateEl = doc.querySelector(selector);
+        if (dateEl) {
+            const dateText = dateEl.getAttribute('datetime') || dateEl.textContent;
+            const parsedDate = new Date(dateText);
+            if (!isNaN(parsedDate.getTime())) {
+                pubDate = parsedDate;
+                break;
+            }
+        }
+    }
+    
+    // Extract categories/tags
+    const categorySelectors = [
+        '.post-categories a',
+        '.categories a',
+        '.tags a',
+        '.post-tags a',
+        '.category a',
+        '.tag a',
+    ];
+    
+    const categories = [];
+    for (const selector of categorySelectors) {
+        const categoryEls = doc.querySelectorAll(selector);
+        if (categoryEls.length > 0) {
+            categoryEls.forEach(el => {
+                const cat = el.textContent.trim();
+                if (cat && !categories.includes(cat)) {
+                    categories.push(cat);
+                }
+            });
+            break;
+        }
+    }
     
     // Try to find the post content - common selectors for ASP.NET blogs
     const contentSelectors = [
@@ -183,7 +307,14 @@ async function fetchPostContent(url) {
     const elementsToRemove = content.querySelectorAll('script, style, .comments, #comments, .share, .social, .related-posts, .navigation, .nav');
     elementsToRemove.forEach(el => el.remove());
     
-    return content.innerHTML;
+    return {
+        title: title || 'Untitled',
+        link: url,
+        pubDate,
+        description: '',
+        categories,
+        htmlContent: content.innerHTML,
+    };
 }
 
 function htmlToMarkdown(html) {
@@ -243,8 +374,14 @@ lang: ""
 `;
 }
 
-async function migratePost(post) {
-    const filename = sanitizeFilename(post.title);
+async function migratePostFromUrl(url) {
+    const postData = await fetchPostData(url);
+    if (!postData) {
+        console.warn('Skipping post with no content:', url);
+        return false;
+    }
+    
+    const filename = sanitizeFilename(postData.title);
     const outputPath = path.join(OUTPUT_DIR, `${filename}.md`);
     
     // Skip if file already exists
@@ -253,14 +390,8 @@ async function migratePost(post) {
         return false;
     }
     
-    const htmlContent = await fetchPostContent(post.link);
-    if (!htmlContent) {
-        console.warn('Skipping post with no content:', post.title);
-        return false;
-    }
-    
-    const markdown = htmlToMarkdown(htmlContent);
-    const frontmatter = createFrontmatter(post, markdown);
+    const markdown = htmlToMarkdown(postData.htmlContent);
+    const frontmatter = createFrontmatter(postData, markdown);
     const fullContent = frontmatter + '\n' + markdown;
     
     fs.writeFileSync(outputPath, fullContent, 'utf-8');
@@ -278,22 +409,23 @@ async function main() {
     }
     
     try {
-        const posts = await fetchRSSFeed();
+        // Fetch all post URLs by paginating through the blog pages
+        const postUrls = await fetchAllPostUrls();
         
         let migrated = 0;
         let skipped = 0;
         let failed = 0;
         
-        for (const post of posts) {
+        for (const url of postUrls) {
             try {
-                const result = await migratePost(post);
+                const result = await migratePostFromUrl(url);
                 if (result) {
                     migrated++;
                 } else {
                     skipped++;
                 }
             } catch (error) {
-                console.error(`Failed to migrate "${post.title}":`, error.message);
+                console.error(`Failed to migrate "${url}":`, error.message);
                 failed++;
             }
             
@@ -305,7 +437,7 @@ async function main() {
         console.log(`Migrated: ${migrated}`);
         console.log(`Skipped: ${skipped}`);
         console.log(`Failed: ${failed}`);
-        console.log(`Total: ${posts.length}`);
+        console.log(`Total: ${postUrls.length}`);
         
     } catch (error) {
         console.error('Migration failed:', error);
