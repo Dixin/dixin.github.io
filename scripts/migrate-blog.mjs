@@ -14,7 +14,6 @@ import { JSDOM } from 'jsdom';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
-const BLOG_URL = 'https://weblogs.asp.net/dixin';
 const OUTPUT_DIR = './src/content/posts';
 const RSS_URL = 'https://weblogs.asp.net/dixin/rss.aspx';
 
@@ -84,13 +83,18 @@ function detectLanguage(codeNode) {
 function detectLanguageFromContent(text) {
     if (!text) return '';
     
-    // Simple heuristics for language detection
-    if (text.includes('namespace ') || text.includes('using System') || text.includes('public class ')) return 'csharp';
+    // Simple heuristics for language detection - prioritize C# for this blog
+    if (text.includes('namespace ') || text.includes('using System') || text.includes('public class ') || text.includes('private ') || text.includes('protected ')) return 'csharp';
     if (text.includes('function ') && text.includes('const ')) return 'javascript';
-    if (text.includes('interface ') && text.includes(': ')) return 'typescript';
+    // More specific TypeScript detection
+    if ((text.includes('interface ') && text.includes('{') && text.includes(': ')) || 
+        text.includes('export interface ') || 
+        text.includes(': string') || 
+        text.includes(': number') ||
+        text.includes(': boolean')) return 'typescript';
     if (text.includes('SELECT ') || text.includes('FROM ') || text.includes('WHERE ')) return 'sql';
     if (text.includes('<?xml') || text.includes('<html')) return 'xml';
-    if (text.includes('def ') && text.includes(':')) return 'python';
+    if (text.includes('def ') && text.includes(':') && !text.includes(';')) return 'python';
     
     return '';
 }
@@ -101,26 +105,6 @@ function sanitizeFilename(title) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
         .substring(0, 100);
-}
-
-function extractCategories(html) {
-    const categories = [];
-    const dom = new JSDOM(html);
-    const categoryLinks = dom.window.document.querySelectorAll('.post-categories a, .categories a, .category a');
-    categoryLinks.forEach(link => {
-        categories.push(link.textContent.trim());
-    });
-    return categories;
-}
-
-function extractTags(html) {
-    const tags = [];
-    const dom = new JSDOM(html);
-    const tagLinks = dom.window.document.querySelectorAll('.post-tags a, .tags a, .tag a');
-    tagLinks.forEach(link => {
-        tags.push(link.textContent.trim());
-    });
-    return tags;
 }
 
 async function fetchWithRetry(url, retries = 3) {
