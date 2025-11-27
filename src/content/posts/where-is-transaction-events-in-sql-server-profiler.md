@@ -3,8 +3,8 @@ title: "Where Is Transaction Events In SQL Server Profiler?"
 published: 2010-04-21
 description: "does not monitor transaction events by default."
 image: ""
-tags: ["Profiling", "SQL Server", "TSQL"]
-category: "Profiling"
+tags: ["Database", "Profiling", "SQL Server", "TSQL"]
+category: "Database"
 draft: false
 lang: ""
 ---

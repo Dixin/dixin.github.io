@@ -4,7 +4,7 @@ published: 2010-03-02
 description: "\\] - \\]"
 image: ""
 tags: [".NET", "C#", "Functional Programming", "Haskell", "JavaScript", "LINQ", "Ruby", "TSQL"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

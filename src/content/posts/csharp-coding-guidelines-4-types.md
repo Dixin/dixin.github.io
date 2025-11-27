@@ -4,7 +4,7 @@ published: 2009-10-08
 description: "C# Coding Guidelines:"
 image: ""
 tags: [".NET", "C#", "C# 4.0", "Coding Guidelines", "Dynamic"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

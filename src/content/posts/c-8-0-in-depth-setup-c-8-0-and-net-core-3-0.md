@@ -4,7 +4,7 @@ published: 2019-02-21
 description: "Currently, Microsoft has the second preview of C# 8.0 and .NET Core 3.0, with a lot of new features and new APIs. This part of C# 8.0 series demonstrates how to setup the environment."
 image: ""
 tags: [".NET", ".NET Core", "C#", "C# 8.0", "Visual Studio Code"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---
@@ -17,14 +17,14 @@ One way to setup the environment is to install Visual Studio 2019 preview ([http
 
 First, install the latest SDK of .NET Core 3.0 for your operating system from the official website: [https://dotnet.microsoft.com/download/dotnet-core/3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0 "https://dotnet.microsoft.com/download/dotnet-core/3.0"). Currently v3.0.0-preview2/SDK 3.0.100-preview-010184 is the latest. Then run the following command to verify the installation:
 
-```csharp
+```console
 dotnet --version
 3.0.100-preview-010184
 ```
 
 By default, the dotnet CLI uses the latest SDK installed for dotnet build and dotnet new, etc.. If you want to go back to the previous stable SDK, use the global.json to specify the stable SDK version for your directory. First, run dotnet –list-sdks to view all the installed SDKs, then run dotnet new globaljson –skd-version {version} to create the global.json file. Then run dotnet –version to verify the changed SDK version:
 
-```csharp
+```console
 C:\Users\dixin>dotnet --list-sdks
 2.1.202 [C:\Program Files\dotnet\sdk]
 2.1.503 [C:\Program Files\dotnet\sdk]
@@ -62,7 +62,7 @@ After that, the extensions version shows 1.18.0-beta7:
 
 Now create a new console app project with dotnet CLI: dotnet new console. Then open the created .csproj file, enable C# 8.0 by adding <LangVersion>8.0</LangVersion>, and enable C# 8.0 nullable reference type check by adding <NullableContextOptions>enable</NullableContextOptions>. The .csproj file becomes:
 
-```csharp
+```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -75,11 +75,11 @@ Now create a new console app project with dotnet CLI: dotnet new console. Then o
 </Project>
 ```
 
-In preview 1, <NullableReferenceTypes>true</NullableReferenceTypes> was used. Now it is changed to <NullableContextOptions>. Then you can start coding C# 8.0 and .NET Core 3.0, and press F5 to start debugging with Visual Studio Code.
+In preview 1, `<NullableReferenceTypes>true</NullableReferenceTypes>` was used. Now it is changed to `<NullableContextOptions>`. Then you can start coding C# 8.0 and .NET Core 3.0, and press F5 to start debugging with Visual Studio Code.
 
-If you create a library project, the default target framework is TargetFramework is netstandard2.0. It must be changed to netcoreapp3.0. The entire .csproj becomes:
+If you create a library project, the default target framework `TargetFramework` is `netstandard2.0`. It must be changed to `netcoreapp3.0`. The entire `.csproj` becomes:
 
-```csharp
+```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -91,4 +91,4 @@ If you create a library project, the default target framework is TargetFramework
 </Project>
 ```
 
-The difference is no <OutputType>Exe</OutputType>.
+The difference is no `<OutputType>Exe</OutputType>`.

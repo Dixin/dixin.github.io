@@ -3,8 +3,8 @@ title: "C# 10 new feature CallerArgumentExpression, argument check and more"
 published: 2021-11-14
 description: "The CallerArgumentExpression has been discussed for years, it was supposed to a part of C# 8.0 but got delayed. Finally this month it is delivered along with C# 10 and .NET 6."
 image: ""
-tags: [".NET", ".NET Core", ".NET Standard", "C# 10.0", "C# Features"]
-category: ".NET"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "C# 10.0", "C# Features"]
+category: "C#"
 draft: false
 lang: ""
 ---

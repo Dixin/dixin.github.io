@@ -4,7 +4,7 @@ published: 2019-09-22
 description: "The previous chapter discussed what is PLINQ and how to use PLINQ. This chapter looks into PLINQ’s internals and execution, including data processing and query performance."
 image: ""
 tags: [".NET", "C#", "LINQ", "Parallel Computing", "Parallel LINQ", "PLINQ"]
-category: ".NET"
+category: "Parallel LINQ"
 draft: false
 lang: ""
 ---

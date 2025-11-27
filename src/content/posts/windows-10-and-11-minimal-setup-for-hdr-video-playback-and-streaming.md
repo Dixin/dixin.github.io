@@ -3,8 +3,8 @@ title: "Windows 10 and 11 minimal setup for HDR video playback and streaming"
 published: 2021-11-14
 description: "On last Black Friday, I purchased a 50-inch 4K HDR10 smart TV with only $150. I use it as monitor for my computer. I didn’t find a walk through tutorial for the whole HDR (High Dynamic Range) setup, s"
 image: ""
-tags: ["Windows 10", "Windows 11"]
-category: "Windows 10"
+tags: ["Windows", "Windows 10", "Windows 11"]
+category: "Windows"
 draft: false
 lang: ""
 ---

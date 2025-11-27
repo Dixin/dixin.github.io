@@ -4,7 +4,7 @@ published: 2020-05-31
 description: "A decade ago, I . They are both monospaced. The difference is:"
 image: ""
 tags: ["Font", "Visual Studio", "Visual Studio Code", "Windows Terminal"]
-category: "Font"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

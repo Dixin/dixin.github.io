@@ -4,7 +4,7 @@ published: 2024-12-01
 description: "Category theory is a theoretical framework to describe abstract structures and relations in mathematics, first introduced by  and [Saun"
 image: ""
 tags: [".NET", "C#", "Categories", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

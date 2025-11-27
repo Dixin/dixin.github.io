@@ -4,7 +4,7 @@ published: 2024-12-15
 description: "A functor is the mapping from 1 object to another object, with a “Select” ability to map 1 morphism to another morphism. A [bifunctor](http://en.wikipedia.org/wiki/Functor#Bifunctors_and_multifunctors"
 image: ""
 tags: [".NET", "Bifunctors", "C#", "Categories", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monadal Categories"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

@@ -3,8 +3,8 @@ title: "My new car at Microsoft Building 35"
 published: 2011-06-06
 description: "I got this from the local dealership. These photos were taken at Microsoft Building 35:"
 image: ""
-tags: ["Microsoft Redmond Campus"]
-category: "Microsoft Redmond Campus"
+tags: ["Microsoft", "Microsoft Redmond Campus"]
+category: "Microsoft"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2024-12-26
 description: "As fore mentioned endofunctor category can be monoidal (the entire category. Actually, an endofunctor In the endofunctor category can be monoidal too. This kind of endofunctor is called monad. Monad i"
 image: ""
 tags: [".NET", "C#", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monads"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

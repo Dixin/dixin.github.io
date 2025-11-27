@@ -4,7 +4,7 @@ published: 2024-11-13
 description: "In lambda calculus and Church encoding, there are various ways to represent a list with anonymous functions."
 image: ""
 tags: [".NET", "C#", "Church Encoding", "Church Lists", "Functional Programming", "Lambda Calculus", "LINQ via C#"]
-category: ".NET"
+category: "Lambda Calculus"
 draft: false
 lang: ""
 ---

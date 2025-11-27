@@ -4,7 +4,7 @@ published: 2010-06-10
 description: "First time to appear on  homepage as headline!"
 image: ""
 tags: [".NET", "AJAX", "ASP.NET", "ASP.NET MVC", "C#", "Web"]
-category: ".NET"
+category: "ASP.NET"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2012-12-29
 description: "Understanding C# async / await:"
 image: ""
 tags: [".NET", "Async", "Await", "C#", "C# 5.0", "Observable", "Reactive Extensions", "Rx"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2025-03-04
 description: "Asynchronous function can improve the responsiveness and scalability of the application and service. C# 5.0 introduces asynchronous function to greatly simplify the async programming model."
 image: ""
 tags: [".NET", "C#", "C# 5.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

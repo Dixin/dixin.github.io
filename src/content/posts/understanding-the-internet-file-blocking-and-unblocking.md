@@ -4,7 +4,7 @@ published: 2009-03-14
 description: "On Windows XP SP2 + IE 7 and later Windows, files from Internet are marked. Sometimes this feature causes problems."
 image: ""
 tags: ["C#", "File System", "NTFS", "Visual Studio", "Windows"]
-category: "C#"
+category: "Windows"
 draft: false
 lang: ""
 ---
@@ -66,7 +66,7 @@ Here
 
 The above alternative data stream can be examined via command line:
 
-```csharp
+```bash
 more < WebOS.zip:Zone.Identifier
 ```
 
@@ -74,13 +74,13 @@ That is how is WebOS.zip file marked as blocked to enhance the security, and a â
 
 Actually any file / directory marked with this Zone.Identifier alternative data stream is considered from Internet and blocked by the Windows. A test.txt file can be created to test this:
 
-```csharp
+```bash
 echo test > test.txt
 ```
 
 by checking its property, this test.txt is unblocked of course. Now inject the same Zone.Identifier alternative data stream into test.txt:
 
-```csharp
+```bash
 more < WebOS.zip:Zone.Identifier > test.txt:Zone.Identifier
 ```
 
@@ -105,7 +105,7 @@ To disable this feature in Windows, go to this place:
 
 The type command can be used to remove the data streams:
 
-```csharp
+```bash
 ren WebOS.zip WebOS.zip.bak
 type WebOS.zip.bak > WebOS.zip
 del WebOS.zip.bak

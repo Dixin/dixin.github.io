@@ -4,7 +4,7 @@ published: 2009-11-11
 description: "This is blogged because it is surprising. Some months ago my friend and me were investigating Mac OSX for my , so we installed the latest version on a machine, [SAMSUN"
 image: ""
 tags: ["Hardware", "MacOSX", "Windows"]
-category: "Hardware"
+category: "Windows"
 draft: false
 lang: ""
 ---

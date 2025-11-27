@@ -4,7 +4,7 @@ published: 2018-10-30
 description: "The previous parts has discussed some aspects that can impact the performance of EF/Core and LINQ to Entities, and here is a summary:"
 image: ""
 tags: [".NET", ".NET Core", "C#", "LINQ"]
-category: ".NET"
+category: "Entity Framework Core"
 draft: false
 lang: ""
 ---

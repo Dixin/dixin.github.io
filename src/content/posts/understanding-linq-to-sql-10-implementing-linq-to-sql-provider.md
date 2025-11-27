@@ -4,7 +4,7 @@ published: 2010-05-11
 description: "\\]"
 image: ""
 tags: [".NET", "C#", "LINQ", "LINQ to SQL", "LINQ via C# Series", "TSQL"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

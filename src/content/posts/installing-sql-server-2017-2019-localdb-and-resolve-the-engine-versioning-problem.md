@@ -3,8 +3,8 @@ title: "Installing SQL Server 2017/2019 LocalDB and resolve the engine versionin
 published: 2020-04-29
 description: "SQL Server LocalDB is a minimal SQL Server database engine, it can be installed and used with zero configuration."
 image: ""
-tags: ["LocalDB", "SQL Server"]
-category: "LocalDB"
+tags: ["Database", "LocalDB", "SQL Server"]
+category: "Database"
 draft: false
 lang: ""
 ---

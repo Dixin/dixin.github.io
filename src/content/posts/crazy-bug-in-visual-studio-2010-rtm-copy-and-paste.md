@@ -4,7 +4,7 @@ published: 2010-04-18
 description: "The copy / paste functionality is very buggy in  Beta and RC. In Beta sometimes this even cause Visual Studio crash. Now after using RT"
 image: ""
 tags: ["Testing", "Usability", "Visual Studio"]
-category: "Testing"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

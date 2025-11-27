@@ -4,7 +4,7 @@ published: 2024-12-31
 description: "Monad is a powerful structure, with the LINQ support in C# language, monad enables chaining operations to build fluent workflow, which can be pure. With these features, monad can be used to manage I/O"
 image: ""
 tags: [".NET", "C#", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monads"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

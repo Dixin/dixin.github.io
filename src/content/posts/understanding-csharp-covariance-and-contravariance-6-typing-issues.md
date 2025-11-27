@@ -4,21 +4,21 @@ published: 2009-09-01
 description: "Understanding C# covariance and contravariance:"
 image: ""
 tags: [".NET", "C#", "C# 4.0", "Covariance And Contravariance"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---
 
 Understanding C# covariance and contravariance:
 
--   [Understanding C# covariance and contravariance (1) Delegates](http://www.cnblogs.com/dixin/archive/2009/08/29/understanding-csharp-covariance-and-contravariance-1-delegates.html)
--   [Understanding C# covariance and contravariance (2) Interfaces](http://www.cnblogs.com/dixin/archive/2009/08/30/understanding-csharp-covariance-and-contravariance-2-interfaces.html)
--   [Understanding C# covariance and contravariance (3) Samples](http://www.cnblogs.com/dixin/archive/2009/08/31/understanding-csharp-covariance-and-contravariance-3-samples.html)
--   [Understanding C# covariance and contravariance (4) Arrays](http://www.cnblogs.com/dixin/archive/2009/08/31/understanding-csharp-covariance-and-contravariance-4-arrays.html)
--   [Understanding C# covariance and contravariance (5) Higher-order functions](http://www.cnblogs.com/dixin/archive/2009/08/31/understanding-csharp-covariance-and-contravariance-5-higher-order-functions.html)
--   Understanding C# covariance and contravariance (6) Typing issues
--   [Understanding C# covariance and contravariance (7) CLR](http://www.cnblogs.com/dixin/archive/2009/09/08/understanding-csharp-covariance-and-contravariance-7-clr.html)
--   [Understanding C# covariance and contravariance (8) Void](http://www.cnblogs.com/dixin/archive/2009/10/04/understanding-csharp-covariance-and-contravariance-8-void.html)
+-   [Understanding C# Covariance And Contravariance (1) Delegates](/posts/understanding-csharp-covariance-and-contravariance-1-delegates)
+-   [Understanding C# Covariance And Contravariance (2) Interfaces](/posts/understanding-csharp-covariance-and-contravariance-2-interfaces)
+-   [Understanding C# Covariance And Contravariance (3) Samples](/posts/understanding-csharp-covariance-and-contravariance-3-samples)
+-   Understanding C# Covariance And Contravariance (4) Arrays
+-   [Understanding C# Covariance And Contravariance (5) Higher-order Functions](/posts/understanding-csharp-covariance-and-contravariance-5-higher-order-functions)
+-   [Understanding C# Covariance And Contravariance (6) Typing Issues](/posts/understanding-csharp-covariance-and-contravariance-6-typing-issues)
+-   [Understanding C# Covariance And Contravariance (7) CLR](/posts/understanding-csharp-covariance-and-contravariance-7-clr)
+-   [Understanding C# Covariance And Contravariance (8) Struct And Void](/posts/understanding-csharp-covariance-and-contravariance-8-struct-and-void)
 
 In each previous part, type implicit conversion is dicussed, which happen during the variances, like
 

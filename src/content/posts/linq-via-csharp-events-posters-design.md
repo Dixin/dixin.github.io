@@ -4,7 +4,7 @@ published: 2009-09-21
 description: "10  events have been held successfully. Each event is a pure English speaking technical talk. I designed some posters for the events, with no enough time to design"
 image: ""
 tags: [".NET", "C#", "LINQ", "LINQ via C# Series"]
-category: ".NET"
+category: "LINQ via C#"
 draft: false
 lang: ""
 ---

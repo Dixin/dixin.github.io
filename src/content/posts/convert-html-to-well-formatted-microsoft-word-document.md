@@ -3,8 +3,8 @@ title: "Convert HTML to Well-Formatted Microsoft Word Document"
 published: 2016-02-23
 description: "Recently I wanted to convert my  into a Word document (.doc). The tasks are:"
 image: ""
-tags: ["C#", "C# 6.0", "HTML", "LINQ", "LINQ to Objects", "Office", "OneDrive", "Open XML", "VSTO", "XML"]
-category: "C#"
+tags: [".NET", "C#", "C# 6.0", "HTML", "LINQ", "LINQ to Objects", "Office", "OneDrive", "Open XML", "VSTO", "XML"]
+category: ".NET"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2019-06-13
 description: "The previous chapter discusses that functional programming encourages modelling data as immutable. Functional programming also encourages modelling operations as pure functions. The encouraged purity"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

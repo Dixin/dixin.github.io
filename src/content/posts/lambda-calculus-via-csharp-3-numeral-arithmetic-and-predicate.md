@@ -4,7 +4,7 @@ published: 2024-11-07
 description: "Anonymous functions can also model numerals and their arithmetic. In Church encoding, a natural number n is represented by a function that calls a given function for n times. This representation is ca"
 image: ""
 tags: [".NET", "C#", "Church Encoding", "Church Numeral", "Functional Programming", "Lambda Calculus", "LINQ via C#"]
-category: ".NET"
+category: "Lambda Calculus"
 draft: false
 lang: ""
 ---

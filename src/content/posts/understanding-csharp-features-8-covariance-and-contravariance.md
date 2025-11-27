@@ -4,7 +4,7 @@ published: 2016-02-06
 description: "\\] - \\]"
 image: ""
 tags: [".NET", "C#", "C# 4.0", "C# Features", "Covariance And Contravariance", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

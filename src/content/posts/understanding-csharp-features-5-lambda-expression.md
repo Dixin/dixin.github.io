@@ -4,7 +4,7 @@ published: 2009-11-29
 description: "\\] - \\]"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# Features", "F#", "Functional Programming", "Haskell", "JavaScript", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

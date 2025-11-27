@@ -4,7 +4,7 @@ published: 2019-06-17
 description: "Pattern matching is a common feature in functional languages. C# 7.0 introduces basic pattern matching in is expression and switch statement, including constant value as pattern and type as pattern, a"
 image: ""
 tags: [".NET", "C#", "C# 7.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

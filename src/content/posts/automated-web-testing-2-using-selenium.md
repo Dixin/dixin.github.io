@@ -4,7 +4,7 @@ published: 2009-02-07
 description: "is another automated web application testing framework. Unlike ,"
 image: ""
 tags: ["JavaScript", "Testing", "Web"]
-category: "JavaScript"
+category: "Web"
 draft: false
 lang: ""
 ---

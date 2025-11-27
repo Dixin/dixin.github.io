@@ -4,7 +4,7 @@ published: 2019-06-08
 description: "The delegate chapter and other previous chapters have demonstrated that in C#, function supports many operations that are available for object. This chapter discusses one more aspect, higher-order fun"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# 6.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

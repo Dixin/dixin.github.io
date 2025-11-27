@@ -4,7 +4,7 @@ published: 2016-03-03
 description: "After installing , the initial Git configurations can be viewed with git config –list:"
 image: ""
 tags: ["Git", "GitHub", "Visual Studio"]
-category: "Git"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

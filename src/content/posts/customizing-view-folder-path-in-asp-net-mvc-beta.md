@@ -3,8 +3,8 @@ title: "Customizing View Folder Path In ASP.NET MVC Beta"
 published: 2008-11-18
 description: "By default, in an ASP.NET MVC Web application, all ViewPages and ViewUserControls should be placed in the default ~/Vews/ directory. But today some one needs to place them into a custom location."
 image: ""
-tags: [".NET", "ASP.NET MVC", "C#", "Web"]
-category: ".NET"
+tags: [".NET", "ASP.NET", "ASP.NET MVC", "C#", "Web"]
+category: "ASP.NET"
 draft: false
 lang: ""
 ---

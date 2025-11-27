@@ -4,14 +4,14 @@ published: 2007-11-22
 description: "Today someone is asking how to customize the color of IE scrollbar. The following code works for HTML:"
 image: ""
 tags: ["CSS", "HTML", "Web", "XHTML"]
-category: "CSS"
+category: "Web"
 draft: false
 lang: ""
 ---
 
 Today someone is asking how to customize the color of IE scrollbar. The following code works for HTML:
 
-```csharp
+```css
 body
 {
     scrollbar-face-color: #E3F1D1;
@@ -26,7 +26,7 @@ body
 
 But not for XHTML. For XHTML page, it should be like this:
 
-```csharp
+```css
 html
 {
     scrollbar-face-color: #E3F1D1;

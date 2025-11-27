@@ -4,7 +4,7 @@ published: 2019-07-03
 description: "After understanding how to use LINQ to Objects queries, this chapter starts to discuss how these queries work internally, including how they execute and how they are implemented. These insights help d"
 image: ""
 tags: [".NET", "C#", "F#", "Haskell", "JavaScript", "LINQ", "LINQ to Objects", "LINQ via C#"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

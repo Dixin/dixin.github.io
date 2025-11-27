@@ -4,7 +4,7 @@ published: 2019-06-07
 description: "C# lambda expression is a powerful syntactic sugar. Besides representing anonymous function, the same syntax can also represent expression tree. An expression tree is an immutable tree data structure"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# 6.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

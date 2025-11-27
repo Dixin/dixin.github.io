@@ -4,7 +4,7 @@ published: 2019-10-05
 description: "As fore mentioned, LINQ to Entities queries are translated to database queries. To understand how EF Core work with databases, it is important to uncover the actual underlying operations to the SQL da"
 image: ""
 tags: [".NET", ".NET Core", "C#", "EF Core", "Entity Framework Core", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
-category: ".NET"
+category: "Entity Framework Core"
 draft: false
 lang: ""
 ---

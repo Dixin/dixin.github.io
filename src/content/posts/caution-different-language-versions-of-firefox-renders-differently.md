@@ -4,14 +4,14 @@ published: 2007-09-21
 description: "For the same HTML:"
 image: ""
 tags: ["HTML", "Web", "XHTML"]
-category: "HTML"
+category: "Web"
 draft: false
 lang: ""
 ---
 
 For the same HTML:
 
-```csharp
+```html
 <input type="file" style="width:160px;" />
 ```
 

@@ -3,8 +3,8 @@ title: "Upload any file to FTP server via C#"
 published: 2019-01-31
 description: "Microsoft has a C# example of uploading file to FTP server in MSDN .aspx"
 image: ""
-tags: ["Blog"]
-category: ""
+tags: [".NET", "C#"]
+category: ".NET"
 draft: false
 lang: ""
 ---

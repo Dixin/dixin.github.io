@@ -4,7 +4,7 @@ published: 2019-09-23
 description: "Most of the PLINQ standard queries are the parities with LINQ to Objects standard queries, with the same syntax and functionality. For the additional queries in PLINQ, AsParallel, AsSequential and For"
 image: ""
 tags: [".NET", "C#", "LINQ", "Parallel Computing", "Parallel LINQ", "PLINQ"]
-category: ".NET"
+category: "Parallel LINQ"
 draft: false
 lang: ""
 ---

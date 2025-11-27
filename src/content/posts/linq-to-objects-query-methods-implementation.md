@@ -4,7 +4,7 @@ published: 2019-07-05
 description: "Understanding of internal implementation of LINQ to Objects queries is the ultimate way to master them and use them accurately and effectively, and is also helpful for defining custom query methods, w"
 image: ""
 tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ to Objects", "LINQ via C#"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

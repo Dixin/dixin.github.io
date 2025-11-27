@@ -4,7 +4,7 @@ published: 2019-10-14
 description: "Besides LINQ to Entities queries, EF Core also provides rich APIs for data changes, with imperative paradigm."
 image: ""
 tags: [".NET", ".NET Core", "C#", "EF Core", "Entity Framework Core", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
-category: ".NET"
+category: "Entity Framework Core"
 draft: false
 lang: ""
 ---

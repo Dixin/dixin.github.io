@@ -4,7 +4,7 @@ published: 2007-12-11
 description: "hibernated for years:"
 image: ""
 tags: ["HTML", "HTML5", "Web", "XHTML"]
-category: "HTML"
+category: "Web"
 draft: false
 lang: ""
 ---

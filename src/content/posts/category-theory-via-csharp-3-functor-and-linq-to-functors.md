@@ -4,7 +4,7 @@ published: 2024-12-13
 description: "In category theory,  is a ) from category to category. Giving category C and D, functor F from"
 image: ""
 tags: [".NET", "C#", "Category Theory", "Functional Programming", "Functors", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

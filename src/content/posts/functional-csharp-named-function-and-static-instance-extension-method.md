@@ -4,7 +4,7 @@ published: 2019-06-02
 description: "This chapter starts the deep dive in functional programming with C#. C# has named function and anonymous function. In C#, the most intuitive functions are method members of class and structure, includ"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# 6.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

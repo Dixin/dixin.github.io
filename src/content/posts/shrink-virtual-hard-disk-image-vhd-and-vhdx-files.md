@@ -4,7 +4,7 @@ published: 2016-05-06
 description: "Virtual hard disk image files () grow bigger during the usage. For instance, this is a 20G virtual disk file for a Window"
 image: ""
 tags: ["Hyper-v", "OneDrive", "VHD", "VHDX", "Virtual Hard Disk", "Virtual Machine", "Windows"]
-category: "Hyper-v"
+category: "Windows"
 draft: false
 lang: ""
 ---

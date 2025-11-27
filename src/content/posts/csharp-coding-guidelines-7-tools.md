@@ -4,7 +4,7 @@ published: 2009-10-14
 description: "C# Coding Guidelines:"
 image: ""
 tags: [".NET", "C#", "Coding Guidelines"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

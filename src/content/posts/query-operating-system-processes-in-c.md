@@ -4,7 +4,7 @@ published: 2016-04-02
 description: ".NET framework provides some process APIs in  class. Only some basic information of process can be"
 image: ""
 tags: ["C#", "Process", "Windows", "WMI"]
-category: "C#"
+category: "Windows"
 draft: false
 lang: ""
 ---

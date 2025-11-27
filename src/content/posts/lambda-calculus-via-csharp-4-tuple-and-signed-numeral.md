@@ -4,7 +4,7 @@ published: 2024-11-10
 description: "Besides modeling values like Boolean and numeral, anonymous function can also model data structures. In Church encoding, Church pair is an approach to use functions to represent a tuple of 2 items."
 image: ""
 tags: [".NET", "C#", "Church Encoding", "Church Pairs", "Functional Programming", "Lambda Calculus", "LINQ via C#"]
-category: ".NET"
+category: "Lambda Calculus"
 draft: false
 lang: ""
 ---

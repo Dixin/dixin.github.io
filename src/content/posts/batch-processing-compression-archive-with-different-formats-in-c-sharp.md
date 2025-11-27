@@ -3,8 +3,8 @@ title: "Batch Processing Compression Archives with Different Formats (RAR, ISO, 
 published: 2016-03-02
 description: "](http://techheavy.s3.a"
 image: ""
-tags: ["7-Zip", "7z", "C#", "Conpression", "Extraction", "ISO", "RAR", "Zip"]
-category: "7-Zip"
+tags: [".NET", "7-Zip", "7z", "C#", "Conpression", "Extraction", "ISO", "RAR", "Zip"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -12,6 +12,17 @@ lang: ""
 [![compress](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Batch-processing-RAR-and-Zip_13247/compress_89982e7a-0617-49d7-af84-f4364e62426c.jpg "compress")](http://techheavy.s3.amazonaws.com/wp-content/uploads/2014/02/compress.jpg)
 
 Recently I need to batch process some compressed files in several hard disk drives - Some [RAR](http://en.wikipedia.org/wiki/RAR)/[ISO](http://en.wikipedia.org/wiki/ISO_image)/[7z](http://en.wikipedia.org/wiki/7z) files need to unified to [zip](http://en.wikipedia.org/wiki/Zip_\(file_format\)) format; And some compression archives has to be extracted; etc..
+
+- [C# options for compression archive (RAR, ISO, 7z, zip, …) processing](#c-options-for-compression-archive-rar-iso-7z-zip--processing)
+  - [The entry name encoding/decoding problem](#the-entry-name-encodingdecoding-problem)
+- [Prepare to use 7z.exe command line tool](#prepare-to-use-7zexe-command-line-tool)
+- [Extract entries from RAR/ISO/7z/… archive](#extract-entries-from-rariso7z-archive)
+- [Create zip archive](#create-zip-archive)
+- [Delete a file/directory](#delete-a-filedirectory)
+- [Convert RAR, ISO, 7z, … archives to zip](#convert-rar-iso-7z--archives-to-zip)
+- [Batch process](#batch-process)
+- [Encrypt/hide file names in zip](#encrypthide-file-names-in-zip)
+- [Conclusion](#conclusion)
 
 ## C# options for compression archive (RAR, ISO, 7z, zip, …) processing
 

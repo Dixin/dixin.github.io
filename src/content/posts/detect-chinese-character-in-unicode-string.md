@@ -4,7 +4,7 @@ published: 2016-01-10
 description: "Recently, when trying to convert some directory/file names between Chinese and English, it is necessary to detect if a Unicode string contains Chinese characters. Unfortunately, Chinese language detec"
 image: ""
 tags: ["C#", "Unicode"]
-category: "C#"
+category: "Unicode"
 draft: false
 lang: ""
 ---

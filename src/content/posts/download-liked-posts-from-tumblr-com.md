@@ -3,7 +3,7 @@ title: "Download Liked Posts from Tumblr.com"
 published: 2016-04-12
 description: "After using tumblr.com for years, a lot of posts have been liked. It would be easier to look up if the contents of these posts are stored to local. Fortunately, tumblr has provided [a set of APIs](htt"
 image: ""
-tags: ["JavaScript", "Node.js", "Tumblr", "Visual Studio"]
+tags: ["JavaScript", "Node.js", "Tumblr", "Visual Studio", "Web]
 category: "JavaScript"
 draft: false
 lang: ""

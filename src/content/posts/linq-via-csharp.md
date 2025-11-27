@@ -4,16 +4,16 @@ published: 2024-08-14
 description: "!"
 image: ""
 tags: [".NET", ".NET Core", ".NET Standard", "C#", "C# 8.0", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "LINQ via C#"
 draft: false
 lang: ""
 ---
 
 ![ezgif-1-93576e9d87](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/LINQ-via-C_955C/ezgif-1-93576e9d87_3.jpg "ezgif-1-93576e9d87")
 
--   [Acclaim](#acclaim)
--   [Contents at a Glance](#contentsataglance)
--   [Table of Contents](#contents)
+- [Acclaim](#acclaim)
+- [Contents at a Glance](#contents-at-a-glance)
+- [Table of Contents](#table-of-contents)
 
 This is a book on functional programming and LINQ programming via C# language. It discusses:
 
@@ -21,7 +21,7 @@ This is a book on functional programming and LINQ programming via C# language. I
 -   Use functional LINQ to work with local data and cloud data
 -   The underlying mathematics theories of functional programming and LINQ, including Lambda Calculus and Category Theory
 
-### Acclaim
+## Acclaim
 
 Microsoft:
 
@@ -40,7 +40,7 @@ Academy and more:
 -   “Great book! It takes a hands-on approach to LINQ and functional programming in an easy to understand format. I would highly recommend this book to developers looking to develop expertise in C#, functional programming, and LINQ.” **Himanshu Lal Software Engineering Manager at Facebook**
 -   “This is a great book that combines practical examples with in-depth analysis of LINQ and functional programming in C#. Dixin leverages his expertise in .NET to provide a well written tutorial on the effective use of LINQ and an overview of the theoretical principles behind it. A must read for anyone working on these technologies!” **Dimitrios Soulios Director at Goldman Sachs**
 
-### Contents at a Glance
+## Contents at a Glance
 
 The contents are organized as the following chapters:
 
@@ -85,7 +85,7 @@ This tutorial delivers highly reusable knowledge:
 
 As a fun of functional programming, LINQ, C#, and .NET technologies, hope this helps.
 
-### Table of Contents
+## Table of Contents
 
 All code examples are available on GitHub: https://github.com/Dixin/CodeSnippets.
 

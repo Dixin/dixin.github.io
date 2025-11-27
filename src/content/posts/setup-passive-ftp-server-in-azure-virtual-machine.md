@@ -3,8 +3,8 @@ title: "Setup passive FTP server in Azure virtual machine"
 published: 2019-01-29
 description: "This article demonstrates how to setup a passive FTP server in a Azure virtual machine running Windows."
 image: ""
-tags: ["Blog"]
-category: ""
+tags: ["Azure"]
+category: "Azure"
 draft: false
 lang: ""
 ---

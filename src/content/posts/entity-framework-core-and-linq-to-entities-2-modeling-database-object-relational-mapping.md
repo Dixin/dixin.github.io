@@ -4,7 +4,7 @@ published: 2019-10-04
 description: "In LINQ to Entities, the queries are based on Object-relational mapping. .NET and SQL database and have 2 different data type systems. For example, .NET has System.Int64 and System.String, while SQL d"
 image: ""
 tags: [".NET", ".NET Core", "C#", "EF Core", "Entity Framework Core", "LINQ", "LINQ to Entities", "Object-Relational Mapping", "SQL", "SQL Server"]
-category: ".NET"
+category: "Entity Framework Core"
 draft: false
 lang: ""
 ---

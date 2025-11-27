@@ -4,7 +4,7 @@ published: 2019-05-28
 description: "Object-oriented programming and functional programming are programming paradigms. A programming paradigm is a fundamental style or approach of programming. Paradigms are not mutually exclusive. It is"
 image: ""
 tags: [".NET", "C#", "Introducing LINQ", "LINQ", "LINQ via C#", "Ruby", "TSQL"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2024-11-01
 description: "Lambda calculus (aka λ-calculus) is a theoretical framework to describe function definition, function application, function recursion, and uses functions and function application to express computatio"
 image: ""
 tags: [".NET", "C#", "Functional Programming", "Lambda Calculus", "LINQ via C#"]
-category: ".NET"
+category: "Lambda Calculus"
 draft: false
 lang: ""
 ---

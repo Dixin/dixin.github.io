@@ -4,7 +4,7 @@ published: 2019-06-05
 description: "C#’s delegate is an important feature to make function first class citizen just like object. C# is a strongly-typed language, where any value and any expression that evaluates to a value has a type. I"
 image: ""
 tags: [".NET", "C#", "C# 2.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

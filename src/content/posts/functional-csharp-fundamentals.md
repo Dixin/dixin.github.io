@@ -4,7 +4,7 @@ published: 2019-06-01
 description: "The previous chapter demonstrates that C# is a standardized, cross-platform, and multi-paradigm language, and gives an overview that C# is very functional with rich features, including LINQ, a unified"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# 6.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2009-12-16
 description: "\\] - \\]"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# Features", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

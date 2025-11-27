@@ -4,7 +4,7 @@ published: 2019-05-07
 description: "C# is a functional and object-oriented programming language built by Microsoft. C# works with a family of programming frameworks crossing many platforms and devices. C# has been used by millions of pe"
 image: ""
 tags: [".NET", "C#", "Functional Programming", "Introducing LINQ", "LINQ", "LINQ via C#", "SQL Server", "XML"]
-category: ".NET"
+category: "LINQ via C#"
 draft: false
 lang: ""
 ---

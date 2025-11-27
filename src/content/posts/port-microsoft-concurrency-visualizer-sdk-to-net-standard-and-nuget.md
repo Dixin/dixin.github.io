@@ -3,8 +3,8 @@ title: "Port Microsoft Concurrency Visualizer SDK to .NET Standard and NuGet"
 published: 2025-01-24
 description: "I uploaded a NuGet package of Microsoft Concurrency Visualizer SDK: . [Microsoft Concurrency Visualizer](https://docs.micr"
 image: ""
-tags: [".NET", ".NET Core", ".NET Standard", "Concurrency VIsualizer", "NuGet", "SDK", "Visual Studio"]
-category: ".NET"
+tags: [".NET", ".NET Core", ".NET Standard", "Concurrency Visualizer", "NuGet", "SDK", "Visual Studio"]
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

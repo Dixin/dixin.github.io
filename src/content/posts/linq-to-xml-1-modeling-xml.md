@@ -4,7 +4,7 @@ published: 2019-08-10
 description: "XML (eXtensible Markup Language) is widely used to represent, store, and transfer data. .NET Standard provides LINQ to XML APIs to query XML data source. LINQ to XML APIs are located in System.Xml.XDo"
 image: ""
 tags: [".NET", "C#", "LINQ", "LINQ to XML", "XML"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

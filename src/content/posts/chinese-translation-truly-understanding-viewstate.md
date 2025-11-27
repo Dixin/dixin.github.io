@@ -4,7 +4,7 @@ published: 2007-09-19
 description: "Dave Reed has a great article: , and I have translated it into Chinese. Plea"
 image: ""
 tags: [".NET", "ASP.NET", "C#", "Web"]
-category: ".NET"
+category: "ASP.NET"
 draft: false
 lang: ""
 ---

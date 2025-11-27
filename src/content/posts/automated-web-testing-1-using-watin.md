@@ -4,7 +4,7 @@ published: 2009-02-05
 description: "(what-in), stands for Web Application Testing In .NET, is a very easy automated web application testing framework. WatiN is developed in C# for web testing with"
 image: ""
 tags: [".NET", "Testing", "Web"]
-category: ".NET"
+category: "Web"
 draft: false
 lang: ""
 ---

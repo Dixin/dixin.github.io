@@ -4,7 +4,7 @@ published: 2019-09-24
 description: "The purpose of PLINQ is to utilize multiple CPUs for better performance than LINQ to Objects However, PLINQ can also introduces performance overhead, like source partitioning and result merging. There"
 image: ""
 tags: [".NET", "C#", "LINQ", "Parallel Computing", "Parallel LINQ", "PLINQ"]
-category: ".NET"
+category: "Parallel LINQ"
 draft: false
 lang: ""
 ---

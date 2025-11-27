@@ -4,7 +4,7 @@ published: 2019-07-06
 description: "The previous 2 chapters discussed the LINQ to Objects standard queries. Besides these built-in queries provided by System.Linq.Enumerable type in .NET Standard, Microsoft also provides additional LINQ"
 image: ""
 tags: [".NET", "C#", "Functional Programming", "Iteractive Extensions", "Ix", "LINQ", "LINQ to Objects", "LINQ via C#"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

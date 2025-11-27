@@ -4,7 +4,7 @@ published: 2019-06-04
 description: "The previous 2 chapters discuss all the named functions in C#. This chapter looks into the input and output features of C# function."
 image: ""
 tags: [".NET", "C#", "C# 4.0", "C# 5.0", "C# 7.0", "C# Features", "Functional C#", "Functional Programming", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

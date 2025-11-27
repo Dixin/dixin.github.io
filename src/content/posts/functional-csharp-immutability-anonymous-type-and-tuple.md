@@ -4,7 +4,7 @@ published: 2019-06-13
 description: "Immutability is an important aspect of functional programming. As discussed in the introduction chapter, imperative/object-oriented programming is usually mutable and stateful, and functional programm"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

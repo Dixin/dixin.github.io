@@ -3,8 +3,8 @@ title: "Use Fiddler with Node.js"
 published: 2016-02-22
 description: ") is an useful HTTP proxy debugger on Windows. It would be nice if it can work with  applica"
 image: ""
-tags: ["Fiddler", "HTTP", "JavaScript", "Node.js"]
-category: "Fiddler"
+tags: ["Fiddler", "HTTP", "JavaScript", "Node.js", "Web"]
+category: "JavaScript"
 draft: false
 lang: ""
 ---
@@ -17,7 +17,7 @@ lang: ""
 
 If the [request module](https://www.npmjs.com/package/request) is used to send requests, it is relatively easier. Environment variables can be used to turn on/off current node.js process’s fiddler proxy settings:
 
-```csharp
+```bash
 set https_proxy=http://127.0.0.1:8888
 set http_proxy=http://127.0.0.1:8888
 set NODE_TLS_REJECT_UNAUTHORIZED=0
@@ -26,7 +26,7 @@ node Dixin.Nodejs\main.js
 
 It’s done. After setting the above 3 environment variables, when calling request module to send requests, they will be captured by Fiddler. If the proxy settings needs to be turned off, just set these environment variables to empty:
 
-```csharp
+```bash
 set https_proxy=
 set http_proxy=
 set NODE_TLS_REJECT_UNAUTHORIZED=
@@ -34,7 +34,7 @@ set NODE_TLS_REJECT_UNAUTHORIZED=
 
 This can be done with JavaScript. Here is part of a simple fiddler.js module:
 
-```csharp
+```js
 "use strict";
 
 var url = require("url"),
@@ -64,7 +64,7 @@ var url = require("url"),
 
 The usage is straightforward:
 
-```csharp
+```js
 var fiddler = require("./fiddler");
 fiddler.proxyRequests();
 // requests.
@@ -75,7 +75,7 @@ fiddler.unproxyRequests();
 
 If requests are sent with [HTTP](https://nodejs.org/api/http.html)/[HTTPS](https://nodejs.org/api/https.html) modules of Node.js, there is no global switch to turn on/off proxy settings for all requests. Some helper methods can be created to proxy an individual HTTP request to Fiddler. Below is the rest of the fiddler.js module:
 
-```csharp
+```js
 setProxy = function (options) {
         if (typeof options === "string") { // options can be URL string.
             options = url.parse(options);
@@ -121,7 +121,7 @@ When calling HTTP/HTTPS modules to send a request, call setProxy to proxy the re
 
 setProxy is used for the url/options, before passing it to call HTTP module methods, like request, get, etc. The following example proxies the request to URL string:
 
-```csharp
+```js
 var http = require("http"),
     https = require("https"),
     fiddler = require("./fiddler");
@@ -139,7 +139,7 @@ The second request can be viewed in Fiddler:
 
 Similarly, setProxy can be used for URI options:
 
-```csharp
+```js
 var blogUrl = {
     protocol: "https:",
     hostname: "weblogs.asp.net",
@@ -157,7 +157,7 @@ The second request is in Fiddler:
 
 A get method and a request method are also provided. They are just shortcuts. The above calls are equivalent to:
 
-```csharp
+```js
 fiddler.request(photoUrl).end();
 fiddler.get(blogUrl);
 ```

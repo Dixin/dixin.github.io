@@ -4,7 +4,7 @@ published: 2009-08-29
 description: "Understanding C# Covariance And Conreavariance:"
 image: ""
 tags: [".NET", "C#", "C# 4.0", "Covariance And Contravariance"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

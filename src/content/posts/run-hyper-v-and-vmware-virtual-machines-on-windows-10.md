@@ -4,7 +4,7 @@ published: 2019-01-14
 description: "I use Windows’ Hyper-V to run virtual machines for long time. Recently I need to run a VMware virtual machine to test something. I installed VMware Player, which is free for non-commercial usage. Howe"
 image: ""
 tags: ["Hyper-v", "Virtual Machine", "VMware", "Windows", "Windows 10"]
-category: "Hyper-v"
+category: "Windows"
 draft: false
 lang: ""
 ---

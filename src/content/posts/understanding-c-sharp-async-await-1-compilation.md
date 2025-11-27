@@ -4,7 +4,7 @@ published: 2012-11-03
 description: "Understanding C# async / await:"
 image: ""
 tags: [".NET", "Async", "Await", "C#", "C# 5.0"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

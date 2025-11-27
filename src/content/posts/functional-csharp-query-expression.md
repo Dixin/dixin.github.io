@@ -4,7 +4,7 @@ published: 2019-06-10
 description: "C# 3.0 introduces query expression, a SQL-like query syntactic sugar for query methods composition."
 image: ""
 tags: [".NET", "C#", "C# 2.0", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

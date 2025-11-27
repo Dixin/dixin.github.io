@@ -4,7 +4,7 @@ published: 2019-06-03
 description: "The previous chapter discussed named function. There is one more special kind of named function. local function. Local function can be nested in another function, and it supports an important feature"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# 6.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

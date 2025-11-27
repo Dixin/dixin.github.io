@@ -4,7 +4,7 @@ published: 2010-06-26
 description: "Some times, command text is followed by ellipsis (…) or not:"
 image: ""
 tags: ["Usability", "Windows"]
-category: "Usability"
+category: "Windows"
 draft: false
 lang: ""
 ---

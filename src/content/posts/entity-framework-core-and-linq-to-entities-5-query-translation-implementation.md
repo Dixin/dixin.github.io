@@ -4,7 +4,7 @@ published: 2019-10-10
 description: "Regarding different database systems can have different query languages or different query APIs, EF Core implement a provider model to work with different kinds of databases. In EF Core, the base libr"
 image: ""
 tags: [".NET", ".NET Core", "C#", "EF Core", "Entity Framework Core", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
-category: ".NET"
+category: "Entity Framework Core"
 draft: false
 lang: ""
 ---

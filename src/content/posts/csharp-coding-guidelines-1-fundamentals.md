@@ -4,7 +4,7 @@ published: 2009-10-06
 description: "Recently some talks on dos and don'ts of C# 2.0 / 3.0 / 4.0 are delivered for some junior developers in my friend’s team. Since the feedback looks good, those contents are decided to write down."
 image: ""
 tags: [".NET", "C#", "Coding Guidelines"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

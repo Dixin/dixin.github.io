@@ -4,7 +4,7 @@ published: 2009-03-21
 description: "Recently the ASP.NET development server on my machine could not work. When F5 is pressed in Visual Studio 2008, IE started and displayed “Internet Explorer cannot display the webpage”. This problem na"
 image: ""
 tags: ["ASP.NET", "Visual Studio", "Web"]
-category: "ASP.NET"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

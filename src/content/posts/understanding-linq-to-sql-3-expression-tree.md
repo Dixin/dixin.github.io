@@ -4,7 +4,7 @@ published: 2010-04-06
 description: "\\]"
 image: ""
 tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ to SQL", "LINQ via C# Series", "SQL Server", "TSQL", "Visual Studio"]
-category: ".NET"
+category: "LINQ"
 draft: false
 lang: ""
 ---

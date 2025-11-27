@@ -4,7 +4,7 @@ published: 2024-12-25
 description: "Given monoidal categories (C, ⊗, IC) and (D, ⊛, ID), a strong lax monoidal functor is a functor F: C → D equipped with:"
 image: ""
 tags: [".NET", "Applicative Functors", "C#", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monadal Functors"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

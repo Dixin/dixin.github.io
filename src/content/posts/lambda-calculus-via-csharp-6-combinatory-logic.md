@@ -4,7 +4,7 @@ published: 2024-11-19
 description: "In lambda calculus, the primitive is function, which can have free variables and bound variables.  was introduced by [Moses Schönfink"
 image: ""
 tags: [".NET", "C#", "Combinators", "Combinatory Logic", "Functional Programming", "Iota", "Lambda Calculus", "LINQ via C#", "SKI"]
-category: ".NET"
+category: "Lambda Calculus"
 draft: false
 lang: ""
 ---

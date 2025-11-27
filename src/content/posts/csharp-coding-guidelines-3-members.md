@@ -4,20 +4,20 @@ published: 2009-10-07
 description: "C# Coding Guidelines:"
 image: ""
 tags: [".NET", "C#", "Coding Guidelines"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---
 
 C# Coding Guidelines:
 
--   [C# Coding Guidelines (1) Fundamental](http://www.cnblogs.com/dixin/archive/2009/10/06/csharp-coding-guidelines-1-fundamental.html)
--   [C# Coding Guidelines (2) Naming](http://www.cnblogs.com/dixin/archive/2009/10/07/csharp-coding-guidelines-2-naming.html)
--   C# Coding Guidelines (3) Member
--   [C# Coding Guidelines (4) Type](http://www.cnblogs.com/dixin/archive/2009/10/08/csharp-coding-guidelines-4-type.html)
--   [C# Coding Guidelines (5) Exception](http://www.cnblogs.com/dixin/archive/2009/10/11/csharp-coding-guidelines-5-exception.html)
--   [C# Coding Guidelines (6) Documentation](http://www.cnblogs.com/dixin/archive/2009/10/13/csharp-coding-guidelines-6-documentation.html)
--   [C# Coding Guidelines (7) Tools](http://www.cnblogs.com/dixin/archive/2009/10/13/csharp-coding-guidelines-7-tools.html)
+-   [C# Coding Guidelines (1) Fundamentals](/posts/csharp-coding-guidelines-1-fundamentals)
+-   [C# Coding Guidelines (2) Naming](/posts/csharp-coding-guidelines-2-naming)
+-   C# Coding Guidelines (3) Members
+-   [C# Coding Guidelines (4) Types](/posts/csharp-coding-guidelines-4-types)
+-   [C# Coding Guidelines (5) Exceptions](/posts/csharp-coding-guidelines-5-exceptions)
+-   [C# Coding Guidelines (6) Documentation](/posts/csharp-coding-guidelines-6-documentation)
+-   [C# Coding Guidelines (7) Tools](/posts/csharp-coding-guidelines-7-tools)
 
 ## Constructors
 
@@ -132,7 +132,6 @@ public class ProductController : Controller
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 For more information of dependency injection pattern, please read [Martin Fowler](http://martinfowler.com/)’s [article](http://martinfowler.com/articles/injection.html).
 

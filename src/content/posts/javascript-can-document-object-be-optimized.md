@@ -4,27 +4,27 @@ published: 2007-10-25
 description: "In JavaScript, document is a property of window. When access document directly, window.document is accessed. Recently, a colleague demonstrated a way to optimize document, which looks weird:"
 image: ""
 tags: ["HTML", "JavaScript", "Web", "XHTML"]
-category: "HTML"
+category: "JavaScript"
 draft: false
 lang: ""
 ---
 
 In JavaScript, document is a property of window. When access document directly, window.document is accessed. Recently, a colleague demonstrated a way to optimize document, which looks weird:
 
-```csharp
+```js
 // Accessing _document might be faster than accessing document;
 var _document = window.document;
 ```
 
 To avoid changing context code accessing document, like document.getElementById() invocation, etc., the above code should be:
 
-```csharp
+```js
 var document = window.document;
 ```
 
 However, this results an error in most browsers. There is one way to work around:
 
-```csharp
+```js
 try {
     var _document = window.document;
     eval("var document = _document");
@@ -39,7 +39,7 @@ finally {
 
 And this is the test code:
 
-```xml
+```html
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

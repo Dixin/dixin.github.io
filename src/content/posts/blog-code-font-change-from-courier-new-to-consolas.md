@@ -4,7 +4,7 @@ published: 2010-04-16
 description: "is an excellent  (non-proportional) [typeface](http://en.wikipedia.org/wik"
 image: ""
 tags: ["Microsoft", "UI Design", "Visual Studio", "Web", "Windows"]
-category: "Microsoft"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---
@@ -15,7 +15,7 @@ lang: ""
 
 The latest code font definition of MSDN is:
 
-```csharp
+```css
 font-family: Consolas, Courier, monospace;
 font-size: 0.83em;
 ```

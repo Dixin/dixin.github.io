@@ -4,14 +4,14 @@ published: 2007-10-26
 description: "For non-form elements, like <div>, etc., document.getElementById() usually works stably, except Opera:"
 image: ""
 tags: ["HTML", "JavaScript", "Web", "XHTML"]
-category: "HTML"
+category: "Web"
 draft: false
 lang: ""
 ---
 
 For non-form elements, like <div>, etc., document.getElementById() usually works stably, except Opera:
 
-```csharp
+```html
 <div name="userName">1</div>
 <div id="userName">2</div>
 <script type="text/javascript">

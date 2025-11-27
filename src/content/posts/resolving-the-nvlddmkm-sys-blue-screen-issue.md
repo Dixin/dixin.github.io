@@ -4,7 +4,7 @@ published: 2010-01-30
 description: "I started to use ATI discrete graphic cards since 2002. At the end of 2009, I got my first pair of NVIDIA cards,  ,"
 image: ""
 tags: ["Hardware", "Windows"]
-category: "Hardware"
+category: "Windows"
 draft: false
 lang: ""
 ---

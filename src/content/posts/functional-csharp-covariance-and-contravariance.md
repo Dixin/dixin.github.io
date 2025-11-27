@@ -4,7 +4,7 @@ published: 2019-06-11
 description: "In programming languages with subtyping support, variance is the ability to substitute a type with a different subtype or supertype in a context. For example, having a subtype and a supertype, can a f"
 image: ""
 tags: [".NET", "C#", "C# 2.0", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

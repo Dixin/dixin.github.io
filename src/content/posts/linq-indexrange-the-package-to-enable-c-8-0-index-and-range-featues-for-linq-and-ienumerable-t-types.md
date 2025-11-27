@@ -3,8 +3,8 @@ title: "Linq.IndexRange: The package to enable C# 8.0 index and range featues fo
 published: 2019-02-03
 description: "LINQ operators to enable C# 8.0 index and range new features working with LINQ queries and any type that implements `IEnumerable<T>`."
 image: ""
-tags: ["Blog"]
-category: ""
+tags: [".NET", "C#", "LINQ"]
+category: "LINQ"
 draft: false
 lang: ""
 ---

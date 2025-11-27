@@ -4,7 +4,7 @@ published: 2010-04-11
 description: "I developed a tool for  in 2008 in , and I got a very cool Windows Media Center remote controller. Sin"
 image: ""
 tags: ["Usability", "Windows", "Windows Media Center"]
-category: "Usability"
+category: "Windows"
 draft: false
 lang: ""
 ---

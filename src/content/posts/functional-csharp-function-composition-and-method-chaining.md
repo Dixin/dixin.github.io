@@ -4,7 +4,7 @@ published: 2019-06-09
 description: "As demonstrated in the introduction chapter, in object-oriented programming, program is modelled as objects, and object composition is very common, which combines simple objects to more complex object"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "Functional Programming"
 draft: false
 lang: ""
 ---

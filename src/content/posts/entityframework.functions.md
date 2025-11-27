@@ -4,7 +4,7 @@ published: 2024-01-19
 description: "EntityFramework.Functions library implements  code first support for:"
 image: ""
 tags: ["Code First", "Entity Framework", "LINQ", "LINQ to Entities", "SQL Functions", "SQL Server", "SQL Stored Procedure"]
-category: "Code First"
+category: "Entity Framework"
 draft: false
 lang: ""
 ---

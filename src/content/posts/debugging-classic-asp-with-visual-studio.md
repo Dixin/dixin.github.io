@@ -4,7 +4,7 @@ published: 2016-05-23
 description: "Recently I tried to show my Mom some websites I built when I was a kid. Those , some in  wh"
 image: ""
 tags: ["ASP", "Debug", "IIS", "Visual Studio"]
-category: "ASP"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

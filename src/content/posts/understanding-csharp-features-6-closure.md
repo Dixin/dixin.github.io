@@ -4,7 +4,7 @@ published: 2016-01-18
 description: "\\] - \\]"
 image: ""
 tags: [".NET", "C#", "C# Features", "Closure", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

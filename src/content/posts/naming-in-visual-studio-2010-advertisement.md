@@ -4,7 +4,7 @@ published: 2010-03-28
 description: "A great advertisement for Visual Studio 2010 has been released. Click  to dow"
 image: ""
 tags: [".NET", "C#", "Visual Studio"]
-category: ".NET"
+category: "Visual Studio"
 draft: false
 lang: ""
 ---

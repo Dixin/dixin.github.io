@@ -4,7 +4,7 @@ published: 2016-01-14
 description: "I have a web project “Chinese Etymology ()” for searching Chinese character’s etymologies and ancient Chinese characters. It is developed with Microsoft tec"
 image: ""
 tags: [".NET Core", "AppVeyor", "ASP.NET Core", "Azure", "Azure SQL Database", "CD", "CI", "Continuous Delivery", "Continuous Integration", "Debug", "Deployment", "DevOps", "GitHub", "Node.js", "SQL Server", "YAML", "YML"]
-category: ".NET Core"
+category: "Azure"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2019-02-19
 description: "C#, .NET Core, Azure, Functional Programming, Lambda Calculus, Category Theory, LINQ, LINQ to Objects, LINQ to XML, Parallel LINQ, LINQ to Entities, Entity Framework Core, Azure SQL Database."
 image: ""
 tags: [".NET", ".NET Core", "C#", "LINQ"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

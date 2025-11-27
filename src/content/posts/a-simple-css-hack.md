@@ -4,7 +4,7 @@ published: 2007-09-21
 description: "This following hack works for IE6 / IE7 / Firefox:"
 image: ""
 tags: ["CSS", "Web"]
-category: "CSS"
+category: "Web"
 draft: false
 lang: ""
 ---

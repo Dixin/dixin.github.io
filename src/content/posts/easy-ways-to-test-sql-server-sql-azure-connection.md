@@ -3,8 +3,8 @@ title: "Easy Ways to Test SQL Server/SQL Azure Connection"
 published: 2016-01-11
 description: "It is incredibly easy to test the SQL Server/Azure SQL Database connectivity or firewall settings from Windows, even without SSMS ([SQL Server Management Studio](https://en.wikipedia.org/wiki/SQL_Serv"
 image: ""
-tags: ["Azure SQL Database", "SQL Azure", "SQL Server"]
-category: "Azure SQL Database"
+tags: ["Database", "Azure SQL Database", "SQL Azure", "SQL Server"]
+category: "Database"
 draft: false
 lang: ""
 ---

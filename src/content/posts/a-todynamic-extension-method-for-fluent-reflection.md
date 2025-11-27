@@ -11,6 +11,15 @@ lang: ""
 
 Recently I needed to demonstrate some code with reflection, but I felt it inconvenient and tedious. To simplify the reflection coding, I created a ToDynamic() extension method. The source code can be downloaded from [here](https://aspblogs.blob.core.windows.net/media/dixin/Media/DynamicWrapper.zip).
 
+- [Problem](#problem)
+- [C# 4.0 dynamic](#c-40-dynamic)
+- [.NET 4.0 DynamicObject, and DynamicWrapper](#net-40-dynamicobject-and-dynamicwrapper)
+- [ToDynamic() and fluent reflection](#todynamic-and-fluent-reflection)
+- [Special scenarios](#special-scenarios)
+  - [Access static members](#access-static-members)
+  - [Change instances of value types](#change-instances-of-value-types)
+- [Conclusions](#conclusions)
+
 ## Problem
 
 One example for complex reflection is in LINQ to SQL. The DataContext class has a property Privider, and this Provider has an Execute() method, which executes the query expression and returns the result. Assume this Execute() needs to be invoked to query SQL Server database, then the following code will be expected:

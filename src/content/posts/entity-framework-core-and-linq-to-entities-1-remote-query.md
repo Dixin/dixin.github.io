@@ -4,7 +4,7 @@ published: 2019-10-01
 description: "The previous chapters discussed LINQ to Objects, LINQ to XML, and Parallel LINQ. All of these LINQ technologies query local in-memory objects managed by .NET. This chapter discusses a different kind o"
 image: ""
 tags: [".NET", ".NET Core", "C#", "EF Core", "Entity Framework Core", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
-category: ".NET"
+category: "Entity Framework Core"
 draft: false
 lang: ""
 ---

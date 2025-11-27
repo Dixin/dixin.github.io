@@ -4,7 +4,7 @@ published: 2009-11-26
 description: "\\] - \\]"
 image: ""
 tags: [".NET", "C#", "C# 3.0", "C# 4.0", "C# Features", "Dynamic", "Functional Programming", "LINQ", "LINQ via C#"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---

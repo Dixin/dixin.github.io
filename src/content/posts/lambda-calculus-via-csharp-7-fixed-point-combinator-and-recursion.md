@@ -4,7 +4,7 @@ published: 2024-11-23
 description: "p is the ) (aka invariant point) of function f :"
 image: ""
 tags: [".NET", "C#", "Combinators", "Combinatory Logic", "Fixed Point Combinator", "Functional Programming", "Lambda Calculus", "LINQ via C#", "Y Combinator"]
-category: ".NET"
+category: "Lambda Calculus"
 draft: false
 lang: ""
 ---

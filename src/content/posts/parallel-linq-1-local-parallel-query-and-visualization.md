@@ -4,7 +4,7 @@ published: 2019-09-20
 description: "LINQ to Objects and LINQ to XML queries are designed to work sequentially, and do not involve multi-threading, concurrency, or parallel computing. To scale LINQ query in multi-processor environment, ."
 image: ""
 tags: [".NET", "C#", "Concurrency VIsualizer", "LINQ", "Parallel Computing", "Parallel LINQ", "PLINQ"]
-category: ".NET"
+category: "Parallel LINQ"
 draft: false
 lang: ""
 ---

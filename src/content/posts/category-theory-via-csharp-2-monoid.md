@@ -4,7 +4,7 @@ published: 2024-12-12
 description: ") is an important algebraic structure in category theory. A monoid M is a set M equipped with a binary operation ⊙ and a special element"
 image: ""
 tags: [".NET", "C#", "Categories", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monoid`"]
-category: ".NET"
+category: "Category Theory"
 draft: false
 lang: ""
 ---

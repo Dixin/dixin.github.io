@@ -4,7 +4,7 @@ published: 2009-10-13
 description: "C# Coding Guidelines:"
 image: ""
 tags: [".NET", "C#", "Coding Guidelines"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---
@@ -91,7 +91,6 @@ namespace WebOS.Common
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 **✔** Use Microsoft XML documentation tags to write the comments.
 

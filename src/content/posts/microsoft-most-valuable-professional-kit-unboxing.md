@@ -4,7 +4,7 @@ published: 2010-10-28
 description: "I am very happy to receive the  Kit:"
 image: ""
 tags: ["C#", "C# 3.0", "C# 4.0", "Microsoft"]
-category: "C#"
+category: "Microsoft"
 draft: false
 lang: ""
 ---

@@ -4,7 +4,7 @@ published: 2009-09-07
 description: "Today when playing with Windows Server 2008 R2 RTM at home, I noticed a small UI bug from the start menu."
 image: ""
 tags: ["Testing", "Windows"]
-category: "Testing"
+category: "Windows"
 draft: false
 lang: ""
 ---

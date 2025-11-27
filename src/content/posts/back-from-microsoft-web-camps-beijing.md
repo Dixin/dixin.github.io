@@ -4,7 +4,7 @@ published: 2010-05-25
 description: "I am just back from , where Web developers in Beijing had a good time for 2 days with 2 fantastic speakers,  a"
 image: ""
 tags: [".NET", "ASP.NET MVC", "jQuery", "Microsoft", "Web", "WebOS"]
-category: ".NET"
+category: "Microsoft"
 draft: false
 lang: ""
 ---

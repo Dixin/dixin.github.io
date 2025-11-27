@@ -4,7 +4,7 @@ published: 2016-03-07
 description: "C# 6.0 introduces a new feature exception filter and a new keyword when. , but exception filter/when keyword is not."
 image: ""
 tags: [".NET", "C#", "C# 6.0"]
-category: ".NET"
+category: "C#"
 draft: false
 lang: ""
 ---
@@ -152,7 +152,7 @@ Here the Log method will log the exception, and return false. So the catch block
 
 There is nothing new or surprising. And When method is compiled to:
 
-```csharp
+```
 .method private hidebysig static void  When() cil managed
 {
     .maxstack  2

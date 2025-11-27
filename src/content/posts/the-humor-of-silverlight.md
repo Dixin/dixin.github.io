@@ -4,7 +4,7 @@ published: 2010-12-11
 description: "!"
 image: ""
 tags: [".NET", "Silverlight", "Web"]
-category: ".NET"
+category: "Silverlight"
 draft: false
 lang: ""
 ---

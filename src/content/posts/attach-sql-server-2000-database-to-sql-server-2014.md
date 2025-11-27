@@ -3,8 +3,8 @@ title: "Attach SQL Server 2000 database to SQL Server 2014"
 published: 2015-04-10
 description: "In the , the  is used. It"
 image: ""
-tags: ["SQL Server", "TSQL"]
-category: "SQL Server"
+tags: ["Database", "SQL Server", "TSQL"]
+category: "Database"
 draft: false
 lang: ""
 ---
@@ -19,7 +19,7 @@ The reason is, only the previous 2 version is supported to a SQL Server. For SQL
 
 Since SQL Server 2000/2005 database is supported in SQL Server 2008. The Northwind database can be [attached](https://msdn.microsoft.com/en-us/library/ms176061.aspx) to a SQL Server 2008:
 
-```csharp
+```sql
 USE master;
 GO
 CREATE DATABASE [Northwind] ON PRIMARY 
@@ -32,7 +32,7 @@ GO
 
 or just:
 
-```csharp
+```sql
 USE master;
 GO
 CREATE DATABASE [Northwind] ON 
@@ -48,7 +48,7 @@ The database version will be upgraded from 539 to 655:
 
 Then call [sp\_detach\_db](https://msdn.microsoft.com/en-us/library/ms188031.aspx) to detach from SQL Server 2008:
 
-```csharp
+```sql
 USE master;
 GO
 EXEC sp_detach_db @dbname = N'Northwind', @skipchecks = N'true';
@@ -69,7 +69,7 @@ The downloaded sample database files also includes an instnwnd.sql installation 
 
 [sp\_dboption](https://msdn.microsoft.com/en-us/library/ms187310.aspx) is used at line 24 and 25:
 
-```csharp
+```sql
 exec sp_dboption 'Northwind','trunc. log on chkpt.','true'
 exec sp_dboption 'Northwind','select into/bulkcopy','true'
 GO
@@ -77,7 +77,7 @@ GO
 
 It is deprecated since SQL Server 2012. In SQL Server 2012/2014, [ALTER DATABASE](https://msdn.microsoft.com/en-us/library/bb522682.aspx) should be used. These 2 lines are equivalent to:
 
-```csharp
+```sql
 -- exec sp_dboption 'Northwind','trunc. log on chkpt.','true'
 ALTER DATABASE Northwind SET RECOVERY SIMPLE
 -- exec sp_dboption 'Northwind','select into/bulkcopy','true'
