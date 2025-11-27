@@ -3,8 +3,8 @@ title: "Category Theory via C# (5) Bifunctor"
 published: 2024-12-15
 description: "A functor is the mapping from 1 object to another object, with a “Select” ability to map 1 morphism to another morphism. A [bifunctor](http://en.wikipedia.org/wiki/Functor#Bifunctors_and_multifunctors"
 image: ""
-tags: ["C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "Categories", "LINQ via C#", "Bifunctors", "Monadal Categories"]
-category: "C#"
+tags: [".NET", "Bifunctors", "C#", "Categories", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monadal Categories"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -34,7 +34,8 @@ public interface IBifunctor<TBifunctor<,>> where TBifunctor<,> : IBifunctor<TBif
 ```
 
 The most intuitive built-in bifunctor is ValueTuple<,>. Apparently ValueTuple<,> can be viewed as a type constructor of kind \* –> \* –> \*, which accepts 2 concrete types to and return another concrete type. Its Select implementation is also straightforward:
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T1, T2> : IBifunctor<ValueTuple<,>>
 {
     // Bifunctor Select: (TSource1 -> TResult1, TSource2 -> TResult2) -> (ValueTuple<TSource1, TSource2> -> ValueTuple<TResult1, TResult2>).
@@ -69,7 +70,8 @@ public class Lazy<T1, T2>
 ```
 
 Lazy<,> is simply the lazy version of ValueTuple<,>. Jut like Lazy<>, Lazy<,> can be constructed with a factory function, so that the call to selector1 and selector2 are deferred:
-```
+
+```csharp
 public static partial class LazyExtensions // Lazy<T1, T2> : IBifunctor<Lazy<,>>
 {
     // Bifunctor Select: (TSource1 -> TResult1, TSource2 -> TResult2) -> (Lazy<TSource1, TSource2> -> Lazy<TResult1, TResult2>).
@@ -113,7 +115,8 @@ public interface IMonoidalCategory<TObject, TMorphism> : ICategory<TObject, TMor
 ```
 
 DotNet category is monoidal category, with the most intuitive bifunctor ValueTuple<,> as the monoid multiplication, and Unit type as the monoid unit:
-```
+
+```csharp
 public partial class DotNetCategory : IMonoidalCategory<Type, Delegate>
 {
     public static Type Multiply(Type value1, Type value2) => typeof(ValueTuple<,>).MakeGenericType(value1, value2);
@@ -123,7 +126,8 @@ public partial class DotNetCategory : IMonoidalCategory<Type, Delegate>
 ```
 
 To have (DotNet, ValueTuple<,>, Unit) satisfy the monoid laws, the associator, left unitor and right unitor are easy to implement:
-```
+
+```csharp
 public partial class DotNetCategory
 {
     // Associator: (T1 x T2) x T3 -> T1 x (T2 x T3)

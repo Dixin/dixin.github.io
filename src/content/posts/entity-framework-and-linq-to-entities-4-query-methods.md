@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (4) Query Methods"
 published: 2016-05-31
 description: "This part discusses how to query SQL database with the defined mapping classes. Entity Framework and LINQ to Entities supports most of the extension methods provided by Queryable class:"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -69,7 +69,8 @@ Just like all the other kinds of LINQ, LINQ to Entities implements deferred exec
 ### Generation
 
 As fore mentioned, DefaultIfEmpty is the only generation method provided:
-```
+
+```csharp
 internal static void DefaultIfEmpty()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -91,7 +92,8 @@ SELECT
 The OUTER JOIN ON 1 = 1 from a single row table guarantees that the SQL query result has at least 1 row. If the right table of JOIN has rows, the JOIN results is the rows; otherwise, the JOIN result will be 1 row, where each column is NULL.
 
 The other DefaultIfEmpty overload accepts a specified default value:
-```
+
+```csharp
 internal static void DefaultIfEmptyWithPrimitive()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -115,7 +117,8 @@ SELECT
 ```
 
 This overload and its translation works for a single column. It throws NotSupportedException for entity type:
-```
+
+```csharp
 internal static void DefaultIfEmptyWithEntity()
 {
     ProductCategory defaultCategory = new ProductCategory();
@@ -131,7 +134,8 @@ DefaultIfEmpty can also be used to implement outer join, which will be discussed
 ### Filtering (restriction)
 
 Entity Framework translates Queryable.Where to SQL WHERE clause. And the predicate expression tree (again, not predicate function in Enumerable.Where) is translated to the condition in WHERE clause
-```
+
+```csharp
 internal static void Where()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -148,7 +152,8 @@ SELECT
 ```
 
 The C# || operator in the predicate expression tree is translated to SQL OR operator in WHERE clause:
-```
+
+```csharp
 internal static void WhereWithOr()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -166,7 +171,8 @@ SELECT
 ```
 
 The C# && operator is translated to SQL AND operator. Also, multiple Where calls are translated to one single WHERE clause with AND too
-```
+
+```csharp
 internal static void WhereWithAnd()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -196,7 +202,8 @@ SELECT
 ```
 
 The other filtering method, OfType, is equivalent to Where with is operator:
-```
+
+```csharp
 internal static void WhereWithIs()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -228,7 +235,8 @@ SELECT
 ```
 
 OfType works for entity type. It throws NotSupportedException for primitive type representing a single column:
-```
+
+```csharp
 internal static void OfTypeWithPromitive()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -241,7 +249,8 @@ internal static void OfTypeWithPromitive()
 ### Mapping (projection)
 
 In above queries, Queryable.Select is not called, so the translated SELECT clause contains all the mapped columns to construct the entity objects; if Select is called, the selector expression tree is translated to specified columns in SELECT clause. For example:
-```
+
+```csharp
 internal static void Select()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -268,7 +277,8 @@ SELECT
 ```
 
 Select supports Anonymous type:
-```
+
+```csharp
 internal static void SelectAnonymousType()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -294,7 +304,8 @@ SELECT
 ### Grouping
 
 The following is a simple GroupBy example, :
-```
+
+```csharp
 internal static void GroupBy()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -332,7 +343,8 @@ This is because above GroupBy returns hierarchical result (collection of groups,
 -   Eventually Entity Framework transforms the SQL result table into .NET hierarchical data structure, a IQueryable<T> collection of IGrouping<T> collections.
 
 To implement SQL GROUP BY query, just have the GroupBy query to return flattened result (collection of values). This can be done with a GroupBy overload accepting a resultSelector, or equivalently, an additional Select query:
-```
+
+```csharp
 internal static void GroupByWithResultSelector()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -370,7 +382,8 @@ SELECT
 ```
 
 SelectMany can also flatten hierarchical result:
-```
+
+```csharp
 internal static void GroupByAndSelectMany()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -395,7 +408,8 @@ SELECT
 ```
 
 GroupBy’s keySelector can return anonymous type to support multiple keys:
-```
+
+```csharp
 internal static void GroupByMultipleKeys()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -434,7 +448,8 @@ SELECT
 ### Inner join
 
 Besides above GroupBy, as discussed in the LINQ to Objects chapter, inner join can be done with Join and SelectMany. The following examples simply join the ProductSubcategory and ProductCategory entities with their ProductCategoryID properties:
-```
+
+```csharp
 internal static void InnerJoinWithJoin()
 {
     IQueryable<ProductSubcategory> outer = AdventureWorks.ProductSubcategories;
@@ -466,7 +481,8 @@ internal static void InnerJoinWithSelectMany()
 ```
 
 And their query expression versions are similar:
-```
+
+```csharp
 internal static void InnerJoinWithJoin()
 {
     IQueryable<ProductSubcategory> outer = AdventureWorks.ProductSubcategories;
@@ -495,7 +511,8 @@ internal static void InnerJoinWithSelectMany()
 ```
 
 Inner join can be translated from GroupJoin and Select too:
-```
+
+```csharp
 internal static void InnerJoinWithGroupJoin()
 {
     IQueryable<ProductSubcategory> outer = AdventureWorks.ProductSubcategories;
@@ -534,7 +551,8 @@ internal static void InnerJoinWithSelect()
 ```
 
 Here GroupJoin and Select returns hierarchical result, collection of collections, so SelectMany is called to flatten it to collection of values. Their query expression versions are:
-```
+
+```csharp
 internal static void InnerJoinWithGroupJoin()
 {
     IQueryable<ProductSubcategory> outer = AdventureWorks.ProductSubcategories;
@@ -570,7 +588,8 @@ internal static void InnerJoinWithSelect()
 ```
 
 Here the ProductCategory and ProductSubCategory entities are associated, also inner join can be implemented by the navigation property:
-```
+
+```csharp
 internal static void InnerJoinWithAssociation()
 {
     IQueryable<ProductSubcategory> outer = AdventureWorks.ProductSubcategories;
@@ -593,7 +612,8 @@ SELECT
 ```
 
 Apparently, navigation property is the easiest way for join query, as long as the entities are associated. The following example inner joins 3 entities, Product, ProductProductPhoto, ProductPhoto:
-```
+
+```csharp
 internal static void MultipleInnerJoinsWithAssociations()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -623,7 +643,8 @@ SELECT
 If above query is implemented by Join with keys, or by SelectMany with keys, then multiple Join or SelectMany calls are needed.
 
 Just like LINQ to Objects, to join with multiple keys, have the outerKeySelector and innerKeySelector return anonymous type. The following example joins the ProductSubcategory and ProductCategory entities with their ProductCategoryID properties, and their Name properties:
-```
+
+```csharp
 internal static void InnerJoinWithMultipleKeys()
 {
     IQueryable<ProductSubcategory> outer = AdventureWorks.ProductSubcategories;
@@ -653,7 +674,8 @@ SELECT
 ### Left outer join
 
 Left outer join can be done with GroupJoin and Select. The following examples joins ProductCategory and ProductSubcategory entities with their ProductCategoryID properties:
-```
+
+```csharp
 internal static void LeftOuterJoinWithGroupJoin()
 {
     IQueryable<ProductCategory> outer = AdventureWorks.ProductCategories;
@@ -689,7 +711,8 @@ internal static void LeftOuterJoinWithSelect()
 ```
 
 Their query expression versions are:
-```
+
+```csharp
 internal static void LeftOuterJoinWithGroupJoin()
 {
     IQueryable<ProductCategory> outer = AdventureWorks.ProductCategories;
@@ -745,7 +768,8 @@ SELECT
 ```
 
 To implement a simple left outer join query, just call SelectMany to flatten the hierarchical result:
-```
+
+```csharp
 internal static void LeftOuterJoinWithGroupJoinAndSelectMany()
 {
     IQueryable<ProductCategory> outer = AdventureWorks.ProductCategories;
@@ -785,7 +809,8 @@ internal static void LeftOuterJoinWithSelectAndSelectMany()
 ```
 
 Notice DefaultIfEmpty must be called in SelectMany, otherwise the queries become inner join. And their query expression versions are:
-```
+
+```csharp
 internal static void LeftOuterJoinWithGroupJoinAndSelectMany()
 {
     IQueryable<ProductCategory> outer = AdventureWorks.ProductCategories;
@@ -821,7 +846,8 @@ internal static void LeftOuterJoinWithSelectAndSelectMany()
 ```
 
 Similar to inner join, left outer join can be done with entities association too:
-```
+
+```csharp
 internal static void LeftOuterJoinWithAssociation()
 {
     IQueryable<ProductCategory> source = AdventureWorks.ProductCategories;
@@ -848,7 +874,8 @@ SELECT
 ### Cross join
 
 Just like LINQ to Objects, cross join can be done with SelectMany and Join. The following examples query the expensive products (list price greater than 2000) and cheap products (list price less than 100), and then cross join them to get all possible product bundles, where each bundle has one expensive product and one cheap product:
-```
+
+```csharp
 internal static void CrossJoinWithSelectMany()
 {
     IQueryable<Product> outer = AdventureWorks.Products.Where(product => product.ListPrice > 2000);
@@ -875,7 +902,8 @@ internal static void CrossJoinWithJoin()
 ```
 
 Their query expression versions are similar:
-```
+
+```csharp
 internal static void CrossJoinWithSelectMany()
 {
     IQueryable<Product> outer = AdventureWorks.Products.Where(product => product.ListPrice > 2000);
@@ -926,7 +954,8 @@ These 2 SQL queries are equivalent. They have the same query plan.
 ### Self join
 
 Entities can join with themselves. The following example joins the Products data source with Products data source with ListPrice, to query each product’s same price products.
-```
+
+```csharp
 internal static void SelfJoin()
 {
     IQueryable<Product> outer = AdventureWorks.Products;
@@ -949,7 +978,8 @@ internal static void SelfJoin()
 ```
 
 The the query expression version is:
-```
+
+```csharp
 internal static void SelfJoin()
 {
     IQueryable<Product> outer = AdventureWorks.Products;
@@ -1027,7 +1057,8 @@ SELECT [Left].[Count], [Right].[Value] FROM
 ### Cross apply
 
 In LINQ to Entities queries, SelectMany can flatten hierarchical data, for example, hierarchical result from GroupBy:
-```
+
+```csharp
 internal static void CrossApplyWithGroupByAndTake()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -1062,7 +1093,8 @@ SELECT
 ```
 
 As fore mentioned, GroupJoin and one-to-many association can produce hierarchical data, which then can be flattened by SelectMany:
-```
+
+```csharp
 internal static void CrossApplyWithGroupJoinAndTake()
 {
     IQueryable<ProductCategory> outer = AdventureWorks.ProductCategories;
@@ -1116,7 +1148,8 @@ SELECT
 ### Outer apply
 
 FirstOrDefault accepts a IQueryable<T> data source and returns a single value, so it can be used to flatten hierarchical data too. again, take GroupBy as example:
-```
+
+```csharp
 internal static void OuterApplyWithGroupByAndFirstOrDefault()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -1148,7 +1181,8 @@ SELECT
 ```
 
 Similarly, when FirstOrDefault is called in GroupJoin or one-to-many association:
-```
+
+```csharp
 internal static void OuterApplyWithGroupJoinAndFirstOrDefault()
 {
     IQueryable<ProductCategory> outer = AdventureWorks.ProductCategories;
@@ -1197,7 +1231,8 @@ SELECT
 ### Concatenation
 
 The following example concatenates the cheap products’ names with the expensive products’ names:
-```
+
+```csharp
 internal static void Concat()
 {
     IQueryable<string> first = AdventureWorks.Products
@@ -1212,7 +1247,8 @@ internal static void Concat()
 ```
 
 Here Select is called before Concat. It is equivalent to call Select after Concat:
-```
+
+```csharp
 internal static void ConcatWithSelect()
 {
     IQueryable<Product> first = AdventureWorks.Products.Where(product => product.ListPrice < 100);
@@ -1243,7 +1279,8 @@ SELECT
 ### Set
 
 The following example queries the subcategories for the distinct ProductCategoryIDs:
-```
+
+```csharp
 internal static void Distinct()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -1255,7 +1292,8 @@ internal static void Distinct()
 ```
 
 Also, as fore mentioned, GroupBy can also query distinct group keys:
-```
+
+```csharp
 internal static void DistinctWithGroupBy()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -1278,7 +1316,8 @@ SELECT
 ```
 
 To query distinct multiple keys, use anonymous type:
-```
+
+```csharp
 internal static void DistinctMultipleKeys()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -1319,7 +1358,8 @@ SELECT
 GroupBy can also be used for more complex scenarios, for example, query the complete entities with certain distinct properties. Please see above APPLY examples.
 
 The following example queries subcategories’ Names, where they have distinct ProductCategoryIDs:
-```
+
+```csharp
 internal static void DistinctWithGroupByAndFirstOrDefault()
 {
     IQueryable<ProductSubcategory> source = AdventureWorks.ProductSubcategories;
@@ -1345,7 +1385,8 @@ SELECT
 ```
 
 The other set query methods, Intersect and Except:
-```
+
+```csharp
 internal static void Intersect()
 {
     var first = AdventureWorks.Products
@@ -1414,7 +1455,8 @@ SELECT
 ### Partitioning
 
 Take cannot be used independently. OrderBy must be called before calling Skip. For example:
-```
+
+```csharp
 internal static void OrderByAndSkip()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1437,7 +1479,8 @@ SELECT
 ```
 
 When Take is called without calling Skip:
-```
+
+```csharp
 internal static void Take()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1457,7 +1500,8 @@ SELECT TOP (10)
 ```
 
 When Take is called with Skip:
-```
+
+```csharp
 internal static void OrderByAndSkipAndTake()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1485,7 +1529,8 @@ This is extremely helpful for pagination.
 ### Ordering
 
 OrderBy/OrderByDescding are translated to ORDER BY clause with ASC/DESC. For example:
-```
+
+```csharp
 internal static void OrderBy()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1534,7 +1579,8 @@ SELECT
 ```
 
 To sort with multiple keys, call OrderBy/OrderByDescending and ThenBy/ThenByDescending:
-```
+
+```csharp
 internal static void OrderByAndThenBy()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1547,7 +1593,8 @@ internal static void OrderByAndThenBy()
 ```
 
 Similar to GroupBy/Join/GroupJoin, the ordering query methods’ keySelector can return anonymous type:
-```
+
+```csharp
 internal static void OrderByAnonymousType()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1575,7 +1622,8 @@ SELECT
 ```
 
 If OrderBy/OrderByDescending are called multiple times:
-```
+
+```csharp
 internal static void OrderByAndOrderBy()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1606,7 +1654,8 @@ SELECT
 ### Conversion
 
 Cast can convert primitive types, for example, decimal (money) to string (nvarchar):
-```
+
+```csharp
 internal static void Cast()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1626,7 +1675,8 @@ SELECT
 ```
 
 SQL function CAST only works for primitive types, so Cast query method cannot convert arbitrary data. The following example attempts to convert Product to UniversalProduct:
-```
+
+```csharp
 internal static void CastEntity()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1661,7 +1711,8 @@ namespace System.Linq
 ```
 
 AsQueryable accepts an IEnumerable<T> source. If the input source is indeed an IQueryable<T> source, then return the input source; if not, wrap the input source into an EnumerablleQuery<T> object, and return it. EnumerablleQuery<T> is a special implementation of IQueryable<T>. When pulling values from EnumerableQuery<T> source, System.Linq.EnumerableRewriter.Visit is called to translate the query to local LINQ to Objects query, then execute the query locally. As a result, AsEnumerable can convert a remote LINQ to Entities query to local LINQ to Objects query, but AsQueryable cannot convert a local LINQ to Objects query to a remote LINQ to Entities query (and logically, a local .NET data source cannot be converted to a remote SQL data source). For example:
-```
+
+```csharp
 internal static void AsEnumerableAsQueryable()
 {
     IQueryable<Product> source1 = AdventureWorks.Products;
@@ -1719,7 +1770,8 @@ SELECT
 ```
 
 AsEnumerable can be useful for LINQ to Entities for some special cases. For example, LINQ to Entities’ Select query method does not support mapping to existing entity type:
-```
+
+```csharp
 internal static void SelectEntities()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1738,7 +1790,8 @@ internal static void SelectEntities()
 ```
 
 Executing above query throws a NotSupportedException. This is by design, because this kind of mapping causes difficulties for Entity Framework. For example, by default DbContext maintains the mapping between remote rows and query result entities, and constructing entities on the fly prevents doing so. Here, one solution is to construct the UniversalProduct entities with local LINQ to Objects query:
-```
+
+```csharp
 internal static void SelectEntityObjects()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1763,7 +1816,8 @@ Query methods in this category takes an IQueryable<T> input source and returns a
 ### Element
 
 First/FirstOrDefault execute the LINQ to Entities queries immediately for the first value/first or default value. The following example queries the first product’s Name:
-```
+
+```csharp
 internal static void First()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1783,7 +1837,8 @@ SELECT TOP (1)
 ```
 
 First/FirstOrDefault can also accept a predicate expression tree. The following example queries the first or default product with ListPrice greater than 5000:
-```
+
+```csharp
 internal static void FirstOrDefault()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1811,7 +1866,8 @@ SELECT
 ```
 
 As discussed in LINQ to Objects, Single/SingleOrDefault look similar to, but the semantics is more strict:
-```
+
+```csharp
 internal static void Single()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1838,7 +1894,8 @@ SELECT
 ```
 
 Single/SingleOrDefault can also accept predicate:
-```
+
+```csharp
 internal static void SingleOrDefault()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1875,7 +1932,8 @@ SELECT
 ### Aggregation
 
 Count/LongCount are translated to SQL aggregate functions COUNT/COUNT\_BIG, and the provided predicate is translated to WHERE clause. The following examples query the System.Int32 count of categories, and the System.Int64 count of the products with ListPrice greater than 0:
-```
+
+```csharp
 internal static void Count()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1911,7 +1969,8 @@ SELECT
 ```
 
 Max/Min are translated to MAX/MIN functions. If a selector is provided, the selector is translated to argument of MAX/MIN. The following examples query the latest ModifiedDate of photos, and the lowest ListPrice of products:
-```
+
+```csharp
 internal static void Max()
 {
     IQueryable<ProductPhoto> source = AdventureWorks.ProductPhotos;
@@ -1952,7 +2011,8 @@ For other scenarios, like query some properties
 ### Quantifier
 
 Any is translated to EXISTS operator, and the LINQ to Entities query before Any is translated to subquery of EXISTS. The following example simply query whether any product exists:
-```
+
+```csharp
 internal static void Any()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1973,7 +2033,8 @@ SELECT
 ```
 
 Contains can be implemented by Any equivalently, so Contains is translated to EXISTS too. The following example queries whether any product’s ListPrice is 100:
-```
+
+```csharp
 internal static void Contains()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -1984,7 +2045,8 @@ internal static void Contains()
 ```
 
 It is equivalent to the following Any query:
-```
+
+```csharp
 internal static void AnyWithPredicate()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -2006,7 +2068,8 @@ SELECT
 ```
 
 All can be implemented by Any equivalently too. The following example queries whether all products’ ListPrices are not 100:
-```
+
+```csharp
 internal static void AllNot()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -2016,7 +2079,8 @@ internal static void AllNot()
 ```
 
 It is equivalent to query whether not any product’s ListPrice is 100:
-```
+
+```csharp
 internal static void NotAny()
 {
     IQueryable<Product> source = AdventureWorks.Products;

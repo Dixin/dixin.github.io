@@ -3,8 +3,8 @@ title: "LINQ to XML in Depth (3) Manipulating XML"
 published: 2018-08-30
 description: "Besides creating and querying XML, LINQ to XML also provides APIs for other XML manipulations, including cloning, deleting, replacing, and updating XML structures:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -62,7 +62,8 @@ Besides creating and querying XML, LINQ to XML also provides APIs for other XML 
 ## Clone
 
 Most structures can be cloned by calling their constructors with the source instance:
-```
+
+```csharp
 internal static void ExplicitClone()
 {
     XElement sourceElement = XElement.Parse("<element />");
@@ -84,7 +85,8 @@ internal static void ExplicitClone()
 ```
 
 If an XObject instance is in an XML tree, when it is added to a different XML tree, it is cloned, and the new instance is actually added to the target. The exceptions are XName and XNamespace, which are cached at runtime. For example:
-```
+
+```csharp
 internal static void ImplicitClone()
 {
     XElement child = XElement.Parse("<child />");
@@ -106,7 +108,8 @@ internal static void ImplicitClone()
 ## Add, delete, replace, update, and events
 
 Most of APIs to add/replace/delete/update XML structures are very intuitive. And when changing a XObject instance, XObject.Changing and XObject.Changed events are fired before and after the change. For example:
-```
+
+```csharp
 internal static void Manipulate()
 {
     XElement child = new XElement("child");
@@ -174,7 +177,8 @@ XElement.SetAttributeValue and XElement.SetElementValue are different from other
 -   add a new attribute/child element if it does not exist
 -   update the attribute/child element value if it exists:
 -   remove the attribute/child element if it exists and the provided value to null.
-```
+
+```csharp
 internal static void SetAttributeValue()
 {
     XElement element = new XElement("element");
@@ -223,7 +227,8 @@ internal static void SetElementValue()
 ## Annotation
 
 Annotation is not a part of the XML. It is an separate arbitrary data in the memory, and associated with a XObject instance in the memory. The annotation APIs provided by XObject allows adding/querying/deleting any .NET data. Apparently, when cloning or serializing XObject, annotation is ignored on the the new XObject and the generated string.
-```
+
+```csharp
 internal static void Annotation()
 {
     XElement element = new XElement("element");
@@ -244,7 +249,8 @@ internal static void Annotation()
 ## Validate XML with XSD
 
 [XSD (XML Schema Definition)](https://en.wikipedia.org/wiki/XML_Schema_\(W3C\)) is the metadata of XML tree, including XML's elements, attributes, constrains rules, etc. System.Xml.Schema.Extensions provides a few APIs to validate XML with provided schema. To obtain a schema, one option is to infer it from existing XML:
-```
+
+```csharp
 public static XmlSchemaSet InferSchema(this XNode source)
 {
     XmlSchemaInference schemaInference = new XmlSchemaInference();
@@ -256,7 +262,8 @@ public static XmlSchemaSet InferSchema(this XNode source)
 ```
 
 The returned XmlSchemaSet instance contains s sequence of XmlSchema instances, one for each namespace in the source XML. XmlSchema can be converted to XDocument with the help of XmlWriter:
-```
+
+```csharp
 public static XDocument ToXDocument(this XmlSchema source)
 {
     XDocument document = new XDocument();
@@ -269,7 +276,8 @@ public static XDocument ToXDocument(this XmlSchema source)
 ```
 
 Still take an RSS feed as example, the following code outputs the RSS feed’s schema:
-```
+
+```csharp
 internal static void InferSchemas()
 {
     XDocument aspNetRss = XDocument.Load("https://www.flickr.com/services/feeds/photos_public.gne?id=64715861@N07&format=rss2");
@@ -279,7 +287,8 @@ internal static void InferSchemas()
 ```
 
 The printed schema is:
-```
+
+```csharp
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="rss">
     <xs:complexType>
@@ -325,7 +334,8 @@ The data is all gone, and there is only structural description for that RSS feed
 [![image_thumb2](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/LINQ-to-XML-in-Depth-3-Manipulating-XML_8D00/image_thumb2_thumb.png "image_thumb2")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/LINQ-to-XML-in-Depth-3-Manipulating-XML_8D00/image_thumb2_2.png)
 
 Now, this RSS feed’s schema, represented by XmlSchemaSet, can be used to validate XML. The following example calls the Validate extension methods for XDocument to validate another RSS feed from Flickr. As demonstrated before, Flickr RSS has more elements. Apparently the validation fails:
-```
+
+```csharp
 internal static void Validate()
 {
     XDocument aspNetRss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -345,7 +355,8 @@ internal static void Validate()
 ```
 
 Validate has another overload accepting a bool parameter addSchemaInfo. When it is called with true for addSchemaInfo, if an element or attribute is validated, the validation details are saved in an IXmlSchemaInfo instance, and associated with this element or attribute as an annotation. Then, the GetSchemaInfo method can be called on each element or attribute, to query that IXmlSchemaInfo annotation, if available. IXmlSchemaInfo can have a lot of information, including a Validity property, intuitively indicating the validation status:
-```
+
+```csharp
 internal static void GetSchemaInfo()
 {
     XDocument aspNetRss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -381,7 +392,8 @@ internal static void GetSchemaInfo()
 ## Transform XML with XSL
 
 [XSL (Extensible Stylesheet Language)](https://en.wikipedia.org/wiki/XSL) can transform a XML tree to another. XSL transformation can be done with the System.Xml.Xsl.XslCompiledTransform type:
-```
+
+```csharp
 public static XDocument XslTransform(this XNode source, XNode xsl)
 {
     XDocument result = new XDocument();
@@ -398,7 +410,8 @@ public static XDocument XslTransform(this XNode source, XNode xsl)
 ```
 
 The following example transforms RSS to HTML, the most recent 5 items in RSS are mapped to HTML hyperlinks in an unordered list:
-```
+
+```csharp
 internal static void XslTransform()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -440,7 +453,8 @@ internal static void XslTransform()
 ```
 
 The above transformation can also be done with LINQ to Objects/XML query:
-```
+
+```csharp
 internal static void Transform()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");

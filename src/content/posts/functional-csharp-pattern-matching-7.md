@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (15) Pattern matching"
 published: 2018-06-15
 description: "Pattern matching is a common feature in functional languages. C# 7.0 introduces basic pattern matching, including constant value as pattern and type as pattern, and C# 7.1 supports generics in pattern"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ Pattern matching is a common feature in functional languages. C# 7.0 introduces 
 ## Pattern matching with is expression
 
 Before C# 7.0, is keyword is used in the instance is Type expression to test whether the instance is compatible with the specified type. Since C# 7.0, is can test constant pattern, including null, constant value, enumeration:
-```
+
+```csharp
 internal static partial class PatternMatching
 {
     internal static void IsConstantValue(object @object)
@@ -59,7 +60,8 @@ namespace System
 The early versions of C# 7.0 compiler takes the tested instance as the first argument of object.Equals call, and the constant value as the second argument. This can have issues. In this way, the generated static object.Equals calls the tested instance’s Equals instance method. Since the tested instance can be any custom type, and its Equals instance method can be overridden with arbitrary custom implementation. In C# 7.0 GA release, this was [fixed](https://github.com/dotnet/roslyn/issues/16710) by having the constant value becomes the first argument of object.Equals, so that calling the constant value’s Equals instance method, which has more predictable behavior, could be called.
 
 The pattern can also be a type, followed by a pattern variable of that type:
-```
+
+```csharp
 internal static void IsReferenceType(object @object)
 {
     if (@object is Uri uri)
@@ -70,7 +72,8 @@ internal static void IsReferenceType(object @object)
 ```
 
 The type in above pattern is a reference type (class), so the is expression is compiled to as type conversion and null check:
-```
+
+```csharp
 internal static void CompiledIsReferenceType(object @object)
 {
     Uri uri = @object as Uri;
@@ -82,7 +85,8 @@ internal static void CompiledIsReferenceType(object @object)
 ```
 
 This syntactic sugar also works for value type:
-```
+
+```csharp
 internal static void IsValueType(object @object)
 {
     if (@object is DateTime dateTime)
@@ -93,7 +97,8 @@ internal static void IsValueType(object @object)
 ```
 
 The as operator cannot be used for value type. Type cast (ValueType)instance can work, but when the cast fails it throws exception. So pattern matching for value type is compiled to nullable value type conversion with as operator, and HasValue check:
-```
+
+```csharp
 internal static void CompiledIsValueType(object @object)
 {
     DateTime? nullableDateTime = @object as DateTime?;
@@ -106,7 +111,8 @@ internal static void CompiledIsValueType(object @object)
 ```
 
 It is also common to use pattern matching with additional conditions:
-```
+
+```csharp
 internal static void IsWithCondition(object @object)
 {
     if (@object is string @string && TimeSpan.TryParse(@string, out TimeSpan timeSpan))
@@ -117,7 +123,8 @@ internal static void IsWithCondition(object @object)
 ```
 
 After compilation, the condition is additional to the null check:
-```
+
+```csharp
 internal static void CompiledIsWithCondition(object @object)
 {
     string @string = @object as string;
@@ -129,7 +136,8 @@ internal static void CompiledIsWithCondition(object @object)
 ```
 
 The previously discussed Data type override the Equals method of object:
-```
+
+```csharp
 internal partial class Data : IEquatable<Data>
 {
     public override bool Equals(object obj)
@@ -145,7 +153,8 @@ internal partial class Data : IEquatable<Data>
 ```
 
 With the traditional syntax, the object parameter’s type was detected twice. In .NET Framework, the Code Analysis tool issues warning CA1800 for this: 'obj', a parameter, is cast to type 'Data' multiple times in method 'Data.Equals(object)'. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant castclass instruction. Now with the new syntax, this can be simplified as following without warning:
-```
+
+```csharp
 internal partial class Data : IEquatable<Data>
 {
     public override bool Equals(object obj) => 
@@ -154,7 +163,8 @@ internal partial class Data : IEquatable<Data>
 ```
 
 C# 7.1 supports generics open type in pattern matching:
-```
+
+```csharp
 internal static void OpenType<T1, T2>(object @object, T1 open1)
 {
     if (@object is T1 open) { }
@@ -164,7 +174,8 @@ internal static void OpenType<T1, T2>(object @object, T1 open1)
 ```
 
 The var keyword can be the pattern of any type:
-```
+
+```csharp
 internal static void IsType(object @object)
 {
     if (@object is var match)
@@ -175,7 +186,8 @@ internal static void IsType(object @object)
 ```
 
 Since the var pattern matching always works, it is compiled to true in debug build:
-```
+
+```csharp
 internal static void CompiledIsAnyType(object @object)
 {
     object match = @object;
@@ -191,7 +203,8 @@ In release build, the above if (true) test is simply removed.
 ## Pattern matching with switch statement
 
 Before C# 7.0, the switch statement only supports string, integral types (like bool, byte, char, int, long, etc.), and enumeration; and the case label only supports constant value. Since C# 7.0, switch supports any type and case label supports pattern matching for either constant value or type. The additional condition for the pattern matching can be specified with a when clause. The following example tries to convert object to DateTime:
-```
+
+```csharp
 internal static DateTime ToDateTime(object @object)
 {
     switch (@object)
@@ -221,7 +234,8 @@ internal static DateTime ToDateTime(object @object)
 ```
 
 The last section with with any type pattern is equivalent to the default section, because it always matches. Each pattern matching is compiled in the similar ways as is expression:
-```
+
+```csharp
 internal static DateTime CompiledToDateTime(object @object)
 {
     // case null:

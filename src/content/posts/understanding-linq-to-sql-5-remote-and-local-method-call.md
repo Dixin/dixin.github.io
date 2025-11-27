@@ -27,7 +27,8 @@ Otherwise it is executed in CLR locally.
 ## Remote method call
 
 In the previous post, remote method calls are everywhere. In the following code:
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 var results = source.Where(product => product.ReorderLevel > 20)
                     .Select(product => new
@@ -77,7 +78,8 @@ private static bool IsExpensive(decimal? price)
 ```
 
 if it is used in:
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 IQueryable<Product> results = source.Where(product => IsExpensive(product.UnitPrice));
 ```
@@ -87,7 +89,8 @@ This custom method cannot be recognized and translated into SQL, so a NotSupport
 > Method 'Boolean IsExpensive(System.Nullable\`1\[System.Decimal\])' has no supported translation to SQL.
 
 But it can work as a local method call in Select():
-```
+
+```csharp
 var results = source.Where(product => product.ReorderLevel > 20)
                     .Select(product => new
                         {
@@ -111,13 +114,15 @@ After executing in SQL Server, CLR gets the results, and sends the results to th
 As in the previous post, LINQ to SQL is so smart that many .NET methods can be translated to SQL, like IEnumerable<T>.Contains() is translated to IN, product.CategoryID != null is translated to IS NOT NULL, etc. The only thing need to do is to make sure the method call can make sense in SQL, so that it is able to be recognized and translated.
 
 One example is the string equation:
-```
+
+```csharp
 IQueryable<Category> source = database.Categories;
 Category result = source.Single(category => category.CategoryName == "Beverage");
 ```
 
 Usually, for string equation, the following looks better:
-```
+
+```csharp
 IQueryable<Category> source = database.Categories;
 Category result = source.Single(category => 
     category.CategoryName.Equals("Beverages", StringComparison.Ordinal));
@@ -130,7 +135,8 @@ But this throws an NotSupportedException:
 The reason is, the StringComparison.Ordinal has no corresponding implementation in SQL so it cannot be translated. Please remember: the above lambda expression category => category.CategoryName == "Beverage" is [constructing an expression tree data structure](/posts/understanding-linq-to-sql-3-expression-tree), not [C# executable code](/posts/understanding-csharp-3-0-features-6-lambda-expression). So it is both unnecessary and incorrect to change it into category.CategoryName.Equals("Beverages", StringComparison.Ordinal).
 
 Another overload of methods can make sense in SQL:
-```
+
+```csharp
 Category result = source.Single(category => 
     category.CategoryName.Equals("Beverages"));
 ```

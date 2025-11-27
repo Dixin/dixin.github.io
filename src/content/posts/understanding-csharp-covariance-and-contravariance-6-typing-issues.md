@@ -31,7 +31,8 @@ Since C# 4.0 introduces new variance rules, which means in C# 4.0, types could b
 ## Delegate covariance / contravariance issues
 
 Take a look at this covariance sample:
-```
+
+```csharp
 Func<Base> baseFunc = () => new Base();
 Func<Derived> derivedFunc = () => new Derived();
 
@@ -44,7 +45,8 @@ Console.WriteLine(derivedFunc is Func<Base>);
 [](http://11011.net/software/vspaste)
 
 And this contravariance sample:
-```
+
+```csharp
 Action<Base> baseAction = arg => { };
 Action<Derived> derivedAction = arg => { };
 
@@ -61,7 +63,8 @@ Yes, in C# 4.0, delegate types are more convertable.
 ## Interface covariance / contravariance issues
 
 This is the interface covariance on IEnumerator<out T>:
-```
+
+```csharp
 IEnumerator<Base> baseEnumerator = new BaseEnumerator();
 IEnumerator<Derived> derivedEnumerator = new DerivedEnumerator();
 
@@ -76,7 +79,8 @@ Console.WriteLine(derivedEnumerator is IEnumerator<Base>);
 It looks acceptable.
 
 Then this is covariance on IEnumerable<out T>:
-```
+
+```csharp
 IEnumerable<Base> bases = new Base[0];
 IEnumerable<Derived> deriveds = new Derived[0];
 
@@ -91,7 +95,8 @@ Console.WriteLine(deriveds is IEnumerable<Base>);
 Looks like a big mess.
 
 To try interface contravariance, IComparable<in T> can be used as an example:
-```
+
+```csharp
 internal class Base : IComparable<Base>
 {
     public int CompareTo(Base other)
@@ -107,7 +112,8 @@ internal class Derived : Base
 [](http://11011.net/software/vspaste)
 
 Then:
-```
+
+```csharp
 IComparable<Base> baseComparable = new Base();
 // This cannot compile in C# 2.0 / 3.0,
 // because Derived does not implement IComparable<Derived>.

@@ -3,8 +3,8 @@ title: "LINQ to Objects in Depth (4) Deferred Execution, Lazy Evaluation and Eag
 published: 2018-07-07
 description: "As fore mentioned, when a generator method (method contains yield statement and returns IEnumerable<T>) is compiled to a pure function, which constructs a generator and return it to caller. So at runt"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ As fore mentioned, when a generator method (method contains yield statement and 
 ## Deferred execution vs. immediate execution
 
 To demonstrate how the deferred execution work, take the Select query method as example, with tracing of the control flow:
-```
+
+```csharp
 internal static partial class DeferredExecution
 {
     internal static IEnumerable<TResult> SelectGenerator<TSource, TResult>(
@@ -40,7 +41,8 @@ internal static partial class DeferredExecution
 ```
 
 The foreach loop can be desugared:
-```
+
+```csharp
 internal static IEnumerable<TResult> DesugaredSelectGenerator<TSource, TResult>(
     this IEnumerable<TSource> source, Func<TSource, TResult> selector)
 {
@@ -66,7 +68,8 @@ internal static IEnumerable<TResult> DesugaredSelectGenerator<TSource, TResult>(
 ```
 
 After compilation, it is equivalent to the following generator creation and return:
-```
+
+```csharp
 internal static IEnumerable<TResult> CompiledSelectGenerator<TSource, TResult>(
     this IEnumerable<TSource> source, Func<TSource, TResult> selector) =>
         new Generator<TResult, IEnumerator<TSource>>(
@@ -92,7 +95,8 @@ internal static IEnumerable<TResult> CompiledSelectGenerator<TSource, TResult>(
 This also demonstrates how the tracing is triggered. The returned generator represents the output sequence and wraps the the data and algorithm of query. When SelectGenerator is called, the output sequence is returned to caller, the query logic is not executed, and the values in the output sequence are not evaluated.
 
 In contrast, the following query is implemented with traditional collection instead of generator:
-```
+
+```csharp
 internal static IEnumerable<TResult> SelectList<TSource, TResult>(
     this IEnumerable<TSource> source, Func<TSource, TResult> selector)
 {
@@ -112,7 +116,8 @@ internal static IEnumerable<TResult> SelectList<TSource, TResult>(
 ```
 
 The output sequence is represented by a list with known values. So when the output sequence is returned to caller, the query algorithm of mapping is already executed, and the values in the output sequence are evaluated. This is immediate execution. Calling these 2 methods shows the difference at runtime:
-```
+
+```csharp
 internal static void ForEachSelect()
 {
     IEnumerable<string> deferredQuery = Enumerable.Range(1, 5)
@@ -158,7 +163,8 @@ In LINQ to Objects, the query methods returning IEnumerable<T> sequence all impl
 ### Cold sequence vs. hot sequence
 
 In above examples, one function returns a generator, which is a sequence wraps data and iteration algorithms instead of evaluated values. This kind of sequence is called cold sequence. The other method returns a collection, which is is a sequence wraps values already evaluated from data and iteration algorithms. This kind of sequence is called hot sequence. For example:
-```
+
+```csharp
 internal static IEnumerable<double> AbsAndSqrtGenerator(double @double)
 {
     yield return Math.Abs(@double);
@@ -188,7 +194,8 @@ In .NET, the convention is that all sequences returned by query methods (like Se
 ## Lazy evaluation vs. eager evaluation
 
 There are 2 types of deferred execution. Take Select as example, the query execution is deferred until values are pulled from the result sequence. When trying to pull the first result value, the query executes until the first result value is evaluated, at this moment the rest result values remain not evaluated. When trying to pull the second result value, the query executes until the second result value is evaluated, and at this moment the rest result values remain not evaluated, and so on. If the pulling stops in the middle, the rest result values remain not evaluated. This behavior is called lazy evaluation. Besides above Select query, Where query is also an example of lazy evaluation:
-```
+
+```csharp
 internal static IEnumerable<TSource> WhereGenerator<TSource>(
     this IEnumerable<TSource> source, Func<TSource, bool> predicate)
 {
@@ -207,7 +214,8 @@ internal static IEnumerable<TSource> WhereGenerator<TSource>(
 ```
 
 Its compilation is equivalent to:
-```
+
+```csharp
 internal static IEnumerable<TSource> CompiledWhereGenerator<TSource>(
     this IEnumerable<TSource> source, Func<TSource, bool> predicate) =>
         new Generator<TSource, IEnumerator<TSource>>(
@@ -240,7 +248,8 @@ internal static IEnumerable<TSource> CompiledWhereGenerator<TSource>(
 ```
 
 The following example pulls values from the composition of Where and Select queries, to demonstrate how the lazy evaluation works for each result value:
-```
+
+```csharp
 internal static void ForEachWhereAndSelect()
 {
     IEnumerable<string> deferredQuery = Enumerable.Range(1, 5)
@@ -273,7 +282,8 @@ internal static void ForEachWhereAndSelect()
 The final query is a generator created by Select query, when foreach loop pulls the first result value, the Select query starts execution and pulls the first value from its source sequence, which is another generator created by Where query. So Where query starts execution too. Where query pulls values from its source sequence, until its first result value 3 is yielded. Therefore, Select pulls the first value 3, and yields its first result value \*\*\*. Then, the pulling and evaluation continues. The foreach loop pulls the next result value from generator created by Select, which pulls the next result value from generator created by Where, and the generator created by Where yields its next result value 4 to the generator created by Select, which yields its next value \*\*\*\* to the foreach loop. This goes on, and when there is no result value to pull, the query execution ends.
 
 The opposition of lazy evaluation, is eager evaluation, where trying to pull a result value for the first time causes all result values evaluated. For example, Reverse query implements deferred execution. When its result sequence is pulled for the first time, it stars execution. It has to evaluate all the result values, in order to know what is the last source value, and yield it as its first result value. The following code demonstrates how Reserve is implemented::
-```
+
+```csharp
 internal static IEnumerable<TSource> ReverseGenerator<TSource>(this IEnumerable<TSource> source)
 {
     "Reverse query starts.".WriteLine();
@@ -289,7 +299,8 @@ internal static IEnumerable<TSource> ReverseGenerator<TSource>(this IEnumerable<
 ```
 
 Its compilation is equivalent to:
-```
+
+```csharp
 internal static IEnumerable<TSource> CompiledReverseGenerator<TSource>(this IEnumerable<TSource> source) =>
     new Generator<TSource, (TSource[] Values, int Index)>(
         data: default, // (TSource[] Values, int Index) data = default;
@@ -315,7 +326,8 @@ internal static IEnumerable<TSource> CompiledReverseGenerator<TSource>(this IEnu
 ```
 
 The following example pulls values from the composition of Select and Reverse queries:
-```
+
+```csharp
 internal static void ForEachSelectAndReverse()
 {
     IEnumerable<string> deferredQuery = Enumerable.Range(1, 5)

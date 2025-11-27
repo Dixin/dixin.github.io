@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (21) SKI Combinator Calculus"
 published: 2018-11-21
 description: "The  shows SKI calculus is untyped and strongly typed C# implementation does not work. So here comes the SKI in untyped C#:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -16,7 +16,8 @@ lang: ""
 ## **Latest version: [https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-6-combinatory-logic](/posts/lambda-calculus-via-csharp-6-combinatory-logic "https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-6-combinatory-logic")**
 
 The [previous part](/posts/lambda-calculus-via-c-sharp-20-combinators) shows SKI calculus is untyped and strongly typed C# implementation does not work. So here comes the SKI in untyped C#:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Func<dynamic, Func<dynamic, Func<dynamic, dynamic>>>
@@ -35,7 +36,8 @@ Notice closed types (Func<dynamic, …>) are used instead of open type (Func<T, 
 ## I Combinator
 
 Actually I can be defined with S and K:
-```
+
+```csharp
 S K K x
 ≡ K x (K x)
 ≡ x
@@ -46,13 +48,15 @@ S K K x
 ```
 
 So I is merely [syntactic sugar](http://en.wikipedia.org/wiki/Syntactic_sugar):
-```
+
+```csharp
 I2 := S K K
 I3 := S K S
 ```
 
 And C#:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Func<dynamic, dynamic>
@@ -66,7 +70,8 @@ public static partial class SkiCombinators
 ## BCKW combinators
 
 BCKW and SKI can define each other:
-```
+
+```csharp
 B := S (K S) K
 C := S (S (K (S (K S) K)) S) (K K)
 K := K
@@ -80,19 +85,22 @@ I := W K
 ## ω combinator
 
 In SKI, the self application combinator ω is:
-```
+
+```csharp
 ω := S I I
 ```
 
 This is easy to understand:
-```
+
+```csharp
 S I I x
 ≡ I x (I x) 
 ≡ x x
 ```
 
 Then
-```
+
+```csharp
 Ω := S I I (S I I) 
    ≡ I (S I I) (I (S I I)) 
    ≡ (S I I) (S I I) 
@@ -101,7 +109,8 @@ Then
 ```
 
 C#:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Func<dynamic, dynamic> 
@@ -115,12 +124,14 @@ public static partial class SkiCombinators
 ## Function composition
 
 Remember function composition:
-```
+
+```csharp
 (f2 ∘ f1) x := f2 (f1 x)
 ```
 
 In SKI:
-```
+
+```csharp
 S (K S) K f1 f2 x
 ≡ (K S) f1 (K f1) f2 x
 ≡ S (K f1) f2 x
@@ -129,12 +140,14 @@ S (K S) K f1 f2 x
 ```
 
 So:
-```
+
+```csharp
 Compose := S (K S) K
 ```
 
 In C#:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Func<dynamic, dynamic> 
@@ -145,13 +158,15 @@ public static partial class SkiCombinators
 ## Booleans
 
 From previous part:
-```
+
+```csharp
 True := K
 False := S K
 ```
 
 So:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Boolean
@@ -165,7 +180,8 @@ public static partial class SkiCombinators
 ## Numerals
 
 Remember:
-```
+
+```csharp
 0 := λf.λx.x
 1 := λf.λx.f x
 2 := λf.λx.f (f x)
@@ -174,7 +190,8 @@ Remember:
 ```
 
 In SKI:
-```
+
+```csharp
 K I f x
 ≡ I x
 ≡ x
@@ -196,7 +213,8 @@ K I f x
 ```
 
 So:
-```
+
+```csharp
 0 := K I                     ≡ K I
 1 := I                       ≡ I
 2 := S Compose I             ≡ S (S (K S) K) I
@@ -205,7 +223,8 @@ So:
 ```
 
 In C#:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Func<dynamic, dynamic> 
@@ -223,12 +242,14 @@ public static partial class SkiCombinators
 ```
 
 And generally:
-```
+
+```csharp
 Increase := S Compose ≡ S (S (K S) K)
 ```
 
 C#:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static Func<dynamic, Func<dynamic, dynamic>> 

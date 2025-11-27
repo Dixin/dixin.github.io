@@ -3,8 +3,8 @@ title: "TransientFaultHandling.Core: Retry library for .NET Core/.NET Standard"
 published: 2025-01-22
 description: "TransientFaultHandling.Core is retry library for transient error handling. It is ported from Microsoft Enterprise Library’s TransientFaultHandling library, a library widely used with .NET Framework. T"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "Retry", "Exception Handling", "Functional Programming"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "Exception Handling", "Functional Programming", "Retry"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -14,7 +14,8 @@ TransientFaultHandling.Core is retry library for transient error handling. It is
 ## Introduction
 
 With this library, the old code of retry logic based on Microsoft Enterprise Library can be ported to .NET Core/.NET Standard without modification:
-```
+
+```csharp
 ITransientErrorDetectionStrategy transientExceptionDetection = new MyDetection();
 RetryStrategy retryStrategy = new FixedInterval(retryCount: 5, retryInterval: TimeSpan.FromSeconds(1));
 RetryPolicy retryPolicy = new RetryPolicy(transientExceptionDetection, retryStrategy);
@@ -22,7 +23,8 @@ string result = retryPolicy.ExecuteAction(() => webClient.DownloadString("https:
 ```
 
 With this library, it is extremely easy to detect transient exception and implement retry logic. For example, the following code downloads a string, if the exception thrown is transient (a WebException), it retries up to 5 times, and it waits for 1 second between retries:
-```
+
+```csharp
 Retry.FixedInterval(
     () => webClient.DownloadString("https://DixinYan.com"),
     isTransient: exception => exception is WebException,
@@ -30,7 +32,8 @@ Retry.FixedInterval(
 ```
 
 Fluent APIs are also provided for even better readability:
-```
+
+```csharp
 Retry
     .WithIncremental(retryCount: 5, initialInterval: TimeSpan.FromSeconds(1),
         increment: TimeSpan.FromSeconds(1))
@@ -41,7 +44,8 @@ Retry
 ```
 
 It also supports JSON/XML/INI configuration:
-```
+
+```csharp
 {
   "retryStrategy": {
     "name1": {
@@ -107,7 +111,8 @@ For retry pattern, please read Microsoft’s [introduction in Cloud Design Patte
 Enterprise Library existing APIs follows an object-oriented design. For the details, please see Microsoft’s [API reference](https://docs.microsoft.com/en-us/previous-versions/msp-n-p/dn170426\(v=pandp.60\)) and ebook [Developer's Guide to Microsoft Enterprise Library](http://go.microsoft.com/fwlink/p/?linkid=290904)‘s Chapter 4, Using the Transient Fault Handling Application Block. Here is a brief introduction.
 
 First, ITransientErrorDetectionStrategy interface must be implemented. It has a single method IsTransient to detected if the thrown exception is transient and retry should be executed.
-```
+
+```csharp
 internal class MyDetection : ITransientErrorDetectionStrategy
 {
     bool IsTransient(Exception exception) => 
@@ -118,7 +123,8 @@ internal class MyDetection : ITransientErrorDetectionStrategy
 Second, a retry strategy must be defined to specify how the retry is executed, like retry count, retry interval, etc.. a retry strategy must inherit RetryStrategy abstract class. There are 3 built-in retry strategies: FixedInterval, Incremental, ExponentialBackoff.
 
 Then a retry policy (RetryPolicy class) must be instantiated with a retry strategy and an ITransientErrorDetectionStrategy interface. a retry policy has an ExecuteAction method to execute the specified synchronous function, and an ExecuteAsync method to execute a\\the specified async function. It also has a Retrying event. When the executed sync/async function throws an exception, if the exception is detected to be transient and max retry count is not reached, then it waits for the specified retry interval, and then it fires the Retrying event, and execute the specified sync/async function again.
-```
+
+```csharp
 RetryStrategy retryStrategy = new FixedInterval(retryCount: 5, retryInterval: TimeSpan.FromSeconds(1));
 
 RetryPolicy retryPolicy = new RetryPolicy(new MyDetection(), retryStrategy);
@@ -135,7 +141,8 @@ using (WebClient webClient = new WebClient())
 ### New functional APIs: single function call for retry
 
 The above object-oriented API design is very inconvenient. New static functions Retry.FixedInterval, Retry.Incremental, Retry.ExponentialBackoff are added to implement retry with a single function call. For example:
-```
+
+```csharp
 Retry.FixedInterval(
     () => webClient.DownloadString("https://DixinYan.com"),
     isTransient: exception => exception is OperationCanceledException,
@@ -150,7 +157,8 @@ await Retry.IncrementalAsync(
 ```
 
 These sync and async functions are very convenient because only the first argument (action to execute) is required. All the other arguments are optional. And a function can be defined inline to detect transient exception, instead of defining a type to implement an interface:
-```
+
+```csharp
 // Treat any exception as transient. Use default retry count, default interval. No event handler.
 Retry.FixedInterval(() => webClient.DownloadString("https://DixinYan.com"));
 
@@ -163,7 +171,8 @@ await Retry.IncrementalAsync(
 ### New fluent APIs for retry
 
 For better readability, new fluent APIs are provided:
-```
+
+```csharp
 Retry
     .WithFixedInterval(retryCount: 5, retryInterval: TimeSpan.FromSeconds(1))
     .Catch(exception =>
@@ -175,7 +184,8 @@ Retry
 ```
 
 The HandleWith call adds an event handler to the Retying event. It is optional:
-```
+
+```csharp
 Retry
     .WithFixedInterval(retryCount: 5, retryInterval: TimeSpan.FromSeconds(1))
     .Catch(exception =>
@@ -185,7 +195,8 @@ Retry
 ```
 
 Catch method has a generic overload. The above code is equivalent to:
-```
+
+```csharp
 Retry
     .WithFixedInterval(retryCount: 5, retryInterval: TimeSpan.FromSeconds(1))
     .Catch<OperationCanceledException>()
@@ -194,7 +205,8 @@ Retry
 ```
 
 The following code “catches” any exception as transient:
-```
+
+```csharp
 Retry
     .WithIncremental(retryCount: 5, increment: TimeSpan.FromSeconds(1)) // Use default initial interval.
     .Catch() // Equivalent to: .Catch<Exception>()
@@ -224,7 +236,8 @@ These old XML infrastructures are outdated. Use new XML/JSON/INI format configur
 ### New XML/JSON/INI configuration for retry
 
 Please install TransientFaultHandling.Configuration package. The following is an example JSON configuration file app.json. It has 3 retry strategies, a FixedInterval retry strategy, a Incremental retry strategy, and an ExponentialBackoff retry strategy:
-```
+
+```csharp
 {
   "retryStrategy": {
     "name1": {
@@ -276,7 +289,8 @@ The same configuration file app.xml in XML format:
 ```
 
 And app.ini file in INI format:
-```
+
+```csharp
 [retryStrategy:name1]
 fastFirstRetry=true
 retryCount=5
@@ -297,7 +311,8 @@ deltaBackoff=00:00:00.6
 ```
 
 These configurations can be easily loaded and deserialized into retry strategy instances:
-```
+
+```csharp
 IConfiguration configuration = new ConfigurationBuilder()
     .AddJsonFile("app.json") // or AddXml("app.xml") or AddIni("app.ini")
     .Build();
@@ -308,14 +323,16 @@ IDictionary<string, RetryStrategy> retryStrategies = configuration.GetRetryStrat
 ```
 
 The GetRetryStrategies extension method returns a dictionary of key value pairs, where each key is the specified name of retry strategy, and each value is the retry strategy instance. Here the first key is “name1”, the first value is a FixedInterval retry strategy instance. The second key is “anme2”, the second value is Incremental retry strategy instance. The third key is “name3”, the third value is ExponentialBackoff retry strategy instance. This extension method can also accept custom configuration section key, and a function to create instance of custom retry strategy type.
-```
+
+```csharp
 retryStrategies = configuration.GetRetryStrategies(
     key: "yourConfigurationSectionKey",
     getCustomRetryStrategy: configurationSection => new MyRetryStrategyType(...));
 ```
 
 The other generic overload can filter the specified retry strategy type:
-```
+
+```csharp
 FixedInterval retryStrategy = configuration.GetRetryStrategies<FixedInterval>().Single().Value;
 ```
 
@@ -330,7 +347,8 @@ Since 2.1.0, both Microsoft.Data.SqlClient and System.Data.SqlClient are support
 -   SqlAzureTransientErrorDetectionStrategy –> SqlAzureTransientErrorDetectionStrategy**Legacy**
 
 You can either rename these types or add the using directives:
-```
+
+```csharp
 using ReliableSqlConnection = Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ReliableSqlConnectionLegacy;
 using SqlDatabaseTransientErrorDetectionStrategy = Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.SqlDatabaseTransientErrorDetectionStrategyLegacy;
 using SqlAzureTransientErrorDetectionStrategy = Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandling.SqlAzure.SqlAzureTransientErrorDetectionStrategyLegacy;

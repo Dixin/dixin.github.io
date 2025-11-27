@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (16) Encoding Church List with 2 Church Pairs as 
 published: 2018-11-16
 description: "Previous part encoded Church list with one  (2-tuple) as a list node. An alternative way"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -25,19 +25,22 @@ Previous part encoded Church list with one [Church pair](/posts/lambda-calculus-
 ## IsNull and Null
 
 Above definition can immediately have:
-```
+
+```csharp
 IsNull2 = λl.(Item1 l)
 ```
 
 So Null is easy to be defined to:
-```
+
+```csharp
 Null2 = λf.True
 ```
 
 just returns True no matter what, which also guarantees above IsNull works.
 
 C#:
-```
+
+```csharp
 // ListNode2 is the alias of Tuple<Boolean, Tuple<T, ListNode2<T>>>
 public delegate object ListNode2<out T>(Boolean<Boolean, Tuple<T, ListNode2<T>>> f);
 
@@ -56,7 +59,8 @@ public static partial class ChurchList2
 ## Create, Value, and Next
 
 Again from to above definitions:
-```
+
+```csharp
 CreateListNode2 = λv.λn.CreateTuple False (CreateTuple v n)
 Value2 = λl.Item1 (Item2 l)
 Next2 = λl.If (IsNull2 l) (λx.l) (λx.(Item2 (Item2 l)))
@@ -65,7 +69,8 @@ Next2 = λl.If (IsNull2 l) (λx.l) (λx.(Item2 (Item2 l)))
 Next uses If again to return Null as its next node, the same as previous Church list implemented by 1 Church pair for each node.
 
 C#:
-```
+
+```csharp
 public static partial class ChurchList2
 {
     // Create = value => next => ChurchTuple.Create(ChurchBoolean.False)(ChurchTuple.Create(value)(next))
@@ -91,12 +96,14 @@ public static partial class ChurchList2
 ## Index
 
 The same as previous part as well:
-```
+
+```csharp
 Index2 = λl.λi.i Next2 l
 ```
 
 C#:
-```
+
+```csharp
 public static partial class ChurchList2
 {
     // Index = start => index = index(Next)(start)

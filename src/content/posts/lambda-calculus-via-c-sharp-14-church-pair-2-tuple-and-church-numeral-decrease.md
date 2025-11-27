@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (14) Church Pair (2-Tuple) and Church Numeral Dec
 published: 2018-11-14
 description: "In the  part, the Decrease was defined as:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -16,7 +16,8 @@ lang: ""
 ## **Latest version: [https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-4-tuple-and-signed-numeral](/posts/lambda-calculus-via-csharp-4-tuple-and-signed-numeral "https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-4-tuple-and-signed-numeral")**
 
 In the [Church numeral arithmetic](/posts/lambda-calculus-via-c-sharp-9-wrapping-church-numerals-and-arithmetic) part, the Decrease was defined as:
-```
+
+```csharp
 Decrease := λn.λf.λx.n (λg.λh.h (g f)) (λu.x) (λu.u)
 ```
 
@@ -25,14 +26,16 @@ This is complex. Now with Church pair (called tuple here to align to C# terms), 
 ## Shift a Church Pair (2-Tuple)
 
 First, a function is needed to shift a tuple:
-```
+
+```csharp
 Shift = λf.λt.CreateTuple (Item2 t) (f (Item1 t))
 ```
 
 It takes a tuple (x, y) and a function f, then returns a new tuple (y, f y).
 
 C# implementation is:
-```
+
+```csharp
 // (x, y) -> (y, f(y))
 // Shift = tuple => f => Create(tuple.Item2())(f(tuple.Item1()))
 public static Tuple<T, T> Shift<T>
@@ -44,13 +47,15 @@ Again, the implementation is uncurried extension method for convenience of appli
 ## Decrease a Church numeral
 
 Remember a Church numeral n can be considered to do “Increase” n times from 0:
-```
+
+```csharp
 n Increase Zero
 ≡ n
 ```
 
 What if doing “Shift” n times base on (0, 0)?
-```
+
+```csharp
 3 (Shift Increase) (0, 0)
 ≡ (Shift Increase) ∘ (Shift Increase) ∘ (Shift Increase) (0, 0)
 ≡ (Shift Increase) ∘ (Shift Increase) (0, Increase 0)
@@ -62,18 +67,21 @@ What if doing “Shift” n times base on (0, 0)?
 ```
 
 And generally:
-```
+
+```csharp
 n (Shift Increase (0, 0))
 ≡ (n - 1, n)
 ```
 
 This turns out a way to get the predecessor of n. So:
-```
+
+```csharp
 Decrease2 := λn.Item1 (n (Shift Increase) (CreateTuple 0 0))
 ```
 
 And C#:
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     // Decrease2 = n => n(tuple => tuple.Shift(Increase))(ChurchTuple.Create(Zero)(Zero)).Item1();

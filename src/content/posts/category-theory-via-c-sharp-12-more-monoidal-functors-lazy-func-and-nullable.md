@@ -3,8 +3,8 @@ title: "Category Theory via C# (12) More Monoidal Functors: Lazy<>, Func<> And N
 published: 2018-12-13
 description: "Lazy<> should be the simplest monoid functor - it is just the lazy version of Tuple<>. And in these posts it will be considered as the Id<> monoidal functor."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Lazy<> monoidal functor
 
 Lazy<> should be the simplest monoid functor - it is just the lazy version of Tuple<>. And in these posts it will be considered as the Id<> monoidal functor.
-```
+
+```csharp
 // [Pure]
 public static partial class LazyExtensions
 {
@@ -48,7 +49,8 @@ Tuple<> is similar to the [Haskell Id Applicative](https://hackage.haskell.org/p
 ## Func<> monoidal functor
 
 Func<> is also monoidal functor:
-```
+
+```csharp
 // [Pure]
 public static partial class FuncExtensions
 {
@@ -75,7 +77,8 @@ public static partial class FuncExtensions
 ## Nullable<> monoidal functor
 
 Nullable<> created previously is monoidal functor too:
-```
+
+```csharp
 // [Pure]
 public static partial class NullableExtensions
 {
@@ -103,7 +106,8 @@ public static partial class NullableExtensions
 ```
 
 ## Unit tests
-```
+
+```csharp
 public partial class MonoidalFunctorTests
 {
     [TestMethod()]

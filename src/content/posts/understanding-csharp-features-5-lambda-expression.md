@@ -3,7 +3,7 @@ title: "Understanding C# Features (5) Lambda Expression, Anonymous Function and 
 published: 2009-11-29
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "F#", "Functional Programming", "Haskell", "JavaScript", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "F#", "Functional Programming", "Haskell", "JavaScript", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -29,7 +29,8 @@ namespace System
 ```
 
 If a named method (either static or instance method) has exactly the same signature as above Func<int, bool>, e.g.:
-```
+
+```csharp
 public static bool IsPositive(int int32)
 {
     return int32 > 0;
@@ -37,19 +38,22 @@ public static bool IsPositive(int int32)
 ```
 
 then delegate can be instantiated by calling the constructor with the named method:
-```
+
+```csharp
 Func<int, bool> isPositive = new Func<int, bool>(IsPositive);
 ```
 
 In this tutorial, to avoid confusion, above Func<int, bool> is called delegate type, and the isPositive variable is called delegate instance.
 
 The above constructor call syntax new Func<int, bool>(…) can be omitted, so that:
-```
+
+```csharp
 Func<int, bool> isPositive = IsPositive;
 ```
 
 which is as nature as defining any other variable with a value, like:
-```
+
+```csharp
 Type instanceVariable = value;
 ```
 
@@ -58,7 +62,8 @@ This is an example of function’s [first-class citizenship](https://en.wikipedi
 ### Anonymous method
 
 C# 2.0 introduced a syntactic sugar, anonymous method, enabling methods to be defined inline, e.g.:
-```
+
+```csharp
 public static partial class Anonymous
 {
     public static void AnonymousMethod()
@@ -114,7 +119,8 @@ Besides named methods, C# compiler also generates cache fields for the delegate 
 ### Lambda expression
 
 In C# 3.0+, above anonymous method’s inline definition can be further simplified with lambda expression syntax:
-```
+
+```csharp
 public static void Lambda()
 {
     Func<int, bool> isPositive = (int int32) =>
@@ -136,7 +142,8 @@ Lambda expression can be further shortened:
 -   When the body of the lambda expression has only one return statement, the brackets { } and “return” keyword can be omitted.
 
 So the above lambda expressions can be:
-```
+
+```csharp
 public static void ExpressionLambda()
 {
     Func<int, bool> isPositive = int32 => int32 > 0;
@@ -148,7 +155,8 @@ public static void ExpressionLambda()
 These lambda expressions are also called expression lambda.
 
 When having more than one statements in the body, the the brackets { } and “return” are required:
-```
+
+```csharp
 public static void StatementLambda()
 {
     Func<int, bool> isPositive = int32 =>
@@ -166,7 +174,8 @@ In C#, anonymous method and lambda expression can be also called [anonymous func
 ### Anonymous function
 
 Generally, [anonymous function](https://en.wikipedia.org/wiki/Anonymous_function) is a function not bound to an identifier. The C# anonymous function is just an alias term for anonymous method and lambda expression. Either anonymous method or lambda expression can be used directly, without being bound to any delegate instance, or involving any named method:
-```
+
+```csharp
 public static void CallAnonymousMethod()
 {
     bool positive = new Func<int, bool>(delegate (int int32) { return int32 > 0; })(1);
@@ -194,19 +203,22 @@ namespace System
 These function are anonymous and inline at design time. As fore mentioned, at compile time, they all become named methods. And these calls become normal calls to the compiler generated delegate cache fields.
 
 Here, The new Func<int, bool>(…) and new Action<bool>(…) constructor call syntax surrounding the anonymous functions are required by compiler. The following code cannot be compiled:
-```
+
+```csharp
 (int32 => int32 > 0)(1);
 ```
 
 In C# compiler’s perspective, there is no type information for the parameter(s) and return value at all.
 
 In loosely typed languages like JavaScript, this kind of code definitely works:
-```
+
+```csharp
 (function (number) { return number > 0; })(1)
 ```
 
 This is a very common pattern in client [JavaScript](http://en.wikipedia.org/wiki/JavaScript) - isolate some code by surrounding the code with a anonymous function call:
-```
+
+```csharp
 (function (global, undefined) {
     "use strict";
 
@@ -215,12 +227,14 @@ This is a very common pattern in client [JavaScript](http://en.wikipedia.org/wik
 ```
 
 In other strongly typed languages (typically functional programming languages), like F#, this kind of type inference is supported, so the following F# code works:
-```
+
+```csharp
 (fun int32 -> int32 > 0) 1
 ```
 
 and similarly, in Haskell, the following works:
-```
+
+```csharp
 (\number -> number > 0) 1
 ```
 
@@ -236,7 +250,8 @@ Similar to fore mentioned expression bodied property-like function member, C# 6.
 etc., as long as it has 1 single statement.
 
 These are the sample extension methods from previous part:
-```
+
+```csharp
 public static class StringExtensions
 {
     public static bool ContainsIgnoreCase(this string value, string substring)
@@ -259,7 +274,8 @@ public static class StringExtensions
 ```
 
 Now these can be simplified to:
-```
+
+```csharp
 public static class StringExtensions
 {
     public static bool ContainsIgnoreCase(this string value, string substring)
@@ -280,7 +296,8 @@ public static class StringExtensions
 The 2 versions are identical. This syntax does not apply to ContainsIgnoreCase method, because its body has more than 1 statement.
 
 In this tutorial, to emphasize the functional paradigm, lambda bodied methods will be in the following style:
-```
+
+```csharp
 public static class StringExtensions
 {
     public static bool EqualsIgnoreCase
@@ -340,7 +357,8 @@ In .NET 4.0 FCL, more Action and Func generic delegate types are provided:
 ## Lambda expression as expression tree
 
 An expression tree object can be created with lambda expression:
-```
+
+```csharp
 internal static partial class ExpressionTree
 {
     internal static void ExpressionLambda()
@@ -355,7 +373,8 @@ In the above assignment statement, the right side is a lambda expression, which 
 ### Code as data
 
 Above lambda expression has exactly the same syntax as anonymous function. However, its type is specified to bee Expression<Func<int, bool>> instead of Func<int, boll> delegate type. As a result, the lambda expression is not compiled to executable code. It is compiled to the build of a data structure called expression tree:
-```
+
+```csharp
 internal static void CompiledExpressionLambda()
 {
     ParameterExpression parameterExpression = Expression.Parameter(typeof(int), "int32"); // int32
@@ -427,7 +446,8 @@ namespace System.Linq.Expressions
 Each expression object is a node in the expression tree, representing a construct in the source code int32 => int32 > 0:
 
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_140B654C.png "image")
-```
+
+```csharp
 Expression<Func<int, bool>> (NodeType = Lambda, Type = Func<int, bool>)
 |_Parameters
 | |_ParameterExpression (NodeType = Parameter, Type = int)
@@ -445,12 +465,14 @@ Expression<Func<int, bool>> (NodeType = Lambda, Type = Func<int, bool>)
 So .NET expression tree is a [abstract syntactic tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree), representing the abstract syntactic structure of C# source code. Notice each Expression object has a NodeType property and a Type property. NodeType identifies in the tree what construct this node is, and Type is the represented .NET type. For example, above ParameterExpression is parameter node representing an int parameter in the source code, so its NodeType is Parameter and its Type is int.
 
 To summarize, the differences between
-```
+
+```csharp
 Func<int, bool> isPositive = int32 => int32 > 0; // Code.
 ```
 
 and
-```
+
+```csharp
 Expression<Func<int, bool>> isPositiveExpression = int32 => int32 > 0; // Data.
 ```
 
@@ -502,7 +524,8 @@ Besides above ParameterExpression, ConstantExpression, etc., .NET provides a col
 -   UnaryExpression
 
 And, as demonstrated above, expression can be instantiated by calling the factory methods of Expression class:
-```
+
+```csharp
 public abstract partial class Expression
 {
     public static ParameterExpression Parameter(Type type, string name);
@@ -516,7 +539,8 @@ public abstract partial class Expression
 ```
 
 Expression has a lot more factory methods to cover all the expression instantiation cases:
-```
+
+```csharp
 public abstract partial class Expression
 {
     public static BinaryExpression Add(Expression left, Expression right);
@@ -551,7 +575,8 @@ Some expression can have multiple possible NodeType values. For example:
 -   BinaryExpression represents any binary operation with an operator, a left operand, and a right operand, its NodeType can be Add, And, Assign, Divide, Equal, .GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, Modulo, Multiply, NotEqual, Or, Power, Subtract, etc.
 
 So far C# compiler only implements this “code as data” syntactic sugar for expression lambda, and it is not available to statement lambda yet. The following code:
-```
+
+```csharp
 internal static void StatementLambda()
 {
     Expression<Func<int, bool>> statementLambda1 = int32 => { return int32 > 0; };
@@ -569,7 +594,8 @@ results a compiler error:
 > A lambda expression with a statement body cannot be converted to an expression tree
 
 These 2 expression trees has to be coded as manual building:
-```
+
+```csharp
 internal static void StatementLambda()
 {
     // For single statement, syntactic sugar works.
@@ -604,7 +630,8 @@ Expression tree is data - abstract syntatic tree. In C# and LINQ, expression tre
 -   divide
 
 For example:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> infix = 
     (a, b, c, d, e) => a + b - c * d / 2 + e * 3;
 ```
@@ -719,7 +746,8 @@ public class PrefixVisitor : BinaryArithmeticExpressionVisitor<string>
 ```
 
 Executing the following code:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> infix =
     (a, b, c, d, e) => a + b - c * d / 2 + e * 3;
 
@@ -789,7 +817,8 @@ public class PostfixVisitor : BinaryArithmeticExpressionVisitor<IEnumerable<Tupl
 ```
 
 So data becomes code. The following code:
-```
+
+```csharp
 public static void IL()
 {
     Expression<Func<double, double, double, double, double, double>> infix =
@@ -866,7 +895,8 @@ public static class BinaryArithmeticCompiler
 ```
 
 The following code shows how to compile the expression tree into a .NET method:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> infix =
     (a, b, c, d, e) => a + b - c * d / 2 + e * 3;
 
@@ -879,7 +909,8 @@ This is very powerful. By traversing a abstract syntactic tree, a .NET method is
 ### .NET built-in compiler
 
 .NET provides a built in API [System.Linq.Expressions.Expression<TDelegate>.Compile()](https://msdn.microsoft.com/en-us/library/Bb345362.aspx) to compile expression tree to executable method at runtime:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> infix =
     (a, b, c, d, e) => a + b - c * d / 2 + e * 3;
 
@@ -907,7 +938,8 @@ Theoretically, yes; practically, difficult. At runtime, when looking at a compil
 ## Type inference of lambda expression
 
 In C# lambda syntax, the parameter type(s), return type, and lambda expression type should be all inferable from the context:
-```
+
+```csharp
 // Anonymous method with a int parameter, and returns a bool value.
 Func<int, bool> isPositive = int32 => int32 > 0;
 
@@ -916,7 +948,8 @@ Expression<Func<int, bool>> isPositiveExpression = int32 => int32 > 0;
 ```
 
 So the var keyword cannot be used to define lambda expression. The following code cannot be compiled:
-```
+
+```csharp
 var isPositive = int32 => int32 > 0;
 ```
 
@@ -926,7 +959,8 @@ The compiler does not know:
 -   the type of parameter, return value, etc.
 
 dynamic cannot be used either. The following code cannot be compiled:
-```
+
+```csharp
 dynamic isPositive = int32 => int32 > 0;
 ```
 

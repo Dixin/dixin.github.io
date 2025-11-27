@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (20) Combinators"
 published: 2018-11-20
 description: "As mentioned in , combinator is a special kind of lambda expression without free variables"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ As mentioned in [a fundamental part](/posts/lambda-calculus-via-c-sharp-2-fundam
 ## I combinator
 
 The following simplest lambda expression:
-```
+
+```csharp
 I := λx.x
 ```
 
@@ -29,7 +30,8 @@ is an example of combinator. In combinatory logic, λx.x is called I (Id), becau
 ## BCKW combinators
 
 Also:
-```
+
+```csharp
 B := λx.λy.λz.x (y z)
 C := λx.λy.λz.x z y
 K := λx.λy.   x
@@ -46,7 +48,8 @@ where:
 Only bound variables appear in the body of the lambda expressions. So apparently these are combinators.
 
 C# version:
-```
+
+```csharp
 public static class BckwCombinators
 {
     // B = x => => z => x(y(z))
@@ -72,17 +75,20 @@ The [BCKW system](http://en.wikipedia.org/wiki/B,C,K,W_system) is a variant of c
 ## ω combinator
 
 ω is the self application combinator:
-```
+
+```csharp
 ω := λx.x x
 ```
 
 And Ω is to apply ω to itself:
-```
+
+```csharp
 Ω := ω ω
 ```
 
 The interesting property of Ω is - it’s irreducible:
-```
+
+```csharp
 ω ω
 ≡ (λx.x x) (λx.x x)
 ≡ (λx.x x) (λx.x x)
@@ -90,7 +96,8 @@ The interesting property of Ω is - it’s irreducible:
 ```
 
 C#:
-```
+
+```csharp
 public delegate T ω<T>(ω<T> ω);
 
 public static class OmegaCombinators
@@ -112,7 +119,8 @@ Apparently, applying Ω will throw an exception:
 ## SKI combinators
 
 The more interested combinators are:
-```
+
+```csharp
 S := λx.λy.λz.x z (y z)
 K := λx.λy.   x
 I := λx.      x
@@ -125,7 +133,8 @@ where:
 -   I (Id) returns x
 
 Naturally, this is the C#, strongly typed:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     // S = x => y => z = x(z)(y(z))
@@ -147,13 +156,15 @@ Just like above BCKW system, the [SKI combinator calculus](http://en.wikipedia.o
 ### Boolean in SKI, and type issue
 
 The same as lambda calculus, [Boolean](/posts/lambda-calculus-via-c-sharp-4-encoding-church-booleans) would be the simplest thing to try first. Remember in lambda calculus:
-```
+
+```csharp
 True := λt.λf.t
 False := λt.λf.f
 ```
 
 Here with SKI:
-```
+
+```csharp
 K t f
 ≡ t
 
@@ -163,13 +174,15 @@ K t f
 ```
 
 So in SKI calculus, True and False can be defined as:
-```
+
+```csharp
 True := K
 False := S K
 ```
 
 If above C# SKI is used to implement True and False:
-```
+
+```csharp
 // True = K
 public static Func<object, object> True
     (object @true) => K<object, object>(@true);
@@ -184,7 +197,8 @@ public static Func<object, object> False
 False does not compile. Because in the strongly typed implementation, @true is expected to be a Func<object, object>, so that it can be applied to S as S’s second argument.
 
 Again, as fore mentioned, SKI calculus is untyped. To “make” the above code compile, something is needed to have C# compiler forget @true’s type:
-```
+
+```csharp
 // False = S(K)
 public static Func<object, object> False
     (dynamic @true) => @false => S<object, object, object>(K<object, object>)(@true)(@false);

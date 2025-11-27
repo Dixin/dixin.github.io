@@ -3,8 +3,8 @@ title: "LINQ to Objects in Depth (7) Custom Query Methods"
 published: 2018-07-20
 description: "After discussing the query methods provided by .NET, this part demonstrates how to define custom query methods:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -36,7 +36,8 @@ After discussing the query methods provided by .NET, this part demonstrates how 
 The sequence queries all implement deferred execution, where the sequence queries marked with \* implements eager evaluation, and other unmarked sequence queries implements lazy evaluation. The collection queries, value queries, and void queries all implements immediate execution.
 
 These query methods can be defined in the following static class:
-```
+
+```csharp
 public static partial class EnumerableX { }
 ```
 
@@ -45,7 +46,8 @@ public static partial class EnumerableX { }
 ### Generation
 
 The previous part discussed the Defer query method a sequence factory, and the Create query method accepting a iterator factory. The following Create method is defined to generate a sequence of values by repeatedly calling a value factory:
-```
+
+```csharp
 public static IEnumerable<TResult> Create<TResult>(Func<TResult> valueFactory, int? count = null)
 {
     if (count < 0)
@@ -72,12 +74,14 @@ public static IEnumerable<TResult> Create<TResult>(Func<TResult> valueFactory, i
 ```
 
 When count is not provided, an infinite sequence is generated. For example, the following Guid query method calls Create repeatedly with Guid.NewGuid to generate a sequence of new GUIDs:
-```
+
+```csharp
 public static IEnumerable<Guid> NewGuid(int? count) => Create(Guid.NewGuid, count);
 ```
 
 The following methods generate a sequence of random numbers:
-```
+
+```csharp
 public static IEnumerable<int> RandomInt32(
     int min = int.MinValue, int max = int.MaxValue, int? seed = null, int? count = null) =>
         EnumerableEx.Defer(() =>
@@ -93,13 +97,15 @@ public static IEnumerable<double> RandomDouble(int? seed = null, int? count = nu
 Here Defer is called to defer the instantiation of Random.
 
 The following EmptyIfNull can be used to replace null check and null coalescing:
-```
+
+```csharp
 public static IEnumerable<TSource> EmptyIfNull<TSource>(this IEnumerable<TSource> source) =>
     source ?? Enumerable.Empty<TSource>();
 ```
 
 For example:
-```
+
+```csharp
 internal static void EmptyIfNull(IEnumerable<int> source1, IEnumerable<int> source2)
 {
     IEnumerable<int> positive = source1.EmptyIfNull()
@@ -125,7 +131,8 @@ namespace System
 ```
 
 It concatenates the values with a single separator between each 2 adjacent string values. A general Join query method can be defined as:
-```
+
+```csharp
 public static IEnumerable<TSource> Join<TSource>(this IEnumerable<TSource> source, TSource separator)
 {
     using (IEnumerator<TSource> iterator = source.GetEnumerator())
@@ -144,7 +151,8 @@ public static IEnumerable<TSource> Join<TSource>(this IEnumerable<TSource> sourc
 ```
 
 The following overload accepting a sequence of multiple separators:
-```
+
+```csharp
 public static IEnumerable<TSource> Join<TSource>(
     this IEnumerable<TSource> source, IEnumerable<TSource> separators)
 {
@@ -169,7 +177,8 @@ public static IEnumerable<TSource> Join<TSource>(
 ### Partitioning
 
 Similar to string.Substring, a general Subsequence method can be defined as:
-```
+
+```csharp
 public static IEnumerable<TSource> Subsequence<TSource>(
     this IEnumerable<TSource> source, int startIndex, int count) => 
         source.Skip(startIndex).Take(count);
@@ -229,7 +238,8 @@ public class EqualityComparerWrapper<T> : IEqualityComparer<T>
 ```
 
 The getHashCode function is optional, because any type inherits a GetHashCode method from object. Take the ordering query methods as example, now overloads can be defined to accept a (T, T) –> int function instead of IComparer<T> interface:
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector,
@@ -256,7 +266,8 @@ public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
 ```
 
 Similar overloads can be defined for GroupBy, Join, GroupJoin, Distinct, Union, Intersect, Except:
-```
+
+```csharp
 public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector,
@@ -327,7 +338,8 @@ public static IEnumerable<TSource> Except<TSource>(
 ### List
 
 The List<T> type provides handy methods, which can be implemented for sequence too. The Insert query method return a new sequence with the specified value inserted at the specified index:
-```
+
+```csharp
 public static IEnumerable<TSource> Insert<TSource>(this IEnumerable<TSource> source, int index, TSource value)
 {
     if (index < 0)
@@ -365,7 +377,8 @@ public static IEnumerable<TSource> Insert<TSource>(this IEnumerable<TSource> sou
 There are some difference between the above Insert query method and List<T>.Insert. The above Insert is fluent by returning IEnumerable<T>, while List<T>.Insert returns void so is not fluent. The above Insert creates a new sequence with the specified value inserted, while List<T>.Insert directly changes the original list. The above Insert also implements deferred execution and lazy evaluation with generator, while List<T>.Insert executes immediately.
 
 RemoveAt returns a new sequence with a value removed at the specified index:
-```
+
+```csharp
 public static IEnumerable<TSource> RemoveAt<TSource>(this IEnumerable<TSource> source, int index)
 {
     if (index < 0)
@@ -394,7 +407,8 @@ public static IEnumerable<TSource> RemoveAt<TSource>(this IEnumerable<TSource> s
 ```
 
 Remove returns a new sequence with the first occurrence of the specified value removed. Besides being deferred and lazy, it also accepts an optional equality comparer:
-```
+
+```csharp
 public static IEnumerable<TSource> Remove<TSource>(
     this IEnumerable<TSource> source,
     TSource value,
@@ -417,7 +431,8 @@ public static IEnumerable<TSource> Remove<TSource>(
 ```
 
 RemoveAll return a new sequence with all occurrences of the specified value removed:
-```
+
+```csharp
 public static IEnumerable<TSource> RemoveAll<TSource>(
     this IEnumerable<TSource> source,
     TSource value,
@@ -439,7 +454,8 @@ public static IEnumerable<TSource> RemoveAll<TSource>(
 ### Comparison
 
 ToDictionary and ToLookup accept IEqualityComparer<T> too. Their overloads for functions can be defined:
-```
+
+```csharp
 public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector,
@@ -462,7 +478,8 @@ public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(
 ### List
 
 IndexOf is similar to List<T>.IndexOf. It finds the index of first occurrence of the specified value. –1 is returned id the specified value is not found:
-```
+
+```csharp
 public static int IndexOf<TSource>(
     this IEnumerable<TSource> source,
     TSource value,
@@ -490,7 +507,8 @@ public static int IndexOf<TSource>(
 ```
 
 LastIndexOf finds the index of last occurrence of the specified value:
-```
+
+```csharp
 public static int LastIndexOf<TSource>(
     this IEnumerable<TSource> source,
     TSource value,
@@ -521,7 +539,8 @@ public static int LastIndexOf<TSource>(
 ### Aggregation
 
 .NET provides basic aggregation queries, including Sum/Average/Max/Min queries. In reality, it is also common to calculate the variance, standard deviation, and percentile. The following VariancePopulation/VarianceSample/Variance query methods are equivalent to Excel [VAR.P](https://support.office.com/en-us/article/VAR-P-function-73d1285c-108c-4843-ba5d-a51f90656f3a)/[VAR.S](https://support.office.com/en-us/article/VAR-S-function-913633de-136b-449d-813e-65a00b2b990b)/[VAR](https://support.office.com/en-us/article/VAR-function-270da762-03d5-4416-8503-10008194458a) functions:
-```
+
+```csharp
 public static double VariancePopulation<TSource, TKey>( // Excel VAR.P function.
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector,
@@ -553,7 +572,8 @@ public static double Variance<TSource, TKey>( // Excel VAR function.
 ```
 
 And the following StandardDeviationPopulation/StabdardDeviationSample/StabdardDeviation query methods implements Excel [STDEV.P](https://support.office.com/en-us/article/STDEV-P-function-6e917c05-31a0-496f-ade7-4f4e7462f285)/[STDEV.S](https://support.office.com/en-us/article/STDEV-S-function-7d69cf97-0c1f-4acf-be27-f3e83904cc23)/[STDEV](https://support.office.com/en-us/article/STDEV-function-51fecaaa-231e-4bbb-9230-33650a72c9b0) functions:
-```
+
+```csharp
 public static double StandardDeviationPopulation<TSource, TKey>( // Excel STDEV.P function.
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector,
@@ -577,7 +597,8 @@ public static double StandardDeviation<TSource, TKey>( // Excel STDDEV.P functio
 ```
 
 And the following PercentileExclusive/PercentileInclusive/Percentile implement Excel [PERCENTILE.EXC](https://support.office.com/en-us/article/PERCENTILE-EXC-function-bbaa7204-e9e1-4010-85bf-c31dc5dce4ba)/[PERCENTILE.INC](https://support.office.com/en-us/article/PERCENTILE-INC-Function-DAX-15f69af8-1588-4863-9acf-2acc00384ffd)/[PERCENTILE](https://support.office.com/en-us/article/PERCENTILE-function-91b43a53-543c-4708-93de-d626debdddca) functions:
-```
+
+```csharp
 public static double PercentileExclusive<TSource, TKey>( // Excel PERCENTILE.EXC function.
     this IEnumerable<TSource> source,
     Func<TSource, TKey> keySelector,
@@ -661,14 +682,16 @@ public static double Percentile<TSource, TKey>( // Excel PERCENTILE function.
 ### Quantifiers
 
 string has a very useful IsNullOrEmpty method, and here is the LINQ version:
-```
+
+```csharp
 public static bool IsNullOrEmpty<TSource>(this IEnumerable<TSource> source) => source == null || !source.Any();
 ```
 
 ### Comparison
 
 Contains and SequentialEqual also accepts IEqualityComparer<T>. They can be overloaded with functions:
-```
+
+```csharp
 public static bool Contains<TSource>(
     this IEnumerable<TSource> source,
     TSource value,
@@ -689,7 +712,8 @@ public static bool SequenceEqual<TSource>(
 ### Iteration
 
 EnumerableEx.ForEach from Ix is very handy. However, in contrast of foreach statement, it does not support breaking the loop. So here is an improved EnumerableX.ForEach:
-```
+
+```csharp
 public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> onNext)
 {
     foreach (TSource value in source)
@@ -703,7 +727,8 @@ public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSour
 ```
 
 It follows the same convention of [jQuery.each](http://api.jquery.com/jquery.each/). When onNext function returns false, ForEach stops execution. And the indexed overload is:
-```
+
+```csharp
 public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> onNext)
 {
     int index = 0;
@@ -719,7 +744,8 @@ public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSour
 ```
 
 The last overload just iterate the source sequence and pull all values:
-```
+
+```csharp
 public static void ForEach(this IEnumerable source)
 {
     IEnumerator iterator = source.GetEnumerator();

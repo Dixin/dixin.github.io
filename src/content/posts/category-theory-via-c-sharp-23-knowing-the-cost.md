@@ -3,8 +3,8 @@ title: "Category Theory via C# (23) Performance"
 published: 2018-12-24
 description: "In functional programming, there are many powerful tools and patterns, like lambda expression, purity, deferred execution, immutability, fluent LINQ query composition, … But everything has a cost. As"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -24,7 +24,8 @@ For C#/.NET, the major cost of functional programming paradigm is performance. A
 ### Sort array
 
 The built-in LINQ query methods for IEnumerable<T>, are implemented in imperative algorithms for a lower performance cost. Take the sorting method as example:
-```
+
+```csharp
 public static class Enumerable
 {
     [Pure]
@@ -124,7 +125,8 @@ namespace System.Linq
 OrderBy, OrderByDescending, ThenBy all calls above QuickSort, which is completely imperative, for the lowest performance overhead.
 
 If above quick sort is implemented in purely functional manner, it will be like:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -200,7 +202,8 @@ Also, the LINQ to Objects chapter has implemented an OrderBy query method with a
 ### Prepare to test
 
 First some help functions are needed. The following ForEach is from the EnumerableX class in the LINQ to Objects chapter:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableX
 {
@@ -275,7 +278,8 @@ The performance tests will be done by sorting:
 -   Class (custom reference type) array
 
 So these functions are created to generate random arrays:
-```
+
+```csharp
 [Pure]
 public static class ArrayHelper
 {
@@ -371,7 +375,8 @@ Above 4 kinds of sorting will be compared:
 -   Enumerable.OrderBy: Functional API with imperative implementation and imperative optimization
 -   EnumerableExtensions.OrderBy: Functional API with imperative implementation without optimization
 -   EnumerableExtensions.QuickSort: Functional API with functional implementation
-```
+
+```csharp
 using CustomLinq = Dixin.Linq.LinqToObjects.EnumerableExtensions;
     
 // Impure.
@@ -392,7 +397,8 @@ internal static partial class Sort
 ```
 
 Here are the tests:
-```
+
+```csharp
 // Impure.
 internal static partial class Sort
 {
@@ -457,7 +463,8 @@ FunctionalQuickSort function demonstrates the significant performance cost of fu
 ### Filter IEnumerable<T>
 
 Filtering an IEnumerable<T> can be done in several different ways:
-```
+
+```csharp
 // Impure.
 internal static partial class Filter
 {
@@ -516,7 +523,8 @@ internal static partial class Filter
 The first EagerForEach function uses the same algorithm as System.Linq. Buffer<TElement>.
 
 ### Performance tests
-```
+
+```csharp
 // Impure.
 internal static partial class Filter
 {
@@ -585,7 +593,8 @@ Monad implementation runs slower in all cases.
 ### Filter array
 
 Filtering an array can be done imperatively without any lambda expression, and functionally with lambda expression:
-```
+
+```csharp
 // Impure.
 internal static partial class Filter
 {
@@ -630,7 +639,8 @@ internal static partial class Filter
 ```
 
 ### Performance tests
-```
+
+```csharp
 internal static partial class Filter
 {
     internal static PersonReferenceType[] WithoutLambda(
@@ -670,7 +680,8 @@ internal static partial class Filter
 ```
 
 Applying this function (Release build, optimize code, x64) gives following numbers:
-```
+
+```csharp
 // Impure.
 internal static partial class Filter
 {

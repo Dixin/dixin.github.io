@@ -3,8 +3,8 @@ title: "Batch Processing Compression Archives with Different Formats (RAR, ISO, 
 published: 2016-03-02
 description: "](http://techheavy.s3.a"
 image: ""
-tags: ["RAR", "Zip", "ISO", "7z", "7-Zip", "Conpression", "Extraction", "C#"]
-category: "RAR"
+tags: ["7-Zip", "7z", "C#", "Conpression", "Extraction", "ISO", "RAR", "Zip"]
+category: "7-Zip"
 draft: false
 lang: ""
 ---
@@ -16,14 +16,16 @@ Recently I need to batch process some compressed files in several hard disk driv
 ## C# options for compression archive (RAR, ISO, 7z, zip, …) processing
 
 For compression archive processing, there are some nice .NET libraries, like [SharpCompress](https://github.com/adamhathcock/sharpcompress). For example, it provides an easy way to programmatically extract an archive:
-```
+
+```csharp
 ArchiveFactory.WriteToDirectory(rarFile, destinationDirectory);
 ```
 
 So there creates an possibility to convert RAR to zip, by extracting RAR then re-compressing to zip.
 
 To create or extract zip files, now it seems much easier, since .NET has a built-in [ZipFile class](http://msdn.microsoft.com/en-us/library/system.io.compression.zipfile\(v=vs.110\).aspx) since [4.5](http://en.wikipedia.org/wiki/.NET_Framework_version_history#.NET_Framework_4.5):
-```
+
+```csharp
 ZipFile.CreateFromDirectory(destinationDirectory, zipFile, CompressionLevel.Optimal, false);
 ZipFile.ExtractToDirectory(zipFile, destinationDirectory);
 ```
@@ -126,7 +128,8 @@ To invoke the 7z.exe command line tool, a helper function is needed to:
 -   invoke 7z.exe command line tool.
 -   Wait for 7z.exe to finish executing.
 -   Grab all messages and errors from 7z.exe.
-```
+
+```csharp
 public static class ProcessHelper
 {
     public static int StartAndWait(string fileName, string arguments, Action<string> outputReceived = null, Action<string> errorReceived = null)
@@ -201,7 +204,8 @@ To extract an archive, [the command format](http://sevenzip.sourceforge.jp/chm/c
 > 7z.exe x {archiveFileName} -y -r -o{destinationDirectoryName}
 
 So the code is straightforward:
-```
+
+```csharp
 public void Extract(
     string archive, 
     string destination = null, 
@@ -229,7 +233,8 @@ public void Extract(
 When destination directory is missing, entries will be extracted to a directory with the same name as the archive.
 
 The invocation is extremely simple:
-```
+
+```csharp
 SevenZip sevenZip = new SevenZip(@"D:\Software\7zip\7z.exe");
 sevenZip.Extract(@"D:\Temp\a.rar"); // D:\Temp\a.rar -> D:\Temp\a\.
 ```
@@ -245,7 +250,8 @@ To create zip archive from a file/directory, [the command format](http://sevenzi
 > 7z.exe a {zipFileName} {sourceDirectory}\\\* -tzip -r -mx={compressionLevel} -mmt={threadCount} -p{password}
 
 So a general function will be:
-```
+
+```csharp
 public void Zip(
     string source,
     string zip = null,
@@ -288,7 +294,8 @@ private static int FormatCompressionLevel(int level)
 ```
 
 And this demonstrates how to zip a single file/all entries inside a directory:
-```
+
+```csharp
 sevenZip.Zip(@"D:\Temp\SingleFile", @"D:\Temp\SingleFile.zip");
 sevenZip.Zip(@"D:\Temp\Directory\*", @"D:\Temp\Directory.zip");
 ```
@@ -340,7 +347,8 @@ The built-in Directory.Delete() and File.Delete() functions are not directly use
 ## Convert RAR, ISO, 7z, … archives to zip
 
 Now “converting” an archive becomes very easy:
-```
+
+```csharp
 public void ToZip(
     string archive,
     string zip = null,
@@ -376,14 +384,16 @@ public void ToZip(
 ```
 
 The invocation is easy too:
-```
+
+```csharp
 sevenZip.ToZip(@"D:\Temp\b.rar", null /* By default D:\Temp\b.zip */, true, Console.Write);
 ```
 
 ## Batch process
 
 To batch convert all archives within a certain directory, just need a little recursion:
-```
+
+```csharp
 public void AllToZips(
     string directory,
     string[] archiveExtensions,
@@ -409,7 +419,8 @@ public void AllToZips(
 ```
 
 The invocation will be like:
-```
+
+```csharp
 sevenZip.AllToZips(
     @"\\dixinyan-disk\sda1\Files\",
     new string[] { ".rar", ".iso", ".7z" },
@@ -420,7 +431,8 @@ sevenZip.AllToZips(
 ```
 
 I also need to batch “convert” bunch of archives to files/directories for direct access:
-```
+
+```csharp
 public void ExtractAll(
     string directory,
     string[] archiveExtensions,
@@ -453,7 +465,8 @@ After converting RAR to zip, there is a big disadvantage. RAR can encrypt/hide e
 
 1.  First pass: zip entries into an archive without encryption
 2.  Second pass: zip that archive with encryption
-```
+
+```csharp
 public void DoubleZip(
     string source,
     string password,

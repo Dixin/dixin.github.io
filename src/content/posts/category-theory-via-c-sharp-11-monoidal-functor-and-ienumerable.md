@@ -3,8 +3,8 @@ title: "Category Theory via C# (11) Monoidal Functor And IEnumerable<>"
 published: 2018-12-12
 description: "Given monoidal categories (C, ⊗, IC) and (D, ⊛, ID), a  (or lax monoidal functors) is a functor F: C → D equipped with:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -82,7 +82,8 @@ public interface IDotNetMonoidalFunctor<T> // F<>
 ```
 
 Now the Binary operator becomes more intuitive, because Lazy< , > is just a (lazy) tuple. So above Binary function is close to:
-```
+
+```csharp
 // φ: Lazy<F<T1>, F<T2>> => F<Lazy<T1, T2>>
 // is equivalent to
 // φ: (F<T1>, F<T2>>) => F<Lazy<T1, T2>>
@@ -95,7 +96,8 @@ which clearly shows monoidal functor F<>’s monoidal structure: (F<X>, F<Y>>) �
 ## IEnumerable<> monoidal functor
 
 To implement Binary for IEnumerable<>, just need to take values from each IEnumerable<> in the pair, and result a IEnumerable<> of the values’ Cartesian product:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -123,7 +125,8 @@ public static partial class EnumerableExtensions
 ### N-arity selector for functor
 
 How can this be useful? Remember IEnumerable<>’s Select function:
-```
+
+```csharp
 public static IEnumerable<TResult> Select<TSource, TResult>(
     this IEnumerable<TSource> source, Func<TSource, TResult> selector)
 {
@@ -135,17 +138,20 @@ public static IEnumerable<TResult> Select<TSource, TResult>(
 ```
 
 The selector takes a TSource parameter. What if selector is a N-arity function? For example:
-```
+
+```csharp
 Func<int, int, int, int> selector = (x, y, z) => x + y + z;
 ```
 
 Not a problem, because N-arity function can always be curried to 1-arity function:
-```
+
+```csharp
 Func<int, Func<int, Func<int, int>>> selector = x => y => z => x + y + z;
 ```
 
 So in scenario like:
-```
+
+```csharp
 Func<int, Func<int, Func<int, int>>> selector = x => y => z => x + y + z;
 IEnumerable<int> xs = Enumerable.Range(0, 2);
 IEnumerable<int> ys = Enumerable.Range(2, 2);
@@ -153,12 +159,14 @@ IEnumerable<int> zs = Enumerable.Range(4, 2);
 ```
 
 how selector’s add algorithm can be applied with these values in functors? Try starting from xs:
-```
+
+```csharp
 var query1 = from x in xs select selector(x); // IEnumerable<Func<int, Func<int, int>>> query = xs.Select(selector);
 ```
 
 Unfortunately, now query1’s type becomes IEnumerable<Func<int, Func<int, int>>>. The selector got wrapped in the functor. How to apply a function in functor with value(s) in functor? Now lax monoidal endofunctor can be useful. Its binary operator takes a pair of functors - here one functor wraps function, the other wraps argument, and returns another functor, which wraps a pair of function and argument together.
-```
+
+```csharp
 IEnumerable<Func<int, Func<int, int>>> query1 = from x in xs select selector(x);
 IEnumerable<Lazy<Func<int, Func<int, int>>, int>> query2 = new Lazy<IEnumerable<Func<int, Func<int, int>>>, IEnumerable<int>>(query1, ys).Binary();
 IEnumerable<Func<int, int>> query3 = from pair in query2 select pair.Value1(pair.Value2);
@@ -168,7 +176,8 @@ IEnumerable<Func<int, int>> query3 = from pair in query2 select pair.Value1(pair
 It works. And this approach can be more fluent.
 
 First, replace T1 with Func<T2, T1>, since this is for applying functions wrapped in functor:
-```
+
+```csharp
 public static IEnumerable<Lazy<Func<T2, T1>, T2>> Binary<T1, T2>(
     this Lazy<IEnumerable<Func<T2, T1>>, IEnumerable<T2>> binaryFunctor)
 {
@@ -177,7 +186,8 @@ public static IEnumerable<Lazy<Func<T2, T1>, T2>> Binary<T1, T2>(
 ```
 
 Second, get rid of Lazy< , > in the parameter, it just pairs 2 parameters. “this” keyword remains for the first parameter.
-```
+
+```csharp
 public static IEnumerable<Lazy<Func<T2, T1>, T2>> Binary<T1, T2>(
     this IEnumerable<Func<T2, T1>>, IEnumerable<T2> binaryFunctor)
 {
@@ -186,7 +196,8 @@ public static IEnumerable<Lazy<Func<T2, T1>, T2>> Binary<T1, T2>(
 ```
 
 In the return type IEnumerable<Lazy<Func<T2, T1>, T2>>, Lazy<…> will be dismantled to Func<T2, T1> and T2, then Func<T2, T1> will be applied with T2 and return T1, so eventually the return type will be IEnumerable<T1>:
-```
+
+```csharp
 public static IEnumerable<T1> Binary<T1, T2>(
     this IEnumerable<Func<T2, T1>>, IEnumerable<T2> binaryFunctor)
 {
@@ -195,7 +206,8 @@ public static IEnumerable<T1> Binary<T1, T2>(
 ```
 
 Last step - rename T1 to TResult, T2 to TSource, Binary to Apply, so they make more sense than “general abstract”:
-```
+
+```csharp
 public static IEnumerable<TResult> Apply<TSource, TResult>
     (this IEnumerable<Func<TSource, TResult>> selectorFunctor, IEnumerable<TSource> source) => 
         new Lazy<IEnumerable<Func<TSource, TResult>>, IEnumerable<TSource>>(selectorFunctor, source)
@@ -203,12 +215,14 @@ public static IEnumerable<TResult> Apply<TSource, TResult>
 ```
 
 Now it is easier to apply selector with xs, ys, and zs:
-```
+
+```csharp
 IEnumerable<int> query = xs.Select(selector).Apply(ys).Apply(zs);
 ```
 
 If selector can be wrapped in the IEnumerable<> functor from the beginning:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -220,7 +234,8 @@ public static partial class EnumerableExtensions
 ```
 
 then the application becomes more consistent:
-```
+
+```csharp
 IEnumerable<int> query = selector.Enumerable().Apply(xs).Apply(ys).Apply(zs);
 ```
 
@@ -231,7 +246,8 @@ Apply is also called Merge, because this function merges 2 monoidal functors int
 Actually, monoidal functor IEnumerable<T> is functor and already has a Select function, its (Apply + Enumerable) is equivalent to (Binary + Unit). These 2 groups of functions express each other.
 
 This is how (Binary + Unit) can implement (Apply + Enumerable):
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -246,7 +262,8 @@ public static partial class EnumerableExtensions
 ```
 
 And this is how (Apply + Enumerable) implement (Binary + Unit):
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -286,7 +303,8 @@ In the future the latter style will be used, because (Apply + Enumerable) can be
 ## Monoidal functor and LINQ
 
 The Binary/Apply function merges 2 IEnumerable<> functors into 1 IEnumerable<>, which is similar to the semantics of Enumerable.Zip and Enumerable.Join:
-```
+
+```csharp
 [Pure]
 public static partial class EnumerableExtensions2
 {
@@ -314,7 +332,8 @@ public static partial class EnumerableExtensions2
 ```
 
 [Join has LINQ support](https://msdn.microsoft.com/en-us/library/bb311040.aspx), so:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions2
 {
@@ -361,7 +380,8 @@ IEnumerable<T> is like the [List Appliative in Haskell](https://hackage.haskell.
 -   F.Apply(a.Functor()) == (f => f(a)).Functor().Apply(F)
 
 where f is a function, F, F1, F2, F3 are monoidal functors, o is the composition of functions.
-```
+
+```csharp
 [TestClass()]
 public partial class MonoidalFunctorTests
 {
@@ -416,7 +436,8 @@ public partial class MonoidalFunctorTests
 ```
 
 And unit tests for LINQ implementations:
-```
+
+```csharp
 public partial class MonoidalFunctorTests
 {
     [TestMethod()]

@@ -3,7 +3,7 @@ title: "Understanding C# Features (9) Partial Method"
 published: 2009-12-16
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -14,7 +14,8 @@ lang: ""
 ## The partial keyword
 
 The partial keyword is introduced since C# 2.0. It enables class/struct/interface definition to be split to multiple code files at design time. For example, When creating a WinForm application project in VisualStudio, a form definition is typically like this:
-```
+
+```csharp
 public partial class MainForm : Form
 {
     public MainForm()
@@ -52,7 +53,8 @@ partial class MainForm
 The partial class improves the productivity when a type has some code implemented by developer, some other code auto generated.
 
 C# 3.0 introduces partial methods. For example, In LINQ to SQL dbml, The MSLinqToSQLGenerator generates definition like this:
-```
+
+```csharp
 public partial class WebOSUser : INotifyPropertyChanging, INotifyPropertyChanged
 {
     partial void OnValidate(ChangeAction action);
@@ -60,7 +62,8 @@ public partial class WebOSUser : INotifyPropertyChanging, INotifyPropertyChanged
 ```
 
 Here partial method OnValidate can be optionally implemented by developer in another place:
-```
+
+```csharp
 public partial class WebOSUser
 {
     partial void OnValidate(ChangeAction action)

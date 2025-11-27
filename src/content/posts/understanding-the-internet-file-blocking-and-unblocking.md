@@ -65,19 +65,22 @@ Here
 -   4 = untrusted.
 
 The above alternative data stream can be examined via command line:
-```
+
+```csharp
 more < WebOS.zip:Zone.Identifier
 ```
 
 That is how is WebOS.zip file marked as blocked to enhance the security, and a “Unblock” button appears on the property dialog.
 
 Actually any file / directory marked with this Zone.Identifier alternative data stream is considered from Internet and blocked by the Windows. A test.txt file can be created to test this:
-```
+
+```csharp
 echo test > test.txt
 ```
 
 by checking its property, this test.txt is unblocked of course. Now inject the same Zone.Identifier alternative data stream into test.txt:
-```
+
+```csharp
 more < WebOS.zip:Zone.Identifier > test.txt:Zone.Identifier
 ```
 
@@ -101,7 +104,8 @@ To disable this feature in Windows, go to this place:
 ![file-block-7](https://aspblogs.z22.web.core.windows.net/dixin/Media/fileblock7_0CEC43F8.png "file-block-7")
 
 The type command can be used to remove the data streams:
-```
+
+```csharp
 ren WebOS.zip WebOS.zip.bak
 type WebOS.zip.bak > WebOS.zip
 del WebOS.zip.bak

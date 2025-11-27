@@ -48,7 +48,8 @@ public partial class Imperative
 ```
 
 and the same processing with LINQ:
-```
+
+```csharp
 public partial class LinqToObjects
 {
     public static IEnumerable<Person> FilterAndOrderByAge(IEnumerable<Person> source)
@@ -84,7 +85,8 @@ SELECT [ProductName], [UnitPrice] FROM [Products] ORDER BY [UnitPrice] DESC
 ### XAML
 
 Another declarative example is XAML. Compare C#:
-```
+
+```csharp
 Button button = new Button();
 button.Content = "Submit";
 button.HorizontalAlignment = HorizontalAlignment.Left;
@@ -95,7 +97,8 @@ button.Click += this.Submit;
 ```
 
 with the following XAML:
-```
+
+```csharp
 <Button Content="Submit" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Width="75" Click="Submit" />
 ```
 
@@ -108,7 +111,8 @@ Another controversial topic is HTML. In [CLR via C# 2nd edition](http://www.amaz
 > An example of declarative programming is when a person creates a text file and explicitly enters HTML tags into the file by using an editor such as Notepad.exe. In this scenario, the HTML tags act as instructions that are eventually processed by the Internet browser so that it can lay out the page in a window. The HTML tags are declaring how the program (Web page) should be displayed and operate, and it's the programmer who decides what tags to use and where. Many hard-core programmers don't consider HTML programming to be real programming, but I do.
 
 Similar to C# vs. XAML, if comparing with [JavaScript](http://en.wikipedia.org/wiki/JavaScript):
-```
+
+```csharp
 var img = document.CreateElement("img");
 img.src = "https://farm3.staticflickr.com/2875/9215169916_f8fa57c3da_b.jpg";
 img.style.width = "300px";
@@ -117,7 +121,8 @@ img.title = "Microsoft Way";
 ```
 
 with HTML:
-```
+
+```csharp
 <img src="https://farm3.staticflickr.com/2875/9215169916_f8fa57c3da_b.jpg" style="width: 300px; height: 200px;" title="Microsoft Way" />
 ```
 
@@ -179,7 +184,8 @@ Thanks to Microsoft and [Anders Hejlsberg](http://en.wikipedia.org/wiki/Anders_H
 ## Declarative C#
 
 C# 3.0+ introduced a lot of syntax to make it more declarative. For example, the object initializer collection initializer:
-```
+
+```csharp
 List<Person> team = new List<Person>();
 Person anna = new Person();
 anna.Age = 25;
@@ -200,7 +206,8 @@ team.Add(charlie);
 ```
 
 Comparing to:
-```
+
+```csharp
 List<Person> team = new List<Person>
     {
         new Person() { Age = 25, Name = "Anna" }, 
@@ -331,7 +338,8 @@ public class Person
 ### LINQ and Functional C#
 
 Above LinqToObjects.FilterAndOrderByAge method implementation is equivalent to (actually is compiled to):
-```
+
+```csharp
 public partial class LinqToObjects
 {
     public static IEnumerable<Person> FilterAndOrderByAge(IEnumerable<Person> source)

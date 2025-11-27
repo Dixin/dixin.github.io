@@ -3,8 +3,8 @@ title: "Functional Programming and LINQ via C#"
 published: 2019-02-19
 description: "C#, .NET Core, Azure, Functional Programming, Lambda Calculus, Category Theory, LINQ, LINQ to Objects, LINQ to XML, Parallel LINQ, LINQ to Entities, Entity Framework Core, Azure SQL Database."
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---

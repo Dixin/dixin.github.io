@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (9) Wrapping Church Numerals And Arithmetic"
 published: 2018-11-09
 description: "In , the Decrease function was a Func<Numeral<Func<Func<T, T>, T>>, Numeral<T>>:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -16,7 +16,8 @@ lang: ""
 ## **Latest version: [https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-3-numeral-arithmetic-and-predicate](/posts/lambda-calculus-via-csharp-3-numeral-arithmetic-and-predicate "https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-3-numeral-arithmetic-and-predicate")**
 
 In [previous part](/posts/lambda-calculus-via-c-sharp-7-encoding-church-numerals), the Decrease function was a Func<Numeral<Func<Func<T, T>, T>>, Numeral<T>>:
-```
+
+```csharp
 // Decrease = n => f => x => n(g => h => h(g(f)))(_ => x)(_ => _)
 public static Numeral<T> Decrease<T>
     (this Numeral<Func<Func<T, T>, T>> numeral) => 
@@ -24,7 +25,8 @@ public static Numeral<T> Decrease<T>
 ```
 
 This is ok because in the definition of Numeral<T>:
-```
+
+```csharp
 public delegate Func<T, T> Numeral<T>(Func<T, T> f);
 ```
 
@@ -33,7 +35,8 @@ T can be anything. But on another hand, Decrease can be more useful, if its para
 ## Non-generic wrapper for Numeral<T>, and Increase
 
 One possible solution (inspired by [forall](https://wiki.haskell.org/Keywords#forall) in [Haskell](http://en.wikipedia.org/wiki/Haskell_\(programming_language\))) is to create a non-generic wrapper class without type parameter, and have Numeral<T> to be on that class’s member:
-```
+
+```csharp
 public partial class _Numeral
 {
     public virtual Numeral<T> Numeral<T>()
@@ -46,7 +49,8 @@ public partial class _Numeral
 Once again, a underscore prefixes the class name to indicate this is cheating, because class exists in C# but not in [lambda calculus](http://en.wikipedia.org/wiki/Lambda_calculus) at all.
 
 But how this class can be implemented? Remember:
-```
+
+```csharp
 Increase2 := λn.λf.f ∘ (n f)
 ```
 
@@ -69,7 +73,8 @@ public partial class _Numeral
 ```
 
 So an increased \_Numeral is constructed by using current \_Numeral as the predecessor:
-```
+
+```csharp
 public partial class _Numeral
 {
     public _Numeral Increase
@@ -121,7 +126,8 @@ public static partial class _NumeralExtensions
 ## Decrease and Subtract
 
 Finally, Decrease and Subtract can be done nicely, because now Decrease is a Func<\_Numeral, \_Numeral>:
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     public static _Numeral Zero { get; } = _Numeral.Zero;
@@ -146,13 +152,15 @@ public static partial class _NumeralExtensions
 ## Multiply and Pow
 
 Similar to Add and Subtract, Multiply and Power can be defined as:
-```
+
+```csharp
 Multiply := λa.λb.a (λx.Add b x) 0
 Pow := λm.λe.e (λx.Multiply m x) 1
 ```
 
 (Multiply a b) means just to do “add b” a times on top of 0. (Power m e) is to do “multiply m” e times starting on 1.
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     // Multiply = a => b => a(x => b.Add(x))(Zero)

@@ -3,7 +3,7 @@ title: "Understanding LINQ to SQL (4) Data Retrieving Via Query Methods"
 published: 2010-04-14
 description: "\\]"
 image: ""
-tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ to SQL", "SQL Server", "TSQL", "Visual Studio", "LINQ via C#"]
+tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ to SQL", "LINQ via C#", "SQL Server", "TSQL", "Visual Studio"]
 category: ".NET"
 draft: false
 lang: ""
@@ -48,7 +48,8 @@ Take the Products table as example:
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_25B63014.png "image")
 
 Where() query method is used to filter the items in the IQueryable<T> collection:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -76,7 +77,8 @@ WHERE [t0].[UnitPrice] > @p0',N'@p0 decimal(33,4)',@p0=100.0000
 This can be traced by [SQL Server Profiler](http://msdn.microsoft.com/en-us/library/ms181091.aspx).
 
 The other overload of Where():
-```
+
+```csharp
 IQueryable<TSource> Where<TSource>(
     this IQueryable<TSource> source, 
     Expression<Func<TSource, int, bool>> predicate)
@@ -87,7 +89,8 @@ is not supported in LINQ to SQL.
 ### AND / OR
 
 && / || can be used in Where():
-```
+
+```csharp
 IQueryable<Product> results = source.Where(
     product => product.UnitPrice < 20 || product.UnitPrice > 90);
 ```
@@ -101,7 +104,8 @@ WHERE ([t0].[UnitPrice] < @p0) OR ([t0].[UnitPrice] > @p1)',N'@p0 decimal(33,4),
 ```
 
 Or Where() can be invoked for multiple times:
-```
+
+```csharp
 IQueryable<Product> results = source.Where(product => product.UnitPrice < 20)
                                     .Where(product => product.ReorderLevel > 10);
 ```
@@ -117,7 +121,8 @@ WHERE ([t0].[ReorderLevel] > @p0) AND ([t0].[UnitPrice] < @p1)',N'@p0 int,@p1 de
 ### LIKE
 
 .NET API can be used for constructing query. Typically, when working with character data, string.StartsWith() can be used
-```
+
+```csharp
 IQueryable<Product> results = source.Where(product => product.ProductName.StartsWith("B"));
 ```
 
@@ -132,7 +137,8 @@ WHERE [t0].[ProductName] LIKE @p0',N'@p0 nvarchar(4000)',@p0=N'B%'
 The same for string.EndsWith(“y”) and string.Contains(“z”). They are translated LIKE N’%y’ and LIKE N’%z%’.
 
 Generally, SqlMethods.Like() can be used for LIKE operation:
-```
+
+```csharp
 IQueryable<Product> results = source.Where(
     product => SqlMethods.Like(product.ProductName, "%st%"));
 ```
@@ -144,7 +150,8 @@ For the detail of wildcards, please check [MSDN](http://msdn.microsoft.com/en-us
 ### IN
 
 When IEnumerable<T>.Contains() is used:
-```
+
+```csharp
 IEnumerable<string> names = new string[] { "Chai", "Chang", "Tofu" };
 IQueryable<Product> results = source.Where(product => names.Contains(product.ProductName));
 ```
@@ -160,7 +167,8 @@ WHERE [t0].[ProductName] IN (@p0, @p1, @p2)',N'@p0 nvarchar(4000),@p1 nvarchar(4
 ### IS / NOT / NULL
 
 The following code:
-```
+
+```csharp
 IQueryable<Product> results = source.Where(product => product.CategoryID != null);
 ```
 
@@ -177,7 +185,8 @@ The predicate “product.CategoryID != null” is not executed in CLR but transl
 ## Projection (SELECT, CASE)
 
 If querying all fields is not necessary, Select() can be used to specify the fields:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -210,7 +219,8 @@ Only explicitly required fields (ProductName and UnitPrice) are queried.
 ### Explicitly construct entity
 
 In the above sample, constructing an object of anonymous type looks unnecessary. It should be Ok to use the Product type directly:
-```
+
+```csharp
 IQueryable<Product> results = source.Where(product => product.UnitPrice > 100)
                                     .Select(product => new Product()
                                         {
@@ -233,7 +243,8 @@ Explicit construction of entity type is not allowed after .NET 3.5 Beta2. [Accor
 > This check was added because it was supposed to be there from the beginning and was missing. Constructing entity instances manually as a projection pollutes the cache with potentially malformed objects, leading to confused programmers and lots of bug reports for us. In addition, it is ambiguous whether projected entities should be in the cache or changed tracked at all. The usage pattern for entities is that they are created outside of queries and inserted into tables via the DataContext and then later retrieved via queries, never created by queries.
 
 To explicitly construct entity, there are several ways to work around. One way is construct object of anonymous type, then use LINQ to Objects to construct entity:
-```
+
+```csharp
 IEnumerable<Product> results = source.Where(product => product.UnitPrice > 100)
                                      .Select(product => new
                                          {
@@ -251,7 +262,8 @@ IEnumerable<Product> results = source.Where(product => product.UnitPrice > 100)
 ### CASE
 
 The following query:
-```
+
+```csharp
 var results = source.Where(product => product.ReorderLevel > 20)
                     .Select(product => new
                         {
@@ -278,7 +290,8 @@ WHERE [t0].[ReorderLevel] > @p0',N'@p0 int,@p1 decimal(33,4)',@p0=20,@p1=10.0000
 The query methods OrderBy(), OrderByDescending(), ThenBy(), ThenByDescending() work similarly with LINQ to Objects.
 
 The following OrderBy(A).OrderBy(B):
-```
+
+```csharp
 var results = source.Where(product => product.ReorderLevel > 20)
                     .OrderBy(product => product.ProductName)
                     .OrderBy(product => product.UnitPrice)
@@ -299,7 +312,8 @@ ORDER BY [t0].[UnitPrice], [t0].[ProductName]',N'@p0 int',@p0=20
 ```
 
 While OrderBy(A).ThenBy(B):
-```
+
+```csharp
 var results = source.Where(product => product.ReorderLevel > 20)
                     .OrderBy(product => product.ProductName)
                     .ThenBy(product => product.UnitPrice)
@@ -338,7 +352,8 @@ Take the Products table and Categories table as an example. This is the model of
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_42DBD81E.png "image")
 
 Similar with LINQ to Objects queries, INNER JOIN can be implemented by Join().
-```
+
+```csharp
 IQueryable<Product> outer = database.Products;
 IQueryable<Category> inner = database.Categories;
 var results = outer.Where(product => product.UnitPrice > 100)
@@ -366,7 +381,8 @@ WHERE [t0].[UnitPrice] > @p0',N'@p0 decimal(33,4)',@p0=100.0000
 Here, in C#, Where() is before Join(). This is Ok for translating to SQL, where Join() should come before Where().
 
 The above query can be implemented by query expression:
-```
+
+```csharp
 var results = from product in outer
               where product.UnitPrice > 100
               join category in inner on product.CategoryID equals category.CategoryID
@@ -381,7 +397,8 @@ var results = from product in outer
 which looks a little easier.
 
 INNER JOIN can also be done by SelectMany():
-```
+
+```csharp
 IQueryable<Category> source = database.Categories;
 var results = source.Where(category => category.CategoryName == "Beverages")
                     .SelectMany(
@@ -405,7 +422,8 @@ WHERE ([t0].[CategoryName] = @p0) AND ([t1].[CategoryID] = [t0].[CategoryID])',N
 ### OUTER JOIN
 
 OUTER JOIN is also typically applied one-to-many scenarios. OUTER JOIN can be implemented by GroupJoin().
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> outer = database.Products;
@@ -451,7 +469,8 @@ and prints:
 > Filo Mix <- Grains/Cereals Geitost <- Dairy Products Guaraná Fantástica <- Beverages Jack's New England Clam Chowder <- Seafood Konbu <- Seafood Rhönbräu Klosterbier <- Beverages Rogede sild <- Seafood Teatime Chocolate Biscuits <- Confections Tourtière <- Meat/Poultry Tunnbröd <- Grains/Cereals Zaanse koeken <- Confections
 
 This looks a little tough. Query expression is a little easier:
-```
+
+```csharp
 var results = from product in outer
               where product.UnitPrice < 10
               orderby product.ProductName
@@ -474,7 +493,8 @@ One thing need to pay attention is, do not forget the DefaultIfEmpty() invocatio
 ### Association (OUTER JOIN)
 
 A simpler implementation of OUTER JOIN is using the table association. For example,
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 var results = source.Where(product => product.UnitPrice < 10)
                     .OrderBy(product => product.ProductName)
@@ -488,7 +508,8 @@ var results = source.Where(product => product.UnitPrice < 10)
 This is translated to the same SQL above.
 
 Here is another sample using table association to implement OUTER JOIN:
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 var results = source.Where(product => product.Category.CategoryName == "Beverages")
                     .Select(product => new
@@ -514,7 +535,8 @@ A typical usage of CROSS JOIN is in many-to-many scenarios. Many-to-many scenari
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_26EAA326.png "image")
 
 CROSS JOIN can be implemented by SelectMany(). The following query:
-```
+
+```csharp
 IQueryable<Category> source = database.Employees;
 var results = source.SelectMany(
     employee => employee.EmployeeTerritories,
@@ -527,7 +549,8 @@ var results = source.SelectMany(
 ```
 
 is equal to:
-```
+
+```csharp
 var results = from employee in source
               from territory in employee.EmployeeTerritories
               select new
@@ -571,7 +594,8 @@ The above foreign key is mapped as an association:
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_424F598F.png "image")
 
 So a self JOIN can be performed on Employees table and Employees table through this foreign key:
-```
+
+```csharp
 IQueryable<Employee> source = database.Employees;
 var results = source.SelectMany(
     manager => manager.Employees, 
@@ -606,7 +630,8 @@ namespace System.Linq
 ```
 
 Grouping can be implemented by GroupBy():
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -670,7 +695,8 @@ WHERE ((@x1 IS NULL) AND (SUBSTRING([t0].[ProductName], @p0 + 1, @p1) IS NULL)) 
 ### GROUP BY / aggregate functions
 
 When [aggregate function](http://msdn.microsoft.com/en-us/library/ms173454.aspx) is provided in grouping, it is able to translate the query to GROUP BY. Take COUNT as example:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -707,7 +733,8 @@ and prints:
 ### HAVING
 
 When filtering a GROUP BY:
-```
+
+```csharp
 var groups = source.GroupBy(
                         product => product.CategoryID,
                         (key, products) => new 
@@ -748,7 +775,8 @@ In the 5 set query method of IQueryable<T>, Zip() is not supported in LINQ to SQ
 ### DISTINCT
 
 DISTINCT can be implemented by invoking Distinct() query method. For example:
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 IQueryable<int?> results = source.Where(product => product.UnitPrice > 100)
                                     .Select(product => product.CategoryID)
@@ -766,7 +794,8 @@ WHERE [t0].[UnitPrice] > @p0',N'@p0 decimal(33,4)',@p0=100.0000
 ### UNION
 
 UNION can be implemented by Union(). Please notice UNION includes a DISTINCT calculation in SQL and so that the same in LINQ to SQL. For example:
-```
+
+```csharp
 IQueryable<Supplier> source = database.Suppliers;
 IQueryable<Order> source2 = database.Orders;
 
@@ -801,7 +830,8 @@ FROM (
 ### EXISTS
 
 EXISTS can be implemented by Intersect().
-```
+
+```csharp
 IQueryable<Customer> source = database.Customers;
 IQueryable<Supplier> source2 = database.Suppliers;
 IQueryable<string> results = source.Select(customer => customer.CompanyName)
@@ -824,7 +854,8 @@ WHERE EXISTS(
 ### NOT EXISTS
 
 Except() is opposite of Intersect().
-```
+
+```csharp
 IQueryable<string> results = source.Select(customer => customer.CompanyName)
                                     .Except(source2.Select(
                                         supplier => supplier.CompanyName));
@@ -849,7 +880,8 @@ The partitioning is very simple via LINQ to SQL.
 ### TOP
 
 The following code queries the most expensive 10 products:
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 var results = source.Select(product => new
                         {
@@ -871,7 +903,8 @@ ORDER BY [t0].[UnitPrice] DESC
 ### ROW\_NUMBER()
 
 The Skip() is implemented by generating an extra ROW\_NUMBER field. The following query:
-```
+
+```csharp
 var results = source.Select(product => new
                         {
                             ProductName = product.ProductName,
@@ -896,7 +929,8 @@ ORDER BY [t1].[ROW_NUMBER]',N'@p0 int',@p0=10
 ### BETWEEN AND
 
 Skip().Take() immediately implements pagination:
-```
+
+```csharp
 var results = source.Select(product => new
                         {
                             ProductName = product.ProductName,
@@ -927,7 +961,8 @@ There is only one concatenation query method, Concat().
 ### UNION ALL
 
 The UNION ALL can be implemented by Concate().
-```
+
+```csharp
 IQueryable<Customer> source = database.Customers;
 IQueryable<Supplier> source2 = database.Suppliers;
 IQueryable<string> results = source.Select(customer => customer.CompanyName)
@@ -955,7 +990,8 @@ The qualifiers are all translated to CASE and EXISTS.
 ### CASE / EXISTS
 
 This is an All() example:
-```
+
+```csharp
 IQueryable<Product> source = database.Products;
 bool result = source.All(product => product.UnitPrice < 300);
 ```
@@ -988,7 +1024,8 @@ exec sp_executesql N'SELECT
 ```
 
 This is an Any() example:
-```
+
+```csharp
 bool result = source.Any(product => product.UnitPrice < 300);
 ```
 
@@ -1007,7 +1044,8 @@ exec sp_executesql N'SELECT
 ```
 
 The other overload of Any()
-```
+
+```csharp
 bool result = source.Any();
 ```
 
@@ -1025,7 +1063,8 @@ SELECT
 ```
 
 And Contains():
-```
+
+```csharp
 bool result = source.Select(product=>product.ProductID).Contains(1);
 ```
 

@@ -3,7 +3,7 @@ title: "C# Functional Programming In-Depth (10) Query Expression"
 published: 2019-06-10
 description: "C# 3.0 introduces query expression, a SQL-like query syntactic sugar for query methods composition."
 image: ""
-tags: [".NET", "C#", "C# 2.0", "C# 3.0", "LINQ", "LINQ via C#", "C# Features", "Functional Programming", "Functional C#"]
+tags: [".NET", "C#", "C# 2.0", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -18,7 +18,8 @@ C# 3.0 introduces query expression, a SQL-like query syntactic sugar for query m
 ## Syntax and compilation
 
 The following is the syntax of query expression:
-```
+
+```csharp
 from [Type] identifier in source
 [from [Type] identifier in source]
 [join [Type] identifier in source on expression equals expression [into identifier]]
@@ -45,7 +46,8 @@ Query expression is compiled to query method calls at compile time:
 <table border="0" cellpadding="2" cellspacing="0" width="672"><tbody><tr><td valign="top" width="297">Query expression</td><td valign="top" width="373">Query method</td></tr><tr><td valign="top" width="297">single from clause with select clause</td><td valign="top" width="373">Select</td></tr><tr><td valign="top" width="297">multiple from clauses with select clause</td><td valign="top" width="373">SelectMany</td></tr><tr><td valign="top" width="297">Type in from/join clauses</td><td valign="top" width="373">Cast</td></tr><tr><td valign="top" width="297">join clause without into</td><td valign="top" width="373">Join</td></tr><tr><td valign="top" width="297">join clause with into</td><td valign="top" width="373">GroupJoin</td></tr><tr><td valign="top" width="297">let clause</td><td valign="top" width="373">Select</td></tr><tr><td valign="top" width="297">where clauses</td><td valign="top" width="373">Where</td></tr><tr><td valign="top" width="297">orderby clause with or without ascending</td><td valign="top" width="373">OrderBy, ThenBy</td></tr><tr><td valign="top" width="297">orderby clause with descending</td><td valign="top" width="373">OrderByDescending, ThenByDescending</td></tr><tr><td valign="top" width="297">group clause</td><td valign="top" width="373">GroupBy</td></tr><tr><td valign="top" width="297">into with continuation</td><td valign="top" width="373">Nested query</td></tr></tbody></table>
 
 It is already demonstrated how query expression syntax works for LINQ. Actually, this syntax is not specific for LINQ query or IEnumerable<T>/ParallelQuery<T>/IQueryable<T> types, but a [general C# syntactic sugar](https://www.infoq.com/interviews/LINQ-Erik-Meijer). Take select clause (compiled to Select method call) as example, it can work for any type, as long as the compiler can find a Select instance method or extension method for that type. Take int as example, it does not have a Select instance method, so the following extension method can be defined to accept a selector function:
-```
+
+```csharp
 internal static partial class Int32Extensions
 {
     internal static TResult Select<TResult>(this int int32, Func<int, TResult> selector) => 
@@ -54,7 +56,8 @@ internal static partial class Int32Extensions
 ```
 
 Now select clause of query expression syntax can be applied to int:
-```
+
+```csharp
 internal static partial class QueryExpression
 {
     internal static void SelectInt32()
@@ -68,7 +71,8 @@ internal static partial class QueryExpression
 ```
 
 And they are compiled to above Select extension method call:
-```
+
+```csharp
 internal static void CompiledSelectInt32()
 {
     int mapped1 = Int32Extensions.Select(default, zero => zero); // 0
@@ -77,7 +81,8 @@ internal static void CompiledSelectInt32()
 ```
 
 More generally, Select method can be defined for any type:
-```
+
+```csharp
 internal static partial class ObjectExtensions
 {
     internal static TResult Select<TSource, TResult>(this TSource value, Func<TSource, TResult> selector) => 
@@ -86,7 +91,8 @@ internal static partial class ObjectExtensions
 ```
 
 Now select clause and Select method can be applied to any type:
-```
+
+```csharp
 internal static void SelectGuid()
 {
     string mapped = from newGuid in Guid.NewGuid()
@@ -212,7 +218,8 @@ public interface IRemoteGroup<TKey, T> : IRemote<T>
 ```
 
 The following example demonstrates how the query expression syntax is enabled for ILocal<T> and IRemote<T>:
-```
+
+```csharp
 internal static void LocalQuery(ILocal<Uri> uris)
 {
     ILocal<string> query =
@@ -235,7 +242,8 @@ internal static void RemoteQuery(IRemote<Uri> uris)
 ```
 
 Their syntax looks identical but they are compiled to different query method calls:
-```
+
+```csharp
 internal static void CompiledLocalQuery(ILocal<Uri> uris)
 {
     ILocal<string> query = uris
@@ -280,7 +288,8 @@ namespace System.Linq
 ```
 
 The following query implement filtering and mapping queries with query expression, but Skip and Take have to be called as query methods, so it is in a hybrid syntax:
-```
+
+```csharp
 public static void QueryExpressionAndMethod(IEnumerable<Product> products)
 {
     IEnumerable<string> query =

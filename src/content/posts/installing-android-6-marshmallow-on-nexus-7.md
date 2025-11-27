@@ -3,8 +3,8 @@ title: "Installing Android 6 Marshmallow on Nexus 7"
 published: 2015-10-22
 description: "I got a ) in 2013. In 2014 it was upgraded to , and then became way slower"
 image: ""
-tags: ["Hardware", "Nexus", "Android"]
-category: "Hardware"
+tags: ["Android", "Hardware", "Nexus"]
+category: "Android"
 draft: false
 lang: ""
 ---

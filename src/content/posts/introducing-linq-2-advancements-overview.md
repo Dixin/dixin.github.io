@@ -18,7 +18,8 @@ According to [MSDN](http://msdn.microsoft.com/en-us/netframework/aa904594.aspx):
 ## Independent to data source
 
 This sample mentioned in [part 1](/posts/introducing-linq-1-what-is-linq) is working on items in a .NET array:
-```
+
+```csharp
 var results = from number in source
                where number > 0
                orderby number descending
@@ -42,7 +43,8 @@ The query expression looks like a SQL query. But they are totally different. For
 ## Deferred execution
 
 Deferred execution is a feature of functional programming. Now it is introduced all over the LINQ. In the runtime, when this statement finished executing, we got the local variable: products.
-```
+
+```csharp
 var results = from product in database.Products
                where product.Category.CategoryName == "Beverages"
                orderby product.ProductName
@@ -54,7 +56,8 @@ var results = from product in database.Products
 Please notice at this time positive is not the query result, but the query definition itself.
 
 When we iterate the results, which means the results need to be fetched, the query executes:
-```
+
+```csharp
 foreach (var item in results) // Executes the query when we need the query results.
 {
     Console.WriteLine(item);

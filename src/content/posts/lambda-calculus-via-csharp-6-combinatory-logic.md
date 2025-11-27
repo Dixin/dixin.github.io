@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (6) Combinatory Logic"
 published: 2024-11-19
 description: "In lambda calculus, the primitive is function, which can have free variables and bound variables.  was introduced by [Moses Schönfink"
 image: ""
-tags: ["LINQ via C#", "C#", ".NET", "Lambda Calculus", "Functional Programming", "Combinators", "Combinatory Logic", "SKI", "Iota"]
-category: "LINQ via C#"
+tags: [".NET", "C#", "Combinators", "Combinatory Logic", "Functional Programming", "Iota", "Lambda Calculus", "LINQ via C#", "SKI"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,12 +18,14 @@ In lambda calculus, the primitive is function, which can have free variables and
 ## Combinator
 
 The following is the simplest function definition expression, with only bound variable and no free variable:
-```
+
+```csharp
 I := λx.x
 ```
 
 In combinatory logic it is called I (Id) combinator. The following functions are combinators too:
-```
+
+```csharp
 S := λx.λy.λz.x z (y z)
 K := λx.λy.x
 ```
@@ -31,7 +33,8 @@ K := λx.λy.x
 Here S (Slider) combinator slides z to between x and y (In some materials S is called Substitution; In [presentation](https://www.youtube.com/watch?v=7cPtCpyBPNI) of [Dana Scott](http://en.wikipedia.org/wiki/Dana_Scott) S is called Slider), and K (Killer) combinator kills y.
 
 In C#, just leave the each combinator’s variables as dynamic:
-```
+
+```csharp
 public static partial class SkiCombinators
 {
     public static readonly Func<dynamic, Func<dynamic, Func<dynamic, dynamic>>>
@@ -46,17 +49,20 @@ public static partial class SkiCombinators
 ```
 
 ω is the self application combinator. It applies variable f to f itself:
-```
+
+```csharp
 ω := λf.f f
 ```
 
 Just like above f, ω can also be applied with ω itself, which is the definition of Ω:
-```
+
+```csharp
 Ω := ω ω ≡ (λf.f f) (λf.f f)
 ```
 
 Here ω is a function definition expression without free variables, and Ω is a function application expression, which contains no free variables. For Ω, its function application can be beta reduced forever:
-```
+
+```csharp
 (λf.f f) (λf.f f)
 ≡ (λf.f f) (λf.f f)
 ≡ (λf.f f) (λf.f f)
@@ -66,22 +72,26 @@ Here ω is a function definition expression without free variables, and Ω is a 
 So ω ω is an infinite application. Ω is called the looping combinator.
 
 In C#, it is easy to define the type of self applicable function, like above f. Assume the function’s return type is TResult, then this function is of type input –> TResult:
-```
+
+```csharp
 public delegate TResult Func<TResult>(?);
 ```
 
 The input type is the function type itself, so it is:
-```
+
+```csharp
 public delegate TResult Func<TResult>(Func<TResult> self)
 ```
 
 Above Func<TResult> is the self applicable function type. To be unambiguous with System.Func<TResult>, it can be renamed to SelfApplicableFunc<TResult>:
-```
+
+```csharp
 public delegate TResult SelfApplicableFunc<TResult>(SelfApplicableFunc<TResult> self);
 ```
 
 So SelfApplicableFunc<TResult> is equivalent to SelfApplicableFunc<TResult> -> TResult. Since f is of type SelfApplicableFunc<TResult>, f(f) returns TResult. And since ω accept f and returns TResult. ω is of type SelfApplicableFunc<TResult> -> TResult, which is the definition of SelfApplicableFunc<TResult>, so ω is still of type SelfApplicableFunc<TResult>, ω(ω) is still of type TResult:
-```
+
+```csharp
 public static class OmegaCombinators<TResult>
 {
     public static readonly SelfApplicableFunc<TResult>
@@ -97,13 +107,15 @@ public static class OmegaCombinators<TResult>
 The [SKI combinator calculus](http://en.wikipedia.org/wiki/SKI_combinator_calculus) is a kind of combinatory logic. As a variant of lambda calculus, SKI combinatory logic has no general expression definition rules, or general expression reduction rules. It only has the above S, K, I combinators as the only 3 primitives, and the only 3 function application rules. It can be viewed as a reduced version of lambda calculus, and an extremely simple Turing complete language with only 3 elements: S, K, I.
 
 Take the Boolean values as a simple example. Remember in lambda calculus, True and False are defined as:
-```
+
+```csharp
 True := λt.λf.t
 False := λt.λf.f
 ```
 
 So that when they are applied:
-```
+
+```csharp
 True t f
 ≡ (λt.λf.t) t f
 ≡ t
@@ -114,13 +126,15 @@ True t f
 ```
 
 Here in SKI combinator calculus, SKI combinators are the only primitives, so True and False can be defined as:
-```
+
+```csharp
 True := K
 False := S K
 ```
 
 So that when they are applied, they return the same result as the lambda calculus definition:
-```
+
+```csharp
 True t f
 ≡ K t f
 ≡ t
@@ -132,17 +146,20 @@ True t f
 ```
 
 Remember function composition is defined as:
-```
+
+```csharp
 (f2 ∘ f1) x := f2 (f1 x)
 ```
 
 In SKI, the composition operator can be equivalently defined as:
-```
+
+```csharp
 Compose := S (K S) K
 ```
 
 And this is how it works:
-```
+
+```csharp
 Compose f2 f1 x
 ≡ S (K S) K f2 f1 x
 ≡ (K S) f2 (K f2) f1 x
@@ -152,7 +169,8 @@ Compose f2 f1 x
 ```
 
 In lambda calculus, numerals are defined as:
-```
+
+```csharp
 0 := λf.λx.x
 1 := λf.λx.f x
 2 := λf.λx.f (f x)
@@ -161,7 +179,8 @@ In lambda calculus, numerals are defined as:
 ```
 
 In SKI, numerals are equivalently defined as:
-```
+
+```csharp
 0 := K I                     ≡ K I
 1 := I                       ≡ I
 2 := S Compose I             ≡ S (S (K S) K) I
@@ -170,7 +189,8 @@ In SKI, numerals are equivalently defined as:
 ```
 
 When these numerals are applied, they return the same results as lambda calculus definition:
-```
+
+```csharp
 0 f x
 ≡ K I f x
 ≡ I x
@@ -196,24 +216,28 @@ When these numerals are applied, they return the same results as lambda calculus
 ```
 
 In SKI, the self application combinator ω is:
-```
+
+```csharp
 ω := S I I
 ```
 
 When it is applied with f, it returns f f:
-```
+
+```csharp
 S I I f
 ≡ I x (I f) 
 ≡ f f
 ```
 
 So naturally, Ω is defined as:
-```
+
+```csharp
 Ω := (S I I) (S I I)
 ```
 
 And it is infinite as in lambda calculus:
-```
+
+```csharp
 S I I (S I I)
 ≡ I (S I I) (I (S I I)) 
 ≡ I (S I I) (S I I) 
@@ -222,13 +246,15 @@ S I I (S I I)
 ```
 
 Actually, I combinator can be defined with S and K in either of the following ways:
-```
+
+```csharp
 I := S K K
 I := S K S
 ```
 
 And they work the same:
-```
+
+```csharp
 I x
 ≡ S K K x
 ≡ K x (K x)
@@ -243,7 +269,8 @@ I x
 So I is just a syntactic sugar in SKI calculus.
 
 In C#, these combinators can be implemented as:
-```
+
+```csharp
 using static SkiCombinators;
 
 public static partial class SkiCalculus
@@ -297,7 +324,8 @@ The S, K, I combinators can be composed to new combinator that equivalent to any
 6.  ToSki (λv.(E1 E2)) => (S (ToSki (λ.v.E1)) (ToSki (λv.E2)))
 
 Based on these rules, a compiler can be implemented to compile a expression in lambda calculus to combinator in SKI calculus. As mentioned before, the C# lambda expression can be compiled as function, and also expression tree data representing the logic of that function:
-```
+
+```csharp
 internal static void FunctionAsData<T>()
 {
     Func<T, T> idFunction = value => value;
@@ -306,7 +334,8 @@ internal static void FunctionAsData<T>()
 ```
 
 The above idFunction and idExpression shares the same lambda expression syntax, but is executable function, while the idExpression is a abstract syntax tree data structure, representing the logic of idFunction:
-```
+
+```csharp
 Expression<Func<T, T>> (NodeType = Lambda, Type = Func<T, T>)
 |_Parameters
 | |_ParameterExpression (NodeType = Parameter, Type = T)
@@ -361,7 +390,8 @@ public class ApplicationExpression : Expression
 ```
 
 So the above Ω combinator (S I I) (S I I) can be represented by the following expression tree:
-```
+
+```csharp
 ApplicationExpression (NodeType = Invoke, Type = object)
 |_Function
 | |_ApplicationExpression (NodeType = Invoke, Type = object)
@@ -392,7 +422,8 @@ ApplicationExpression (NodeType = Invoke, Type = object)
 ```
 
 So in the following SkiCompiler type, the ToSki is implemented to traverse the input abstract syntax tree recursively, and apply the above conversion rules:
-```
+
+```csharp
 public static partial class SkiCompiler
 {
     public static Expression ToSki(this Expression lambdaCalculus)
@@ -533,7 +564,8 @@ private static string ToSkiString(this Expression skiCalculus, bool parentheses)
 ```
 
 The following example demonstrates how to represent 2-tuple in SKI calculus combinator:
-```
+
+```csharp
 internal static void Tuple<T1, T2>()
 {
     Expression<Func<T1, Func<T2, Tuple<T1, T2>>>>
@@ -545,7 +577,8 @@ internal static void Tuple<T1, T2>()
 ```
 
 To verify the result, a tuple can be created with x as first item, and y as the second item:
-```
+
+```csharp
 CreateTuple x y
 ≡ S (S (K S) (S (K K) (S (K S) (S (K (S I)) (S (K K) I))))) (K (S (K K) I)) x y
 ≡ S (K S) (S (K K) (S (K S) (S (K (S I)) (S (K K) I)))) x (K (S (K K) I) x) y
@@ -569,7 +602,8 @@ CreateTuple x y
 ```
 
 To get the first/second item of the above tuple, apply it with True/False:
-```
+
+```csharp
 Item1 (CreateTuple x y)
 ≡ (CreateTuple x y) True
 ≡ S (S I (K x)) (K y) True
@@ -594,12 +628,14 @@ Item1 (CreateTuple x y)
 So the compiled 2-tuple SKI calculus combinator is equivalent to the lambda calculus expression.
 
 Another example is the logic operator And:
-```
+
+```csharp
 And := λa.λb.a b False ≡ λa.λb.a b (λt.λf.f)
 ```
 
 So in C#:
-```
+
+```csharp
 internal static void And()
 {
     Expression<Func<Boolean, Func<Boolean, Boolean>>>
@@ -610,7 +646,8 @@ internal static void And()
 ```
 
 Unfortunately, above expression tree cannot be compiled, with error CS1963: An expression tree may not contain a dynamic operation. The reason is, Boolean is the alias of Func<dynamic, Func<dynamic, dynamic>>, and C# compiler does not support dynamic operations in expression tree, like calling a(b) here. At compile time, dynamic is just object, so the solution is to replace dynamic with object, and replace Boolean with object –> object -> object, then the following code can be compiled:
-```
+
+```csharp
 internal static void And()
 {
     Expression<Func<Func<object, Func<object, object>>, Func<Func<object, Func<object, object>>, Func<object, Func<object, object>>>>>
@@ -622,7 +659,8 @@ internal static void And()
 ```
 
 The compilation result can be verified in similar way:
-```
+
+```csharp
 And True True
 ≡ S (S (K S) (S (S (K S) (S (K K) I)) (K I))) (K (K (K I))) True True
 ≡ S (S (K S) (S (S (K S) (S (K K) I)) (K I))) (K (K (K I))) K K
@@ -669,19 +707,22 @@ And True True
 ## Iota combinator calculus
 
 Another interesting example of combinator logic is [Iota](http://en.wikipedia.org/wiki/Iota_and_Jot) combinator calculus. It has only one combinator:
-```
+
+```csharp
 ι := λf.f S K ≡ λf.f (λx.λy.λz.x z (y z)) (λx.λy.x)
 ```
 
 That’s [the whole combinatory logic](https://web.archive.org/web/20150121065142/http://semarch.linguistics.fas.nyu.edu/barker/Iota/). It is an [esoteric programming language](http://en.wikipedia.org/wiki/Esoteric_programming_language) with minimum element – only 1 single element, but still [Turing-complete](http://en.wikipedia.org/wiki/Turing-complete). With Iota combinator, SKI can be implemented as:
-```
+
+```csharp
 S := ι (ι (ι (ι ι)))
 K := ι (ι (ι ι))
 I := ι ι
 ```
 
 So Iota is as Turing-complete as SKI. For example:
-```
+
+```csharp
 I x
 ≡ ι ι x
 ≡ (λf.f S K) (λf.f S K) x
@@ -693,7 +734,8 @@ I x
 ```
 
 In C#, these combinators can be implemented as:
-```
+
+```csharp
 public static partial class IotaCombinator
 {
     public static readonly Func<dynamic, dynamic>

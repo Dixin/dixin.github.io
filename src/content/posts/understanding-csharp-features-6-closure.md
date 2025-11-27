@@ -3,7 +3,7 @@ title: "Understanding C# Features (6) Closure"
 published: 2016-01-18
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ via C#", "C# Features", "Closure"]
+tags: [".NET", "C#", "C# Features", "Closure", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -31,7 +31,8 @@ public class DisplayClass
 Here in DisplayClass, the field is defined outside the scope of the method, so that it can be viewed as a [non-local variable](https://en.wikipedia.org/wiki/Non-local_variable) of method, in contrast of the local variable defined inside method scope. Non-local variable is also called [captured variable](https://msdn.microsoft.com/en-us/library/0yw3tz5k.aspx). This tutorial uses term non-local variable, because it is more specific.
 
 The concept of non-local variable also applies to lambda expression:
-```
+
+```csharp
 public static partial class Closure
 {
     public static void Outer()
@@ -92,7 +93,8 @@ In the Outer method, the inner add function creation becomes the instantiation o
 ## Non-local variable can change
 
 In above examples, non-local variables does not change. But if they changes, of course the referencing functions will be impacted, e.g.:
-```
+
+```csharp
 public static void ChangedNonLocal()
 {
     int nonLocalVariable = 1; // Outside the scope of function add.
@@ -108,7 +110,8 @@ public static void ChangedNonLocal()
 ```
 
 Sometimes, this can be confusing:
-```
+
+```csharp
 public static void MultipleReferences()
 {
     List<Func<int>> functions = new List<Func<int>>(3);
@@ -130,7 +133,8 @@ public static void MultipleReferences()
 In this case, 3 functions are created by the for loop. The nonLocalVariable is 0, 1, 2, when each function is created. However, when the for loop finishes executing, nonLocalVariable becomes 3. So when calling each of these 3 functions, the output will be 3, 3, 3 instead of 0, 1, 2.
 
 This can be resolved by copying the current value of nonLocalVariable:
-```
+
+```csharp
 public static void CopyCurrent()
 {
     List<Func<int>> functions = new List<Func<int>>(3);

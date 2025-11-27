@@ -3,8 +3,8 @@ title: "DiskPart Problem: Cannot Select Partition"
 published: 2016-01-19
 description: "When working with USB drive, the DiskPart command cannot select the partition of the USB disk:"
 image: ""
-tags: ["Windows", "Storage"]
-category: "Windows"
+tags: ["Storage", "Windows"]
+category: "Storage"
 draft: false
 lang: ""
 ---

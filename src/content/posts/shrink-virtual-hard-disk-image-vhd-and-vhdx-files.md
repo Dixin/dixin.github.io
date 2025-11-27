@@ -3,8 +3,8 @@ title: "Shrink Virtual Hard Disk Image (VHD and VHDX) Files"
 published: 2016-05-06
 description: "Virtual hard disk image files () grow bigger during the usage. For instance, this is a 20G virtual disk file for a Window"
 image: ""
-tags: ["Windows", "VHD", "VHDX", "Virtual Hard Disk", "Hyper-v", "Virtual Machine", "OneDrive"]
-category: "Windows"
+tags: ["Hyper-v", "OneDrive", "VHD", "VHDX", "Virtual Hard Disk", "Virtual Machine", "Windows"]
+category: "Hyper-v"
 draft: false
 lang: ""
 ---
@@ -76,7 +76,7 @@ This is the most tricky part. There are several options:
 1.  Use built-in Hyper-v Manager to shrink VHD/VHDX files of a virtual machine. [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Shrink-a_D28C/image_thumb_16.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Shrink-a_D28C/image_35.png)
 2.  Use [VHD Resizer](http://www.bursky.net/wp-content/uploads/2012/07/VhdResizerSetup.zip) to change the size. It only works for VHD, not VHDX.
 3.  Use PowerShell command to shrink VHD/VHDX files:
-    ```
+    ```csharp
     Resize-VHD –Path .\dixinyan-vmxp.vhdx –ToMinimumSize
     ```
     
@@ -87,7 +87,8 @@ Unfortunately, none of these can work for above virtual hard disk of this Window
 -   When shrinking a VHD, convert it to VHDX then convert it back to VHD.
 
 In PowerShell:
-```
+
+```csharp
 Convert-VHD -Path .\dixinyan-vmxp.vhdx -DestinationPath .\dixinyan-vmxp.vhd
 Convert-VHD -Path .\dixinyan-vmxp.vhd -DestinationPath .\dixinyan-vmxp.min.vhdx
 ```

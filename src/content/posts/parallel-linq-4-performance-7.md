@@ -3,8 +3,8 @@ title: "Parallel LINQ in Depth (4) Performance"
 published: 2018-09-30
 description: "Parallel LINQ is powerful, but also can be more complex. This part discusses Parallel LINQ query performance in different cases."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -45,7 +45,8 @@ private static void OrderByTest(Func<int, int> keySelector, int count, int run)
 ```
 
 It calls the RandomInt32 method, which was defined in the LINQ to Objects chapter, to generate an array of random int values with the specified length. Then it executes the sequential and parallel OrderBy methods for the specified times, so that the total execution time can be controlled, The following code compares the sequential/parallel OrderBy execution on small/medium/large size array, with the same simple key selector:
-```
+
+```csharp
 internal static void OrderByTestForCount()
 {
     OrderByTest(keySelector: value => value, count: 5, run: 10_000);    
@@ -58,7 +59,8 @@ internal static void OrderByTestForCount()
 ```
 
 The following method compares the sequential/parallel OrderBy execution on the same size array, with different key selector of light/medium/heavy workload:
-```
+
+```csharp
 internal static void OrderByTestForKeySelector()
 {
     OrderByTest(
@@ -81,7 +83,8 @@ It turns out sequential LINQ to Object can be faster than Parallel LINQ in some 
 ## CPU bound operation vs. I/O bound operation
 
 So far, all the examples are CPU bound operations. In many cases, Parallel LINQ by default takes the logic processor count as the degree of parallelism. This makes sense for CPU bound operations, but may not for I/O bound operations. For example, when downloading files from Internet with parallel threads, it could be nice if the worker thread count can be controlled accurately, and independently from CPU core count. The following ForceParallel method can be implementation for this purpose:
-```
+
+```csharp
 public static partial class ParallelEnumerableX
 {
     public static void ForceParallel<TSource>(
@@ -123,7 +126,8 @@ public static partial class ParallelEnumerableX
 It creates the specified number of partitions from the source, then start one threads to work with each partition. Also, by calling Partitioner.Create with EnumerablePartitionerOptions.NoBuffering, stripped partitioning is enabled for better load balance.
 
 To demonstrate the I/O bound operation, define the following network I/O method to download file synchronously from the the specified URI:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static string Download(string uri)
@@ -167,7 +171,8 @@ private static void DownloadTest(string[] uris)
 ```
 
 The following code queries some some thumbnail picture file URIs from the Flickr RSS feed with LINQ to XML, then compares the performance of downloading those small files:
-```
+
+```csharp
 internal static void RunDownloadSmallFilesTest()
 {
     string[] thumbnails = 
@@ -185,7 +190,8 @@ internal static void RunDownloadSmallFilesTest()
 Here sequential downloading takes longer time, which totally makes sense. The Parallel LINQ query is specified with a max degree of parallelism 10, but it decides to utilize 5 threads. ForceParallel starts 10 threads exactly as specified, and its execution time is about half of Parallel LINQ.
 
 The following code queries for the same Flickr RSS feed for large picture file URIs, and compares the performance of downloading those large files:
-```
+
+```csharp
 internal static void RunDownloadLargeFilesTest()
 {
     string[] contents = 

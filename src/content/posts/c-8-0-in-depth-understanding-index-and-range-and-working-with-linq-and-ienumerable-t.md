@@ -3,8 +3,8 @@ title: "C# 8.0 in-depth: Understanding index and range, and working with LINQ an
 published: 2019-02-24
 description: "C# 8.0 introduces index and range for array. This part discussed the index and range types, syntax, compilation, and how to apply them with LINQ for any type that implements IEnumerable<T>."
 image: ""
-tags: ["C#", "C# 8.0", ".NET", ".NET Core"]
-category: "C#"
+tags: [".NET", ".NET Core", "C#", "C# 8.0"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -60,7 +60,8 @@ public readonly struct Range : IEquatable<Range>
 ```
 
 C# 8.0 introduces the index and range syntax:
-```
+
+```csharp
 Index index1 = 1; // Index 1 from start.
 Index index2 = ^2; // Index 2 from end.
 Range range1 = 1..10; // Start index is 1 from start, end index is 10 from start.
@@ -70,7 +71,8 @@ Range range4 = ..; // Start index is 0 from start, end index is 0 from end.
 ```
 
 These are syntactic sugars, which are compiled to:
-```
+
+```csharp
 Index index3 = 1;
 Index index2 = new Index(2, true);
 Range range5 = Range.Create(1, 10);
@@ -82,26 +84,30 @@ Range range2 = Range.All();
 ## Index and Range for array
 
 C# introduces syntactic sugars to enable Index with array:
-```
+
+```csharp
 int[] array = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 int value = array[^1];
 ```
 
 It is compiled to normal int indexer access:
-```
+
+```csharp
 int[] array = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 Index index = new Index(1, true);
 int value = index.FromEnd ? array[array.Length - index.Value] : array[index.Value];
 ```
 
 And this is the range syntactic sugar for array slice:
-```
+
+```csharp
 int[] array = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 int[] slice = array[^9..7];
 ```
 
 It is compiled to array copy:
-```
+
+```csharp
 int[] array = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 Range range = Range.Create(new Index(9, true), 7);
 int startIndex = range.Start.FromEnd ? array.Length - range.Start.Value : range.Start.Value;
@@ -120,7 +126,8 @@ Currently (v3.0.0-preview2/SDK 3.0.100-preview-010184), the index and range work
 This enables the index and range to work with any type that implements IEnumerable<T>.
 
 LINQ already has ElementAt(int index) and ElementOrDefault(int index) query operator. It would be natural to have a overload for System.Index: ElementAt(Index index) and ElementOrDefault(Index index), and a new method ElementsIn(Range range), so that LINQ can seamlessly work with C# 8.0:
-```
+
+```csharp
 Index index = ...;
 var element1 = source1.ElementAt(index);
 var element2 = source2.ElementAtOrDefault(^ 5);
@@ -131,7 +138,8 @@ var slice2 = source5.ElementsIn(^ 10..);
 ```
 
 The following Range overload and AsEnumerable overload for System.Range convert it to a sequence, so that LINQ query can be started fluently from c# range:
-```
+
+```csharp
 Index index = ...;
 var element1 = source1.ElementAt(index);
 var element2 = source2.ElementAtOrDefault(^ 5);
@@ -256,7 +264,8 @@ internal static class CachedReflectionInfo
 These methods for IEnumerable<T> are straightforward as well, I just followed the behavior and exceptions of array with range. See unit tests [https://github.com/Dixin/CodeSnippets/blob/master/Linq.Range/Linq.Range.Tests/ElementsInTests.cs](https://github.com/Dixin/CodeSnippets/blob/master/Linq.Range/Linq.Range.Tests/ElementsInTests.cs).
 
 ElementAt(Index) and ElementAtOrDefault(Index):
-```
+
+```csharp
 public static TSource ElementAt<TSource>(this IEnumerable<TSource> source, Index index)
 {
     if (source == null)

@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (9) Performance"
 published: 2019-03-31
 description: "The previous parts has discussed some aspects that can impact the performance of EF/Core and LINQ to Entities, and here is a summary:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -159,7 +159,7 @@ This part continues the discussion of performance.
 > 
 > CreateDatabaseIfNotExists<TContext>: is the default initializer, so it is executed here too. As a result, EF attempts to [query the existence of the mapped tables and views, database migration history, and entity data model info, etc](https://romiller.com/2014/06/10/reducing-code-first-database-chatter/). Apparently, here AdventureWorks database does not have the migration and entity data model info; recreating database is not needed as well. So the database initialization can be turned off, by setting the initializer to NullDatabaseInitializer<TContext>:
 > 
-> ```
+> ```csharp
 > public partial class AdventureWorks
 > {
 >     static AdventureWorks()
@@ -266,7 +266,8 @@ internal static void UncachedEntity(AdventureWorks adventureWorks)
 ```
 
 DbSet.Find accept the primary keys and returns an entity. Calling Find can improve the performance, because it looks up cache before querying the repository:
-```
+
+```csharp
 internal static void Find(AdventureWorks adventureWorks)
 {
     Product[] products = adventureWorks.Products
@@ -296,7 +297,7 @@ To improve the performance, EF Core caches the query translations in a Microsoft
 
 > EF always compiles the LINQ expression tree to database expression tree, then cache the SQL generation in a dictionary. For example:
 > 
-> ```
+> ```csharp
 > internal static void TranslationCache(AdventureWorks adventureWorks)
 > {
 >     int minLength = 1;
@@ -316,7 +317,8 @@ To improve the performance, EF Core caches the query translations in a Microsoft
 > -   System.Data.Entity.Core.Objects.ObjectContextOptions.UseCSharpNullComparisonBehavior
 
 The following example executes 2 LINQ to Entities queries:
-```
+
+```csharp
 internal static void UnreusedTranslationCache(AdventureWorks adventureWorks)
 {
     IQueryable<Product> queryWithConstant1 = adventureWorks.Products
@@ -339,7 +341,8 @@ These first LINQ query builds expression trees with a ConstantExpression node re
 > So the first query’s SQL generation cannot be used for the second query either.
 
 To reuse the translation cache, these queries can be parameterized by simply replace the constants with variables:
-```
+
+```csharp
 internal static void ReusedTranslationCache(AdventureWorks adventureWorks)
 {
     int minLength = 1;
@@ -355,7 +358,8 @@ internal static void ReusedTranslationCache(AdventureWorks adventureWorks)
 ```
 
 As discussed in the C# features chapter, the predicate lambda expressions capture variable minLength with the closure syntactic sugar. The above code is compiled to:
-```
+
+```csharp
 internal static void ReusedTranslationCache(AdventureWorks adventureWorks)
 {
     int minLength = 1;
@@ -374,7 +378,7 @@ In the predicates, the outer variable access is compiled to field access. So in 
 
 > In EF, if a query method accepts values instead of lambda expression, this parameterization approach does not work. For example, Skip and Take accept int values as parameters:
 > 
-> ```
+> ```csharp
 > internal static void UnresuedSkipTakeTranslationCache(AdventureWorks adventureWorks)
 > {
 >     int skip = 1;
@@ -407,7 +411,7 @@ In the predicates, the outer variable access is compiled to field access. So in 
 > 
 > Now Skip and Take can access variables via closure:
 > 
-> ```
+> ```csharp
 > internal static void ResuedSkipTakeTranslationCache(AdventureWorks adventureWorks)
 > {
 >     int skip = 1;
@@ -486,7 +490,8 @@ For these operations and APIs, async parities are provided as IQueryable<T> exte
 > In EF, these methods are provided in System.Data.Entity.QueryableExtensions, and LastAsync, LastOrDefaultAsync are not provided, since EF does not support Last, LastOrDefault.
 
 For data changes, DbContext.SaveChangesAsync is provided as a parity of DbContext.SaveChanges. For example:
-```
+
+```csharp
 internal static async Task Async(AdventureWorks adventureWorks)
 {
     IQueryable<ProductCategory> categories = adventureWorks.ProductCategories;
@@ -661,7 +666,8 @@ internal static async Task TransactionScopeAsync()
 ### Asynchronous concurrent conflicts
 
 EF/Core also provide async APIs for other database operations. In the previous concurrency part, a DbContext.SaveChanges overload is implemented to handle concurrency conflict, refresh entity, and retry saving changes. Here a async version can be implemented easily:
-```
+
+```csharp
 public static partial class DbContextExtensions
 {
     public static async Task<int> SaveChangesAsync(
@@ -699,7 +705,8 @@ public static partial class DbContextExtensions
 ```
 
 With the async/await syntactic sugar, the implementation looks very similar to the synchronous version. The following are the SaveChangesAsync overloads to accept RefreshConflict enumeration:
-```
+
+```csharp
 public static async Task<int> SaveChangesAsync(
     this DbContext context, RefreshConflict refreshMode, int retryCount = 3)
 {
@@ -723,7 +730,8 @@ public static async Task<int> SaveChangesAsync(
 ```
 
 Instead of calling the previously defined Refresh extension method to refresh the DbEntityEntry instance, here a async method RefreshAsync is called to refresh asynchronously:
-```
+
+```csharp
 public static async Task<EntityEntry> RefreshAsync(this EntityEntry tracking, RefreshConflict refreshMode)
 {
     switch (refreshMode)
@@ -775,7 +783,8 @@ public static async Task<EntityEntry> RefreshAsync(this EntityEntry tracking, Re
 ```
 
 Now concurrency conflict can be resolved automatically and asynchronously:
-```
+
+```csharp
 internal static async Task SaveChangesAsync()
 {
     using (AdventureWorks adventureWorks1 = new AdventureWorks())

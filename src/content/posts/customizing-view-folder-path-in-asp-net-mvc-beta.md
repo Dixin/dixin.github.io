@@ -98,7 +98,8 @@ public class WebFormViewEngine : VirtualPathProviderViewEngine
 [](http://11011.net/software/vspaste)
 
 So what need to do is very simple: just add another customized IViewEngine object to the Engines property:
-```
+
+```csharp
 ViewEngines.Engines.Add(new WebFormViewEngine()
     {
         MasterLocationFormats = new string[] 

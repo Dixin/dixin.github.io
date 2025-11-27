@@ -3,8 +3,8 @@ title: "Category Theory via C# (3) Monoid as Category"
 published: 2018-12-04
 description: "An individual monoid (T, ⊙, I) can be a category M:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -55,7 +55,8 @@ public class MonoidMorphism<T> : IMorphism<T, T, IMonoid<T>>
 Since there is only 1 object in the category, the source object and result object are always the same object. So MonoidMorphism<T> only take one type parameter. And apparently, its category is IMonoid<T> instead of DotNet.
 
 The implementation of Monoid<T> for ICategory<IMonoid<T>> is a little tricky:
-```
+
+```csharp
 public partial class Monoid<T>
 {
     [Pure]
@@ -94,7 +95,8 @@ As a category, it expects all the type parameters are the same as T, because - o
 ## Category laws, and unit tests
 
 The following unit test shows how it works:
-```
+
+```csharp
 public partial class MonoidTests
 {
     [TestMethod()]

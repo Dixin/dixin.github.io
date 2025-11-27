@@ -3,8 +3,8 @@ title: "LINQ to Objects in Depth (3) Generator"
 published: 2018-07-05
 description: "After understanding how to use LINQ to Objects, starting from this part, the implementation of query methods is discussed. Most LINQ to Object query methods are implemented with iteration pattern and"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -157,7 +157,8 @@ The above sequence encapsulates the data to generate the values from, and also p
 ## Generate sequence and iterator
 
 Now the Sequence<T> and Iterator<T> types can be used to create sequence with specific data and specific iteration algorithm. A simple example is to create a singleton sequence with only 1 value:
-```
+
+```csharp
 internal static partial class IteratorPattern
 {
     internal static IEnumerable<TSource> FromValue<TSource>(TSource value) =>
@@ -178,7 +179,8 @@ internal static partial class IteratorPattern
 ```
 
 Here a bool flag is used to indicate if the value is already iterated. The iterator’s moveNext function checks that bool flag and updates it, so that the value is made available only once. The created sequence can be consumed by foreach loop:
-```
+
+```csharp
 internal static void ForEachFromValue<TSource>(TSource value)
 {
     foreach (TSource result in FromValue(value)) { }
@@ -186,7 +188,8 @@ internal static void ForEachFromValue<TSource>(TSource value)
 ```
 
 As fore mentioned, foreach loop is compiled to while loop. The following code demonstrates the underlying imperative control flow of iteration:
-```
+
+```csharp
 internal static void CompiledForEachFromValue<TSource>(TSource value)
 {
     using (IEnumerator<TSource> iterator = FromValue(value).GetEnumerator())
@@ -214,7 +217,8 @@ internal static void CompiledForEachFromValue<TSource>(TSource value)
 ```
 
 Another example is to create a sequence by repeating a specified value for specified times, which is the Repeat query method:
-```
+
+```csharp
 internal static IEnumerable<TSource> Repeat<TSource>(TSource value, int count) => 
     new Sequence<TSource, int>(
         data: 0, // int index = 0;
@@ -224,7 +228,8 @@ internal static IEnumerable<TSource> Repeat<TSource>(TSource value, int count) =
 ```
 
 Similarly, the sequence created by Repeat can be consumed by foreach loop, which can be desugared to while loop:
-```
+
+```csharp
 internal static void CompiledForEachRepeat<TSource>(TSource value, int count)
 {
     using (IEnumerator<TSource> iterator = Repeat(value, count).GetEnumerator())
@@ -250,7 +255,8 @@ internal static void CompiledForEachRepeat<TSource>(TSource value, int count)
 ```
 
 The following example creates a new sequence from another source sequence, by mapping each value to another result with a selector function, which is the Select query method:
-```
+
+```csharp
 internal static IEnumerable<TResult> Select<TSource, TResult>(
     IEnumerable<TSource> source, Func<TSource, TResult> selector) =>
         new Sequence<TResult, IEnumerator<TSource>>(
@@ -263,7 +269,8 @@ internal static IEnumerable<TResult> Select<TSource, TResult>(
 ```
 
 Again, the sequence created by Select can be consumed by foreach loop, which can be desugared to while loop:
-```
+
+```csharp
 internal static void CompiledForEachSelect<TSource, TResult>(
     IEnumerable<TSource> source, Func<TSource, TResult> selector)
 {
@@ -297,7 +304,8 @@ internal static void CompiledForEachSelect<TSource, TResult>(
 Here iterator’s start function retrieves source sequence’s iterator, and moveNext function use that source iterator to determine whether there is a next value from the source sequence. If yes, getCurrent function calls selector function to map each source value to a result value.
 
 The last example is to create a sequence by filtering another source sequence with a predicate function, which is the Where query method:
-```
+
+```csharp
 internal static IEnumerable<TSource> Where<TSource>(
     IEnumerable<TSource> source, Func<TSource, bool> predicate) =>
         new Sequence<TSource, IEnumerator<TSource>>(
@@ -320,7 +328,8 @@ internal static IEnumerable<TSource> Where<TSource>(
 ```
 
 Once again, the sequence created by Where can be consumed by foreach loop, which can be desugared to while loop:
-```
+
+```csharp
 internal static void CompiledForEachWhere<TSource>(
     IEnumerable<TSource> source, Func<TSource, bool> predicate)
 {
@@ -358,7 +367,8 @@ As demonstrated, following the iterator pattern, it is not that straightforward 
 ## Yield statement and generator
 
 C# 2.0 introduces the yield keyword to simplify the creation of sequence and iterator. The following example create an sequence equivalent to above FromValue method:
-```
+
+```csharp
 internal static IEnumerable<TSource> FromValueGenerator<TSource>(TSource value)
 {
     // Virtual control flow when iterating the returned sequence:
@@ -387,7 +397,8 @@ internal static IEnumerable<TSource> FromValueGenerator<TSource>(TSource value)
 ```
 
 The start, moveNext, getCurrent, end, dispose functions are merged into a natural and intuitive control flow. Similarly, the above Repeat, Select, Where can be implemented with yield following the control flow too:
-```
+
+```csharp
 internal static IEnumerable<TSource> RepeatGenerator<TSource>(TSource value, int count)
 {
     // Virtual control flow when iterating the returned sequence:
@@ -486,7 +497,8 @@ internal static IEnumerable<TSource> WhereGenerator<TSource>(
 ```
 
 So yield statement simplified the implementation of iterator pattern, it enables describing the algorithm that how the values are iterated (yielded), without explicitly creating a sequence or iterator. Actually, above control flow can be further simplified. In FromValueGenerator, the bool state is unnecessary. All needed is to yield a single value to the caller. So FromValueGenerator is equivalent to:
-```
+
+```csharp
 internal static IEnumerable<TSource> FromValueGenerator<TSource>(TSource value)
 {
     yield return value;
@@ -494,7 +506,8 @@ internal static IEnumerable<TSource> FromValueGenerator<TSource>(TSource value)
 ```
 
 In RepeatGenerator, the while loop can be replaced by a for loop to improve the readability a little bit:
-```
+
+```csharp
 internal static IEnumerable<TSource> RepeatGenerator<TSource>(TSource value, int count)
 {
     for (int index = 0; index < count; index++)
@@ -505,7 +518,8 @@ internal static IEnumerable<TSource> RepeatGenerator<TSource>(TSource value, int
 ```
 
 In SelectGenerator and WhereGenerator, the using statement and while loop can be replaced by the foreach syntactic sugar:
-```
+
+```csharp
 internal static IEnumerable<TResult> SelectGenerator<TSource, TResult>(
     IEnumerable<TSource> source, Func<TSource, TResult> selector)
 {
@@ -584,7 +598,8 @@ public class Generator<T, TData> : IGenerator<T>
 ```
 
 The above FromValueGenerator, RepeatGenerator, SelectGenerator, WhereGenerator methods return IEnumerable<T> sequence, their compilation are equivalent to the following methods, where sequence creation is replaced by generator creation:
-```
+
+```csharp
 internal static IEnumerable<TSource> CompiledFromValueGenerator<TSource>(TSource value) =>
     new Generator<TSource, bool>(
         data: false, // bool isValueIterated = false;
@@ -639,7 +654,8 @@ internal static IEnumerable<TSource> CompiledWhereGenerator<TSource>(
 ```
 
 These methods can also return IEnumerator<T> iterator instead:
-```
+
+```csharp
 internal static IEnumerator<TSource> FromValueIterator<TSource>(TSource value)
 {
     yield return value;
@@ -676,7 +692,8 @@ internal static IEnumerator<TSource> WhereIterator<TSource>(
 ```
 
 Now the above methods are compiled to iterator creation, which are equivalent to:
-```
+
+```csharp
 internal static IEnumerator<TSource> CompiledFromValueIterator<TSource>(TSource value)
 {
     bool isValueIterated = false;

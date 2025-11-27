@@ -23,7 +23,8 @@ Understanding C# Covariance And Conreavariance:
 In C# 4.0+, covariance and contravariance are used for generic interfaces. Covariance and contravariance
 
 An interface can be viewed as a set of method signatures, for example:
-```
+
+```csharp
 public interface IOut<TOut> // TOut is only used as output.
 {
     TOut Out1(); // TOut is covariant for Out1 (Func<TOut>).
@@ -46,7 +47,8 @@ public interface IIn<TIn> // TIn is only used as input.
 ## Covariance
 
 For interface IOut<TOut>, TOut is covariant for all members, so TOut can be made covariant at interface level:
-```
+
+```csharp
 public interface IOut<out TOut> // TOut is covariant for all members of interface.
 {
     TOut Out1();
@@ -104,7 +106,8 @@ namespace System.Collections.Generic
 ### Contravariance
 
 For interface IIn<TIn>, TIn is contravariant for all members, so TIn can be made contravariant at interface level:
-```
+
+```csharp
 public interface IIn<in TIn> // TIn is contravariant for all members of interface.
 {
     void In1(TIn @in);
@@ -162,7 +165,8 @@ namespace System
 ## Covariance and contravariance
 
 A generic interface can have both covariant and contravariance type parameters, for example:
-```
+
+```csharp
 public interface IIn_Out<in TIn, out TOut>
 {
     void In(TIn @in);
@@ -171,7 +175,8 @@ public interface IIn_Out<in TIn, out TOut>
 ```
 
 Then:
-```
+
+```csharp
 public static partial class GenericInterfaceWithVariances
 {
     public static void CovarianceAndContravariance()
@@ -188,7 +193,8 @@ public static partial class GenericInterfaceWithVariances
 ## Invariance
 
 In the following generic interface:
-```
+
+```csharp
 public interface IIn_Out<T>
 {
     T Out(); // T is covariant for Out (Func<T>).

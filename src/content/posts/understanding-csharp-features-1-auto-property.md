@@ -3,7 +3,7 @@ title: "Understanding C# Features (1) Auto Property"
 published: 2009-11-26
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""

@@ -3,8 +3,8 @@ title: "Category Theory via C# (6) Functor-like Tuple<>, Task<> And IQueryable<>
 published: 2018-12-07
 description: "Tuple<> looks like the simplest functor by just wrapping a value. It is most close to the [Identity functor of Haskell](http://hackage.haskell.org/package/transformers-0.4.3.0/docs/Data-Functor-Identi"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Tuple<> is like a functor
 
 Tuple<> looks like the simplest functor by just wrapping a value. It is most close to the [Identity functor of Haskell](http://hackage.haskell.org/package/transformers-0.4.3.0/docs/Data-Functor-Identity.html). Its Select functions are:
-```
+
+```csharp
 [Pure]
 public static partial class TupleExtensions
 {
@@ -35,7 +36,8 @@ public static partial class TupleExtensions
 ```
 
 Now Tuple<> can be recognized functor by compiler, so the LINQ syntax applies:
-```
+
+```csharp
 Tuple<int> tupleFunctor = new Tuple<int>(0);
 Tuple<int> query = from x in tupleFunctor select x + 1;
 ```
@@ -43,7 +45,8 @@ Tuple<int> query = from x in tupleFunctor select x + 1;
 ### Tuple< , > is also like a functor
 
 Tuple< , > can also be functor-like:
-```
+
+```csharp
 // [Pure]
 public static partial class TupleExtensions
 {
@@ -60,7 +63,8 @@ public static partial class TupleExtensions
 ```
 
 The Select function just apply selector with the first value, and use the second value remains. In LINQ:
-```
+
+```csharp
 Tuple<int, string> functor = new Tuple<int, string>(0, "text");
 Tuple<bool, string> query = from x in functor select x > 0;
 ```
@@ -72,7 +76,8 @@ Similar Select functions can be implemented for Tuple< , ,>, Tuple< , , ,>, … 
 Unlike previous Lazy, Func<>, Nullable<> functors, there is no laziness for these 2 LINQ queries above. When queries are constructed, selector functions (x + 1 and x > 0) are already applied. Again, a tuple is just a wrapper of value(s). Computing a immediate value is required to construct each query, which is a tuple.
 
 The following unit tests demonstrates tuples fully satisfy functor laws but are lack of laziness.
-```
+
+```csharp
 public partial class FunctorTests
 {
     [TestMethod()]
@@ -127,7 +132,8 @@ Comparing to functors in previous part, Lazy<T> is a lazy version of Tuple<T>.
 ## Task<T> is like a functor too
 
 With the [async/await](/archive/?tag=Async) feature of C# 5.0, Select is easy to implement for Task<T>:
-```
+
+```csharp
 // Impure.
 public static partial class TaskExtensions
 {
@@ -176,7 +182,8 @@ C# language is not designed to be purely functional, neither are .NET framework 
 > Install-Package Mono.Cecil
 
 Then the following function:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<MethodDefinition> GetMethods
@@ -190,7 +197,8 @@ public static partial class ReflectionHelper
 ```
 
 can be used to query the public methods in a library. Take mscorlib.dll as example:
-```
+
+```csharp
 string mscorlib = new Uri(typeof(object).Assembly.GetName().EscapedCodeBase).AbsolutePath;
 int methodsCount = ReflectionHelper.GetMethods(mscorlib, true).Count();
 ```
@@ -198,7 +206,8 @@ int methodsCount = ReflectionHelper.GetMethods(mscorlib, true).Count();
 There are 15627 public methods in mscorlib.dll.
 
 The following function:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<MethodDefinition> GetMethods<TAttribute>
@@ -212,7 +221,8 @@ public static partial class ReflectionHelper
 ```
 
 can be used to query pure methods of a library, that is, how many methods are tagged with \[Pure\] attribute in its contract reference assembly. For mscorlib.all, just query mscorlib.contracts.dll:
-```
+
+```csharp
 const string mscorlibContracts = @"C:\Program Files (x86)\Microsoft\Contracts\Contracts\.NETFramework\v4.5\mscorlib.Contracts.dll";
 int pureMethodsCount = ReflectionHelper.GetMethods<PureAttribute>(mscorlibContracts, true).Count();
 ```
@@ -220,7 +230,8 @@ int pureMethodsCount = ReflectionHelper.GetMethods<PureAttribute>(mscorlibContra
 The result is, in mscorlib.dll, only 1202 (about 8%) public methods are pure (attributed with \[Pure\] in mscorlib.contracts.dll).
 
 Here Mono.Cecil’s AssemblyDefinition.ReadAssembly is used instead of .NET built in Assembly.Load:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<MethodInfo> _GetMethods<TAttribute>
@@ -235,7 +246,8 @@ public static partial class ReflectionHelper
 ```
 
 because when getting types from special assemblies like mscorlib.contracts.dll:
-```
+
+```csharp
 int pureMethodsCount = ReflectionHelper._GetMethods<PureAttribute>(mscorlibContracts, true).Count();
 ```
 
@@ -250,7 +262,8 @@ One last thing to notice: in C#/.NET world, there is no analysis tools to identi
 ## Purity, laziness and LINQ
 
 When working with LINQ to Objects, one great feature is LINQ query has no side effect:
-```
+
+```csharp
 IEnumerable<int> functor = Enumerable.Range(0, 3);
 Func<int, int> selector = x => x + 1;
 IEnumerable<int> query = from x in functor where x > 0 select selector(x);
@@ -262,7 +275,8 @@ Here the query is a cold IEnumerable<T>. selector’s application is guaranteed 
 ### Functor vs. functor-like
 
 At compile time, C# compiler does not have knowledge about laziness. In the case of Tuple<>:
-```
+
+```csharp
 Tuple<int> functor = new Tuple<int>(0);
 Func<int, int> selector = x => x + 1;
 Tuple<int> query = from x in functor select selector(x);
@@ -272,7 +286,8 @@ Tuple<int> query = from x in functor select selector(x);
 Theoretically, Tuple<> is a functor (again, just like the Identity functor in Haskell). However, in these C# posts, because its unexpected behavior (lack of laziness) in LINQ query, it will only be called functor-like.
 
 At compile time, C# compiler does not have knowledge about side effect or purity either. With the help of above (impure) Select extension method, the LINQ syntax still works with Task<T>:
-```
+
+```csharp
 Task<int> functorial = Task.Run(() => 0);
 Func<int, int> selector = x => x + 1;
 Task<int> query = from x in functorial select selector(x);
@@ -282,7 +297,8 @@ Task<int> query = from x in functorial select selector(x);
 This usage looks as “functorial” as any other LINQ to Objects examples. The big difference is, this query can be a hot Task<int>, and the application of selector is unpredictable. When query is created, selector may be not applied, being applied, or already applied.
 
 Also consider the equivalent selecting/mapping of morphisms in DotNet category:
-```
+
+```csharp
 // General abstract functor definition is invalid.
 public static IMorphism<Task<TSource>, Task<TResult>, DotNet> _Select<TSource, TResult>(
     this IMorphism<TSource, TResult, DotNet> selector)
@@ -301,7 +317,8 @@ In these posts, the term “functor”, “functorial”, “functor-like” wil
 ## IQueryable<> is also like a functor
 
 In the LINQ to SQL part, IQueryable<>’s Select extension method is used a lot:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -317,7 +334,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 Or equivalently:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -332,7 +350,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 If looking into the implementation of Select:
-```
+
+```csharp
 [Pure]
 public static partial class QueryableExtensions
 {

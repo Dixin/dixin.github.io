@@ -26,7 +26,8 @@ His father, Mark, was an excellent developer / development lead of Microsoft pro
 -   He is not [atomic](http://www.cnblogs.com/dixin/archive/2009/10/08/csharp-coding-guidelines-4-type.html). He can change during the runtime. I think he is more like the dynamic object in .NET 4.0, supporting late bindings of behaviors.
 
 I suggest his parents to implement this interface for him:
-```
+
+```csharp
 public interface IAffluent
 {
     void GetGiftAround(decimal money);

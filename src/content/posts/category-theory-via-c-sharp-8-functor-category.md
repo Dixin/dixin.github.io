@@ -3,8 +3,8 @@ title: "Category Theory via C# (8) Functor Category"
 published: 2018-12-09
 description: "Given 2 categories C and D, functors C → D forms a , denoted DC:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -26,7 +26,8 @@ Given 2 categories C and D, functors C → D forms a [functor category](http://e
 [![image](https://mscblogs.blob.core.windows.net/media/dixin/Windows-Live-Writer/3e08057eb6f3_80DE/image_thumb.png "image")](https://mscblogs.blob.core.windows.net/media/dixin/Windows-Live-Writer/3e08057eb6f3_80DE/image_2.png)
 
 Here is an example of natural transformations composition:
-```
+
+```csharp
 // [Pure]
 public static partial class NaturalTransformations
 {
@@ -41,7 +42,8 @@ public static partial class NaturalTransformations
 ```
 
 These 2 natural transformation Lazy<> ⇒ Func<> and Func<> ⇒ Nullable<> can compose to a new natural transformation Lazy<> ⇒ Nullable<>:
-```
+
+```csharp
 // Lazy<> => Nullable<>
 public static Nullable<T> ToNullable<T>
     (this Lazy<T> lazy) =>

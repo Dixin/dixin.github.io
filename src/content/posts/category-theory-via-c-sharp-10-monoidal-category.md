@@ -3,8 +3,8 @@ title: "Category Theory via C# (10) Monoidal Category"
 published: 2018-12-11
 description: "A previous part demonstrated endofunctor category is monoidal. Now with the help of bifunctor, the general abstract  can be defined."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -76,7 +76,8 @@ public interface IBinaryFunctor<in TSourceCategory1, in TSourceCategory2, out TT
 So, just like the functor and bifunctor, go with the extension method approach.
 
 For DotNet category, the bifunctor can be Lazy< , >. So:
-```
+
+```csharp
 [Pure]
 public static class DotNetExtensions
 {
@@ -86,7 +87,8 @@ public static class DotNetExtensions
 ```
 
 To be more intuitive, the following “x” extension method can be created for elements in DotNet category:
-```
+
+```csharp
 // [Pure]
 public static partial class LazyExtensions
 {
@@ -96,7 +98,8 @@ public static partial class LazyExtensions
 ```
 
 so that the multiplication binary operation can be applied with any 2 elements in DotNet category, and result another element in DotNet category - the Cartesian product represented by Lazy< , > bifunctor:
-```
+
+```csharp
 var x = 1.x(true);
 var y = "abc".x(2).x(new HttpClient().x((Unit)null));
 var z = y.x(typeof(Unit));
@@ -105,7 +108,8 @@ var z = y.x(typeof(Unit));
 This demonstrates the monoidal structure of DotNet category.
 
 Next, the 3 natural transformations can be implemented as bifunctor’s extension methods too, by borrowing [Microsoft.FSharp.Core.Unit](https://msdn.microsoft.com/en-us/library/ee370443.aspx) from F# as the unit:
-```
+
+```csharp
 // [Pure]
 public static partial class LazyExtensions
 {

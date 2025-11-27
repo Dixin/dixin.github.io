@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (1) IQueryable<T> and Remote Query
 published: 2016-01-16
 description: "The previous chapters discussed LINQ to Objects, LINQ to XML (objects), and Parallel LINQ (to Objects). All of these APIs query in memory objects managed by .NET. This chapter discusses Entity Framewo"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -35,7 +35,7 @@ etc. This tutorial uses Microsoft [SQL Server LocalDB](https://msdn.microsoft.co
 4.  (Optional) [Download SQL Server Data Tools](https://msdn.microsoft.com/en-us/library/mt204009.aspx) and install. It is a free Visual Studio extension, and enables SQL database management inside Visual Studio.
 5.  Download and install Microsoft SQL Server sample databases AdventureWorks. The [full database from Microsoft](http://msftdbprodsamples.codeplex.com/) will be about 205MB, so a compacted and shrunk version of the AdventureWorks database is provided for this tutorial. It is only 34MB, and is available from [GitHub](https://github.com/Dixin/CodeSnippets/tree/master/Data). Just download the [AdventureWorks\_Data.mdf](https://github.com/Dixin/CodeSnippets/blob/master/Data/AdventureWorks_Data.mdf) file and the [AdventureWorks\_Log.ldf](https://github.com/Dixin/CodeSnippets/blob/master/Data/AdventureWorks_Log.ldf) file to the same directory.
 6.  Install Entity Framework library to code project:
-    ```
+    ```powershell
     Install-Package EntityFramework
     ```
     By default, 2 assemblies will be added to the references: EntityFramework.dll and EntityFramework.SqlServer.dll. Entity Framework implements a provider model to support different kinds of databases, so EntityFramework.dll has the general functionalities for all the databases, and EntityFramewwork.SqlServer.dll implements SQL database specific functionalities.
@@ -193,7 +193,8 @@ public class InfixVisitor : BinaryArithmeticExpressionVisitor<string>
 ```
 
 Please see the expression tree part in the C# chapter for the definition of BinaryArithmeticExpressionVisitor<T>. Above InfixVisitor can traverse an arithmetic expression tree, and output infix expression string, which can work in SQL:
-```
+
+```csharp
 internal static partial class ExpressionTree
 {
     internal static void Translate()
@@ -292,7 +293,8 @@ public static partial class BinaryArithmeticTranslator
 ```
 
 When a connection string is not provided to Sql method, it takes a default connection string of SQL Server LocalDB:
-```
+
+```csharp
 internal static partial class ConnectionStrings
 {
     internal const string LocalDb = @"Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30";
@@ -300,7 +302,8 @@ internal static partial class ConnectionStrings
 ```
 
 This is how to use Sql method:
-```
+
+```csharp
 internal static void Execute()
 {
     Expression<Func<double, double, double>> expression1 = (a, b) => a * a + b * b;

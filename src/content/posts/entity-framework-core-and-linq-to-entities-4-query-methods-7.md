@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (4) Query Methods (Operators)
 published: 2019-03-15
 description: "This part discusses how to query SQL database with the defined mapping entities. In EF/Core, LINQ to Entities supports most of the methods provided by Queryable:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -545,7 +545,8 @@ EF Core translates the above query to CROOS JOIN with WHERE clause, which is equ
 > EF still translates above query to INNER JOIN.
 
 The following example implement the same inner join directly with SelectMany. Its SQL translation is the same INNER JOIN as the first Join example:
-```
+
+```csharp
 internal static void InnerJoinWithSelectMany(AdventureWorks adventureWorks)
 {
     IQueryable<ProductCategory> outer = adventureWorks.ProductCategories;
@@ -574,7 +575,8 @@ internal static void InnerJoinWithSelectMany(AdventureWorks adventureWorks)
 ```
 
 The above Select and SelectMany has a Where subquery to filter the related entities to join with. The Where subquery can be substituted by collection navigation property. After the substitution, the queries are translated to the same INNER JOIN as the first Join example:
-```
+
+```csharp
 internal static void InnerJoinWithSelectAndRelationship(AdventureWorks adventureWorks)
 {
     IQueryable<ProductCategory> outer = adventureWorks.ProductCategories;
@@ -610,7 +612,8 @@ internal static void InnerJoinWithSelectManyAndRelationship(AdventureWorks adven
 ```
 
 GroupJoin also returns hierarchical result, so again an additional SelectMany can flatten the result. The following example still has the same INNER JOIN translation as the first Join example:
-```
+
+```csharp
 internal static void InnerJoinWithGroupJoinAndSelectMany(AdventureWorks adventureWorks)
 {
     IQueryable<ProductCategory> outer = adventureWorks.ProductCategories;
@@ -694,7 +697,8 @@ internal static void LeftOuterJoinWithGroupJoin(AdventureWorks adventureWorks)
 ```
 
 GroupJoin returns hierarchical results. So here the translated SQL also sorts the result by the key, so that EF/Core can read the query results group by group. To have flattened results from GroupJoin, SelectMany can be called. As discussed in the LINQ to Objects chapter, an DefaultIfEmpty subquery is required (It becomes inner join if DefaultIfEmpty is missing). The following example has the same SQL translation as above, it just yields result by result instead of group by group.
-```
+
+```csharp
 internal static void LeftOuterJoinWithGroupJoinAndSelectMany(AdventureWorks adventureWorks)
 {
     IQueryable<ProductCategory> outer = adventureWorks.ProductCategories;
@@ -1240,7 +1244,7 @@ In SQL, OFFSET is considered to be a part of the ORDER BY clause, so here EF Cor
 
 > EF does not automatically generate ORDER BY clause, and the above query throws NotSupportedException: The method 'Skip' is only supported for sorted input in LINQ to Entities. The method 'OrderBy' must be called before the method 'Skip'. The following is the equivalent query works in both EF Core and EF:
 > 
-> ```
+> ```csharp
 > internal static void OrderByAndSkip(AdventureWorks adventureWorks)
 > {
 >     IQueryable<Product> source = adventureWorks.Products;

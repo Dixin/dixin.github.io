@@ -21,7 +21,8 @@ Understanding C# Covariance And Conreavariance:
 -   [Understanding C# Covariance And Contravariance (8) Struct And Void](/posts/understanding-csharp-covariance-and-contravariance-8-struct-and-void)
 
 [Higher-order functions](http://en.wikipedia.org/wiki/Higher-order_function) are functions which either take one or more functions as input, or output a function. The other functions are called first-order functions.
-```
+
+```csharp
 public static partial class HigherOrder
 {
     public static void FirstOrderAndHigherOrder()
@@ -36,7 +37,8 @@ public static partial class HigherOrder
 ```
 
 So far, all the covariance/contravariance demonstrations are using first-order functions. For example:
-```
+
+```csharp
 public static partial class HigherOrder
 {
     // System.Action<T>.
@@ -56,7 +58,8 @@ public static partial class HigherOrder
 ```
 
 Most LINQ query methods are higher-order functions. In the fore mentioned example:
-```
+
+```csharp
 public static partial class LinqToObjects
 {
     public static IEnumerable<int> Positive(IEnumerable<int> source)
@@ -71,14 +74,16 @@ the lambda expression is a anonymous first-order function, and Where is a higher
 ## Variance of input
 
 The following delegate type:
-```
+
+```csharp
 public delegate void ActionIn<T>(Action<T> action);
 ```
 
 can represent a higher-order function type, which take a function as parameter.
 
 Regarding T for Action<T> is contravariant, is T still contravariant for ActionIn<T>? The answer is no. The following code cannot be compiled:
-```
+
+```csharp
 public static partial class HigherOrder
 {
 #if Uncompilable
@@ -131,7 +136,8 @@ To examine the variance for higher-order functions:
     5.  \=> …
 
 In above code, ActionIn<T> is equivalent to Action<Action<T>>. So, T is covariant for Action<Action<T>>/ActionIn<T>, not contravariant. The fix is to use out keyword to decorate T, and swap the binding:
-```
+
+```csharp
 public static partial class HigherOrder
 {
     // Action<Action<T>>
@@ -155,7 +161,8 @@ public static partial class HigherOrder
 ```
 
 The other case, type parameter as output, is straightforward, because the type parameter is always covariant for any first-order/higher-order function:
-```
+
+```csharp
 public static partial class HigherOrder
 {
     public delegate Func<TOut> FuncOut<out TOut>();
@@ -203,7 +210,8 @@ For higher-order functions:
     3.  \=> Action<Action<Derived>> “is a” Action<Action<Base>> (covariance)
     4.  \=> Action<Action<Action<Base>>> “is a” Action<Action<Action<Derived>>> (contravariance)
     5.  \=> …
-```
+
+```csharp
 public static class OutputCovarianceForHigherOrder
 {
     public delegate T Func<out T>(); // Covariant T as output.

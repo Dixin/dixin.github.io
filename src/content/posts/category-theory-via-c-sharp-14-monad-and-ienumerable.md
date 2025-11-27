@@ -3,8 +3,8 @@ title: "Category Theory via C# (14) Monad And IEnumerable<>"
 published: 2018-12-15
 description: "A previous part showed endofunctor category is a monoid (the entire category itself). An endofunctor In the endofunctor category can be monoid too. This kind of endofunctor is called monad. Formally,"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -96,7 +96,8 @@ As usual, Flatten and Monad will be implemented as extension methods.
 ## IEnumerable<> monad and SelectMany
 
 IEnumerable<> is the built-in monad, which is similar to the [Haskell List monad](https://hackage.haskell.org/package/base-4.8.0.0/docs/src/GHC-Base.html#line-726). Its Flatten (μ) extension method easy to implement with the yield syntactic sugar:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -121,7 +122,8 @@ public static partial class EnumerableExtensions
 And its Monad (η) extension method is called Enumerable instead of Monad, because Enumerable is more specific than the general abstract name Monad. The enumerable function here is exactly the same Enumerable for monoidal functor IEnumerable<>.
 
 In C#/LINQ, monad is implemented as another extension method called SelectMany. As a functor, IEnumerable<> already has a Select extension method, now with Flatten and Select, SelectMany is easy to implement:
-```
+
+```csharp
 public static IEnumerable<TResult> SelectMany<TSource, TSelector, TResult>
     (this IEnumerable<TSource> source, 
         Func<TSource, IEnumerable<TSelector>> selector, 
@@ -135,7 +137,8 @@ public static IEnumerable<TResult> SelectMany<TSource, TSelector, TResult>
 ```
 
 Actually, (SelectMany + Enumerable) is equivalent to (Flatten + Enumerable), either pair makes IEnumerable<> a monad. That is, (SelectMany + Enumerable) and (Flatten + Enumerable) can replace each other. So above Flatten can be implemented by SelectMany too:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -163,14 +166,16 @@ public static partial class EnumerableExtensions
 This shows SelectMany is more powerful than Flatten, because Flatten is just a special case of SelectMany - SelectMany(Functions.Id). The future monad posts will focus on SelectMany extension methods of the monads. In other languages, e.g. in Haskell, SelectMany is called Bind.
 
 .NET also provide a SelectMany overload without the last parameter resultSelector, which is so easy to implement:
-```
+
+```csharp
 public static IEnumerable<TResult> SelectMany<TSource, TResult>
     (this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector) => 
         source.SelectMany(selector, (sourceValue, selectorValue) => selectorValue);
 ```
 
 The last lambda expression, (sourveValue, resultValue) => resultValue, is similar to [Church Boolean](/posts/lambda-calculus-via-c-sharp-4-encoding-church-booleans)’s [generic version of False function](/posts/lambda-calculus-via-c-sharp-13-encoding-church-pairs-2-tuples-and-generic-church-booleans):
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     // False = @true => @false => @false
@@ -180,7 +185,8 @@ public static partial class ChurchBoolean
 ```
 
 So, if defining a uncurried version of above function:
-```
+
+```csharp
 // [Pure]
 public static partial class Functions
 {
@@ -190,7 +196,8 @@ public static partial class Functions
 ```
 
 then above SelectMany implementation can be even shorter:
-```
+
+```csharp
 public static IEnumerable<TResult> SelectMany2<TSource, TResult>
     (this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector) => 
         source.SelectMany(selector, Functions.False);
@@ -199,7 +206,8 @@ public static IEnumerable<TResult> SelectMany2<TSource, TResult>
 ### IEnumerable<> monad (SelectMany) is monoid
 
 As above shown:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -220,7 +228,8 @@ public static partial class EnumerableExtensions
 ```
 
 And it satisfies the monoid laws:
-```
+
+```csharp
 [TestClass()]
 public partial class MonadTests
 {
@@ -281,7 +290,8 @@ public class Enumerable<T> : IEnumerable<T>
 ### IEnumerable<> monad (SelectMany) is monoidal functor
 
 As a monad, IEnumerable can always implement (Binary + Unit) with (SelectMany + Enumerable):
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -303,7 +313,8 @@ This ensures IEnumerable<> monad (SelectMany + Enumerable) is a monoidal functor
 ### IEnumerable<> monad (SelectMany) is functor
 
 As a monad, IEnumerable can always implement Select too, (SelectMany + Enumerable):
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -330,7 +341,8 @@ then:
 -   F<> is a C#/LINQ monad, and its SelectMany method can be recognized by C# compiler, so the LINQ syntax can be used:
 
 For example, with the built in System.Linq.Enumerable.SelectMany implementation, these “"compound “from” LINQ queries:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -349,7 +361,8 @@ public static partial class EnumerableExtensions
 ```
 
 can be compiled to SelectMany applications:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -373,7 +386,8 @@ For any .NET generic type F<> with such a SelectMany instance/extension method, 
 then F<> is a general abstract monad of category theory too.
 
 Here an IEnumerable<T> can be constructed from 0 or more T values in many ways. And in NET, IEnumerable<T>’s built in SelectMany implementation is pure (yes, it is the same as the SelectMany2 function above):
-```
+
+```csharp
 public static class Enumerable
 {
     [Pure]
@@ -420,7 +434,8 @@ Now in C#, after introducing Monad (Here Enumerable) as η, SelectMany as a more
 where M is a monad (here a IEnumerable<>), Monad is the “constructor” function (here Enumerable).
 
 The following unit tests demonstrates how IEnumerable<> satisfies these laws:
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]

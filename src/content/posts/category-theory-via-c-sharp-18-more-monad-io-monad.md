@@ -3,8 +3,8 @@ title: "Category Theory via C# (18) More Monad: IO<> Monad"
 published: 2018-12-19
 description: "As mentioned in a previous part, in purely functional programming, functions cannot have side effects. For example, when defining LINQ queries, laziness and purity are expected. So, how should the imp"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -26,7 +26,8 @@ etc. The [IO<> monad](http://en.wikipedia.org/wiki/Monad_\(functional_programmin
 ## IO<T> and impurity
 
 The definition of IO<> is simple:
-```
+
+```csharp
 public delegate T IO<out T>();
 ```
 
@@ -53,7 +54,8 @@ So above examples can be represented with IO<T>
     -   Now semantically it should be a Func<string, string, IO<Unit>>
 
 etc. The following extension methods convert Func<T> to IO<T>, etc.:
-```
+
+```csharp
 [Pure]
 public static partial class IOExtensions
 {
@@ -124,7 +126,8 @@ public static partial class IOExtensions
 ```
 
 so that:
-```
+
+```csharp
 IO<string> consoleReadLine = new Func<string>(Console.ReadLine).AsIO();
 Func<string, IO<Unit>> consoleWriteLine = new Action<string>(Console.WriteLine).AsIO();
 
@@ -136,7 +139,8 @@ Func<string, IO<bool>> fileExists = new Func<string, bool>(File.Exists).AsIO();
 ```
 
 A lot of type information as usual. Some other functions can be created to make the code shorter:
-```
+
+```csharp
 [Pure]
 public static partial class IO
 {
@@ -177,7 +181,8 @@ public static partial class IO
 ```
 
 so that:
-```
+
+```csharp
 IO<string> consoleReadLine = IO.Func(Console.ReadLine);
 Func<string, IO<Unit>> consoleWriteLine = IO.Action<string>(Console.WriteLine);
 
@@ -193,7 +198,8 @@ Some type parameters are still needed for IO.Action/IO.Func to locate the specif
 ## IO<> monad
 
 Again, for C# compiler, IO<> is exactly the same as Func<>, so IO<> must be a monad. The following SelectMany is copied from previous part of Func<> monad:
-```
+
+```csharp
 // [Pure]
 public static partial class IOExtensions
 {
@@ -216,7 +222,8 @@ public static partial class IOExtensions
 ```
 
 The implementation for μ, φ, and ι are skipped since they are all the same as Func<>. Here is only Select implementation:
-```
+
+```csharp
 // [Pure]
 public static partial class IOExtensions
 {
@@ -277,7 +284,8 @@ Both examples demonstrated the purity and laziness of IO<> monad. When defining 
 ## Monad laws, and unit tests
 
 The following unit test demonstrates how IO<> monad satisfies the monad laws:
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]

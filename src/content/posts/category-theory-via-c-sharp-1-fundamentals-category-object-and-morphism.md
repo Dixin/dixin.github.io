@@ -3,8 +3,8 @@ title: "Category Theory via C# (1) Fundamentals - Category, Object And Morphism"
 published: 2018-12-01
 description: "This post and the following posts will introduce category theory and its important concepts via C# and LINQ, including functor, applicative functor, monoid, monad, etc. Categories were first introduce"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---

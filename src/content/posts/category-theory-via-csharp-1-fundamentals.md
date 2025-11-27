@@ -3,8 +3,8 @@ title: "Category Theory via C# (1) Fundamentals"
 published: 2024-12-01
 description: "Category theory is a theoretical framework to describe abstract structures and relations in mathematics, first introduced by  and [Saun"
 image: ""
-tags: ["C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "Categories", "LINQ via C#"]
-category: "C#"
+tags: [".NET", "C#", "Categories", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -29,7 +29,8 @@ And these entities must satisfy the following 2 category laws:
 -   Identity law: for each object X, there is an [identity](http://en.wikipedia.org/wiki/Identity_function) morphism: idx : X → X, and identity morphism is neutral for morphism composition. For m: X → Y, there is idY ∘ m ≡ m ≡ m ∘ idX. [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Category-Theory-via-C-1-Fundamentals_6A3A/image_thumb_3.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Category-Theory-via-C-1-Fundamentals_6A3A/image_9.png)
 
 To make above abstract definitions intuitive, a category can be represented by the following interface:
-```
+
+```csharp
 public interface ICategory<TObject, TMorphism>
 {
     static abstract IEnumerable<TObject> Objects { get; }
@@ -79,7 +80,8 @@ public class Int32Category : ICategory<int, BinaryExpression>
 -   ∘: in DotNet category, the composition operation of morphisms is the composition of functions.
 
 As already discussed in lambda calculus chapter, function composition is associative, and the unit function Id is the identity morphism:
-```
+
+```csharp
 public static partial class Functions
 {
     public static Func<TSource, TResult> o<TSource, TMiddle, TResult>(
@@ -95,7 +97,8 @@ So that the category laws are satisfied.
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Category-Theory-via-C-1-Fundamentals_6A3A/image_thumb_4.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Category-Theory-via-C-1-Fundamentals_6A3A/image_11.png)
 
 The DotNet category can be represented as:
-```
+
+```csharp
 public partial class DotNetCategory : ICategory<Type, Delegate>
 {
     public static IEnumerable<Type> Objects => AppDomain.CurrentDomain.GetAssemblies()

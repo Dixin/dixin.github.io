@@ -3,8 +3,8 @@ title: "Parallel LINQ in Depth (3) Query Methods (Operators)"
 published: 2018-09-29
 description: "Parallel LINQ provides additional query methods and additional overrides for Aggregate method:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -38,12 +38,14 @@ The methods marked with \* are already discussed in previous parts. This part co
 ### Cancellation
 
 Parallel LINQ query execution can be cancelled by specifying a System.Threading.CancellationToken instance for the query:
-```
+
+```csharp
 public static ParallelQuery<TSource> WithCancellation<TSource>(this ParallelQuery<TSource> source, CancellationToken cancellationToken);
 ```
 
 CancellationToken can be created with System.Threading.CancellationTokenSource:
-```
+
+```csharp
 internal static void Cancel()
 {
     using (CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(
@@ -71,12 +73,14 @@ After 1 second delay, If the query is still executing, is signaled to cancel, an
 ### Degree of parallelism
 
 WithDegreeOfParallelism specifies the maximum number of concurrent executing tasks:
-```
+
+```csharp
 public static ParallelQuery<TSource> WithDegreeOfParallelism<TSource>(this ParallelQuery<TSource> source, int degreeOfParallelism);
 ```
 
 For example:
-```
+
+```csharp
 internal static void DegreeOfParallelism()
 {
     int maxConcurrency = Environment.ProcessorCount * 10;
@@ -110,12 +114,14 @@ namespace System.Linq.Parallel
 ### Execution mode
 
 WithExecutionMode specifies allowing the query to execute sequentially or not:
-```
+
+```csharp
 public static ParallelQuery<TSource> WithExecutionMode<TSource>(this ParallelQuery<TSource> source, ParallelExecutionMode executionMode);
 ```
 
 ParallelExecutionMode is an enumeration type with 2 members. Default means Parallel LINQ can possibly [decide to execute the query sequentially](http://blogs.msdn.com/b/pfxteam/archive/2009/10/31/9915569.aspx); And ForceParallelism: the query is execute in parallel. For example:
-```
+
+```csharp
 public static void ExecutionMode()
 {
     int count = Environment.ProcessorCount * 10_000;
@@ -150,12 +156,14 @@ When Parallel LINQ execute ToArray query in the default mode, it is the same seq
 ### Merge the values
 
 Parallel LINQ can partition the source values and process the partitions in parallel. After the processing, the result values may need to be merged, e.g., when the result values are consumed by a single thread foreach loop/ForEach method. WithMergeOptions suggests Parallel LINQ how to merge the data:
-```
+
+```csharp
 public static ParallelQuery<TSource> WithMergeOptions<TSource>(this ParallelQuery<TSource> source, ParallelMergeOptions mergeOptions);
 ```
 
 ParallelMergeOptions is an enumeration with 4 members. NotBuffered means when each result value is available, it is yielded to consumer immediately without being buffered., which is similar to lazy evaluation in LINQ to Objects; FullyBuffered means all result values are stored in the full size buffer, then, they are yielded to the consumer, which is similar to eager evaluation in LINQ to Objects; AutoBuffered is between NotBuffered and FullyBuffered, means the buffer size is determined by Parallel LINQ, result values are stored in the auto sized buffer, and when the buffer is full, the result values are yielded to consumer; And Default is the same as AutoBuffered. The following code demonstrates the difference of these options:
-```
+
+```csharp
 internal static void MergeForSelect()
 {
     int count = 10;
@@ -185,7 +193,8 @@ internal static void MergeForSelect()
 For above Select query execution, if NotBuffered is specified, the first result value is yielded faster; if FullyBuffered is specified, the last result value is yielded faster; if AutoBuffered is specified, the behavior is between NotBuffered and FullyBuffered. Also, since FullyBuffered buffers all result values, it can persist their order, while NotBuffered and AutoBuffered cannot.
 
 WithMergeOptions just provides a suggestion to Parallel LINQ, so Parallel LINQ can still make its own decision. For example, OrderBy has to evaluate all source values, fully buffer them, then sort them:
-```
+
+```csharp
 internal static void MergeForOrderBy()
 {
     int count = Environment.ProcessorCount * 2;
@@ -219,7 +228,8 @@ So OrderBy ignores the suggested ParallelMergeOptions and always fully buffer th
 ## Ordering
 
 In Parallel LINQ, it is more complex to control the order of values than in sequential LINQ to Objects. Apparently, the order of values may not be persisted when they are not sequentially processed. Take the indexed Select as example:
-```
+
+```csharp
 internal static void SelectWithIndex() => 
     new StaticPartitioner<int>(Enumerable.Range(0, Environment.ProcessorCount * 2))
         .AsParallel()
@@ -232,12 +242,14 @@ As demonstrated above, WithMergeOptions can impact the order of query results, w
 ### Control the order
 
 AsOrdered method can be called to specify the order of values should be preserved for its following query method calls:
-```
+
+```csharp
 public static ParallelQuery<TSource> AsOrdered<TSource>(this ParallelQuery<TSource> source);
 ```
 
 AsOrdered can only be called on the ParallelQuery<T> instance returned by ParallelEnumerable.AsParallel, ParallelEnumerable.Range, and ParallelEnumerable.Repeat. It throws InvalidOperationException for ParallelQuery<T> instance returned by any other methods.
-```
+
+```csharp
 internal static void AsOrdered()
 {
     Enumerable
@@ -256,12 +268,14 @@ internal static void AsOrdered()
 ```
 
 Preserving the order means additional work. So AsUnordered method is provided to ignore the order of values for its following query method calls:
-```
+
+```csharp
 public static ParallelQuery<TSource> AsUnordered<TSource>(this ParallelQuery<TSource> source);
 ```
 
 It can improve the query performance. Take GroupBy as example, it can execute faster if the source values are explicitly specified to be unordered:
-```
+
+```csharp
 internal static void AsUnordered()
 {
     Random random = new Random();
@@ -290,7 +304,8 @@ internal static void AsUnordered()
 ```
 
 And the order introduced by OrderBy/OrderByDescending/ThenBy/ThenByDescending/Reverse is preserved in their following query method calls:
-```
+
+```csharp
 internal static void OrderBy()
 {
     Enumerable
@@ -326,7 +341,8 @@ In Parallel LINQ, many methods are order sensitive. If the source values are uno
 -   Take: takes arbitrary values
 -   TakeWhile: takes arbitrary values with the predicate
 -   Zip: zips unordered values
-```
+
+```csharp
 internal static void Correctness()
 {
     int count = Environment.ProcessorCount * 4;
@@ -439,7 +455,8 @@ public class OrderableDynamicPartitioner<TSource> : OrderablePartitioner<TSource
 ```
 
 Orderable partitioner can be used with AsOrdered:
-```
+
+```csharp
 internal static partial class Partitioning
 {
     internal static void PartitionerAsOrdered()
@@ -473,7 +490,8 @@ Parallel LINQ’s Aggregate methods are more sensitive than LINQ to Object.
 ### Commutativity, associativity and correctness
 
 In Parallel LINQ, Aggregate methods require the provided accumulator functions to be both commutative and associative. Assume func is a function that accepts 2 parameters and returns a result, if func(a, b) ≡ func(b, a), then func is commutative; if func(func(a, b), c) ≡ func(a, func(b, c)), then func is associative. For example:
-```
+
+```csharp
 internal static void CommutativeAssociative()
 {
     Func<int, int, int> func1 = (a, b) => a + b;
@@ -495,7 +513,8 @@ internal static void CommutativeAssociative()
 ```
 
 To demonstrate how parallel aggregation is impacted by commutativity and associativity, it can be compared with sequential aggregation:
-```
+
+```csharp
 internal static void AggregateCorrectness()
 {
     int count = Environment.ProcessorCount * 2;
@@ -512,7 +531,8 @@ internal static void AggregateCorrectness()
 ```
 
 Apparently, parallelSubtract has incorrect result value, because the function provided to Aggregate is neither commutative nor associative. The following code visualizes the aggregation:
-```
+
+```csharp
 internal static void VisualizeAggregate()
 {
     int count = Environment.ProcessorCount * 2;
@@ -555,7 +575,8 @@ It follows the pattern of parallel query methods. It first partitions the data. 
 ### Partition and merge
 
 Parallel LINQ provides 2 additional Aggregate overloads, where the seed for each partition be specified with either a value or a value factory function:
-```
+
+```csharp
 public static TResult Aggregate<TSource, TAccumulate, TResult>(
     this ParallelQuery<TSource> source, 
     TAccumulate seed, 
@@ -572,7 +593,8 @@ public static TResult Aggregate<TSource, TAccumulate, TResult>(
 ```
 
 They also both accept 2 accumulator functions. First, updateAccumulatorFunc can be read as “source value accumulator”, it accumulates the values within each partition to a partition result. So if there are N partitions, there are N partition results. Then, combineAccumulatorsFunc can be read as “partition result accumulator”, it accumulates all partitions’ results to a single final result. The following example calculates the sum of squares:
-```
+
+```csharp
 internal static void MergeForAggregate()
 {
     int count = Environment.ProcessorCount * 2;

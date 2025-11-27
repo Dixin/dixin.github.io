@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (5) Query Translation"
 published: 2016-02-20
 description: "The previous part discussed what SQL queries are the LINQ to Entities queries translated to. This part discusses how the LINQ to Entities queries are translated to SQL queries. As fore mentioned, IQue"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -152,7 +152,8 @@ internal static partial class Translation
 Once again, a static DbContext is reused in all queries here, to make code shorter. In reality, a DbContext object should always be constructed and disposed for each [unit of work](http://martinfowler.com/eaaCatalog/unitOfWork.html).
 
 The above example queries products with Name starting with “M”, and returns the products’ Names. By deguaring the lambda expressions, and unwrapping the query methods, the above LINQ to Entities query is equivalent to:
-```
+
+```csharp
 internal static void WhereAndSelectExpressions()
 {
     IQueryable<Product> sourceQueryable = AdventureWorks.Products;
@@ -261,7 +262,8 @@ Here are the steps how the fluent query builds expression tree:
 -   A query provider, which is yet another DbQueryProvider object
 
 So, the last IQueryable<T> variable selectQueryable’s Expression property (referencing to selectCallExpression), is the final abstract syntactic tree, which represents the entire LINQ to Entities query logic:
-```
+
+```csharp
 MethodCallExpression (NodeType = Call, Type = IQueryable<string>)
 |_Method = Queryable.Select<Product, string>
 |_Object = null
@@ -311,13 +313,15 @@ MethodCallExpression (NodeType = Call, Type = IQueryable<string>)
 ```
 
 This also demonstrates that lambda expression, extension methods, and LINQ query are powerful features. Such a rich abstract syntactic tree can be built by C# code as simple as:
-```
+
+```csharp
 IQueryable<string> products = AdventureWorks.Products
     .Where(product => product.Name.StartsWith("M")).Select(product => product.Name);
 ```
 
 The other kind of query returning a single value, works in the same way. Take above First as example:
-```
+
+```csharp
 internal static void SelectAndFirst()
 {
     // string first = AdventureWorks.Products.Select(product => product.Name).First();
@@ -329,7 +333,8 @@ internal static void SelectAndFirst()
 ```
 
 Here the sourceQueryable and and Select query is the same as the previous example. So this time, just unwrap the First method. The above First query is equivalent to:
-```
+
+```csharp
 internal static void SelectAndFirstExpressions()
 {
     IQueryable<Product> sourceQueryable = AdventureWorks.Products;
@@ -357,7 +362,8 @@ internal static void SelectAndFirstExpressions()
 ```
 
 In First query, the MethodCallExpression expression is built in the same way. The difference is, IQueryableProvider.Execute is called instead of CreateQuery, so that a single value is returned. In Entity Framework, DbQueryProvider.CreateQuery and DbQueryProvider.Execute both internally call ObjectQueryProvider.CreateQuery to get a IQueryable<T>. So above Execute call is equivalent to:
-```
+
+```csharp
 internal static void SelectAndFirstQuery()
 {
     IQueryable<Product> sourceQueryable = AdventureWorks.Products;
@@ -403,7 +409,8 @@ Inside First:
 -   finally Enumerable.First is called with firstQueryable, and pulls a single value from firstQueryable.
 
 Similarly, the last IQueryable<T> variable firstQueryable’s Expression property (referencing to firstCallExpression), is the final abstract syntactic tree, which represents the entire LINQ to Entities query logic:
-```
+
+```csharp
 MethodCallExpression (NodeType = Call, Type = string)
 |_Method = Queryable.First<string>
 |_Object = null
@@ -435,7 +442,8 @@ MethodCallExpression (NodeType = Call, Type = string)
 ```
 
 And again, the entire abstract syntactic tree can be built by C# code as simple as:
-```
+
+```csharp
 string first = AdventureWorks.Products.Select(product => product.Name).First();
 ```
 
@@ -594,7 +602,8 @@ namespace System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder
 ### Convert Expression to DbExpression
 
 Entity Framework calls ExpressionConverter and PlanCompiler to convert expression tree to database command tree:
-```
+
+```csharp
 public static partial class DbContextExtensions
 {
     public static DbQueryCommandTree Convert(this IObjectContextAdapter context, Expression expression)
@@ -647,7 +656,8 @@ public static partial class DbContextExtensions
 ```
 
 ExpressionConverter translates expression tree and outputs the command tree. PlanCompiler processes the command tree for object-relational mapping, like replacing the scan of AdventureWorks.Product to the scan of \[Production\].\[Product\] table, etc. So above Where and Select query’s expression tree can be converted as:
-```
+
+```csharp
 internal static void WhereAndSelectExpressionsToDbExpressions()
 {
     Expression expression = AdventureWorks.Products
@@ -658,7 +668,8 @@ internal static void WhereAndSelectExpressionsToDbExpressions()
 ```
 
 The converted command tree is equivalent to the command tree built below:
-```
+
+```csharp
 internal static DbQueryCommandTree WhereAndSelectDbExpressions()
 {
     MetadataWorkspace metadata = (AdventureWorks as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
@@ -695,7 +706,8 @@ internal static DbQueryCommandTree WhereAndSelectDbExpressions()
 ```
 
 This abstract syntactic tree can be visualized as:
-```
+
+```csharp
 DbQueryCommandTree
 |_Parameters
 |_Query
@@ -733,7 +745,8 @@ DbQueryCommandTree
 ```
 
 Similarly, the other Select and First query’s expression tree is converted to the equivalent command tree built-below:
-```
+
+```csharp
 internal static DbQueryCommandTree SelectAndFirstDbExpressions()
 {
     MetadataWorkspace metadata = (AdventureWorks as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
@@ -766,7 +779,8 @@ internal static DbQueryCommandTree SelectAndFirstDbExpressions()
 ```
 
 And this abstract syntactic tree can be visualized as:
-```
+
+```csharp
 DbQueryCommandTree
 |_Parameters
 |_Query
@@ -905,7 +919,8 @@ The above Where query’s predicate has a string.StartsWith logic. Entity Framew
 -   Primitive and enum type: instance CompareTo method with more than 0 parameters and returning int
 
 For example, when a LINQ to Entities query has the string.IsNullOrEmpty logic:
-```
+
+```csharp
 internal static DbQueryCommandTree StringIsNullOrEmptyDbExpressions()
 {
     IQueryable<string> products = AdventureWorks.Products
@@ -916,7 +931,8 @@ internal static DbQueryCommandTree StringIsNullOrEmptyDbExpressions()
 ```
 
 The predicate’s body is a simple MethodCallExpression expression:
-```
+
+```csharp
 MethodCallExpression (NodeType = Call, Type = bool)
 |_Method = string.IsNullOrEmpty
 |_Object = null
@@ -926,7 +942,8 @@ MethodCallExpression (NodeType = Call, Type = bool)
 ```
 
 Its translation is dispatched to IsNullOrEmptyTranslator, and it is translate to a DbComparisonExpression, representing a logic that calling database’s Edm.Length function with string variable, and comparing if the result equals to 0:
-```
+
+```csharp
 DbComparisonExpression (ExpressionKind = Equals, ResultType = Edm.Boolean)
 |_Left
 | |_DbFunctionExpression (ExpressionKind = Function, ResultType = Edm.Int32)
@@ -958,7 +975,8 @@ internal static void MethodPredicate()
 ```
 
 This time string.IsNullOrEmpty is wrapped in a FilterName method. As a result, Entity Framework cannot understand how to convert FilterName call, and throws NotSupportedException. If an API cannot be translated to remote database query it can be called locally with LINQ to Objects:
-```
+
+```csharp
 internal static void LocalMethodCall()
 {
     IQueryable<Product> source = AdventureWorks.Products;
@@ -978,7 +996,8 @@ Some .NET APIs have database translations, but not all database APIs has .NET bu
 -   In EntityFramework.SqlServer.dll, System.Data.Entity.SqlServer.SqlFunctions class provides mapping methods from SQL database functions, like SqlFunctions.Checksum method for CHECKSUM function, SqlFunctions.CurrentUser for CURRENT\_USER function, etc.
 
 The following LINQ to Entities query calculates the number of days between current date/time and photo’s last modified date/time. It includes a MethodCallExpression representing a DbFunctions.DiffDays method call:
-```
+
+```csharp
 internal static DbQueryCommandTree DbFunctionDbExpressions()
 {
     var photos = AdventureWorks.ProductPhotos.Select(photo => new
@@ -993,7 +1012,8 @@ internal static DbQueryCommandTree DbFunctionDbExpressions()
 This MethodCallExpression node of DbFunctions.DiffDays is translated to a DbFunctionExpression node of canonical function Edm.DiffDays.
 
 The following LINQ to Entities query filters the product’s Names with a pattern:
-```
+
+```csharp
 internal static DbQueryCommandTree SqlFunctionDbExpressions()
 {
     IQueryable<string> products = AdventureWorks.Products
@@ -1054,7 +1074,8 @@ Just like above ExpressionConverter class, SqlGenerator is also a huge class. It
 ### Database command tree to SQL
 
 The following method can take database command tree and generate SQL:
-```
+
+```csharp
 public static partial class DbContextExtensions
 {
     public static DbCommand Generate(this IObjectContextAdapter context, DbQueryCommandTree commandTree)
@@ -1284,7 +1305,8 @@ public class LogConfiguration : DbConfiguration
 ```
 
 From now on, all LINQ to Entities queries’ database command tree will be logged. For example, executing above Where and Select query logs the following database command tree:
-```
+
+```csharp
 DbQueryCommandTree
 |_Parameters
 |_Query : Collection{Record['Name'=Edm.String]}
@@ -1305,7 +1327,8 @@ DbQueryCommandTree
 ```
 
 And the Select and First query logs the following:
-```
+
+```csharp
 DbQueryCommandTree
 |_Parameters
 |_Query : Collection{Record['Name'=Edm.String]}

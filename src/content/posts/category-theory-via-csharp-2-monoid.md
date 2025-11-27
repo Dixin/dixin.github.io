@@ -3,8 +3,8 @@ title: "Category Theory via C# (2) Monoid"
 published: 2024-12-12
 description: ") is an important algebraic structure in category theory. A monoid M is a set M equipped with a binary operation ⊙ and a special element"
 image: ""
-tags: ["C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "Categories", "LINQ via C#", "Monoid`"]
-category: "C#"
+tags: [".NET", "C#", "Categories", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monoid`"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -32,7 +32,8 @@ so that:
 -   and the pentagon identity commutes:: [![Untitled-2.fw](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/LINQ-via-C-Series-C-Functional-Programmi_921F/Untitled-2.fw_thumb.png "Untitled-2.fw")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/LINQ-via-C-Series-C-Functional-Programmi_921F/Untitled-2.fw_2.png)
 
 In C#, the monoid definition can be represented as:
-```
+
+```csharp
 public interface IMonoid<T>
 {
     static abstract T Multiply(T value1, T value2);

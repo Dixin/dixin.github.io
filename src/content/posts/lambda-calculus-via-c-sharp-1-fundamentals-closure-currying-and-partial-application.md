@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (1) Fundamentals - Closure, Currying and Partial 
 published: 2018-11-01
 description: "C#  is discussed in detail used everywhere in the . This post and the follo"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -34,7 +34,8 @@ All stories can start with a simple concept, [closure](http://en.wikipedia.org/w
 ## Currying and partial application
 
 Looking at this simple function:
-```
+
+```csharp
 Func<int, int, int> add = 
     (x, y) => x + y;
 ```
@@ -45,7 +46,8 @@ Straightforward. It represents an algorithm to add 2 integers. In C#, it is a fu
 -   The function returns the sum of those 2 integers as output (on the right side of =>).
 
 Since C# supports closure and higher-order function, above function can be tweaked a little bit:
-```
+
+```csharp
 Func<int, Func<int, int>> curriedAdd =
     x => new Func<int, int>(y => x + y);
 ```
@@ -58,23 +60,27 @@ It represents an algorithm which eventually still adds 2 integers. The different
     -   The returned function the sum of those 2 integers as output (on the left side of second =>). Here x + y uses closure to reference x, which is out of the returned function (y => x + y).
 
 In C# the returned function’s type declaration, new Func<int, int>(…), can be inferred by compiler. So it can be written cleaner:
-```
+
+```csharp
 Func<int, Func<int, int>> curriedAdd =
     x => y => x + y;
 ```
 
 The add function’s application is also straightforward :
-```
+
+```csharp
 int result = add(1, 2);
 ```
 
 or just keep the code in lambda style - function should be anonymous without name:
-```
+
+```csharp
 result = new Func<int, int, int>((x, y) => x + y)(1, 2);
 ```
 
 The second function’s application is different:
-```
+
+```csharp
 Func<int, int> add1 = curriedAdd(1); // Or: new Func<int, Func<int, int>>(x => y => x + y)(1);
 // Now add1 is s closure: y => 1 + y.
 result = add1(2);
@@ -83,18 +89,21 @@ result = add1(2);
 So after the function transforming, the function application add(1, 2) becomes curriedAdd(1)(2). This approach, to transform a function with 2 parameters into a sequence of 2 functions where each function has 1 parameter, is called [currying](http://en.wikipedia.org/wiki/Currying). The application of one argument to a curried function, is called [partial application](http://en.wikipedia.org/wiki/Partial_application).
 
 Similarly, the following function with 3 parameters:
-```
+
+```csharp
 Func<int, int, int, int> add = (x, y, z) => x + y + z;
 int result = add(1, 2, 3);
 ```
 
 can be curried as:
-```
+
+```csharp
 Func<int, Func<int, Func<int, int>>> curriedAdd = x => y => z => x + y + z;
 ```
 
 and the curried function can be partially applied:
-```
+
+```csharp
 Func<int, Func<int, int>> add1 = curriedAdd(1); // add1 is a closure: y => z => 1 + y + z
 Func<int, int> add3 = add1(2); // add3 is a closure: z => 1 + 2 + z
 result = add3(3);
@@ -103,17 +112,20 @@ result = curriedAdd(1)(2)(3);
 ```
 
 More generally, any function with N parameters:
-```
+
+```csharp
 Func<T1, T2, …, TN, TResult> function = (arg1, arg2, …, argN) => result;
 ```
 
 can be curried into a function sequence of N functions, and each function has 1 parameter:
-```
+
+```csharp
 Func<T1, Func<T2, …, Func<TN, TResult>…>> curriedFunction = arg1 => arg2 => … => argN => result;
 ```
 
 This can be implemented with some Curry() extension methods:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     // from arg => result
@@ -145,7 +157,8 @@ public static partial class FuncExtensions
 ```
 
 With the same idea as currying, we can also partially apply a function with multiple parameters:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     public static Func<TResult> Partial<T, TResult>(
@@ -177,7 +190,8 @@ public static partial class FuncExtensions
 ```
 
 For example:
-```
+
+```csharp
 Func<int, int, int, int> add = (x, y, z) => x + y + z;
 var add4 = add.Partial(4); // add4 is a closure: y => z => 4 + y + z
 int result = add.Partial(1)(2)(3);
@@ -192,7 +206,8 @@ All the later parts of lambda calculus will focus on curried functions (1 parame
 ## Uncurry
 
 Just for fun purpose - a sequence of 1 parameter functions can also be uncurried to a function with multiple parameters too:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     // from () => arg => result
@@ -226,39 +241,46 @@ public static partial class FuncExtensions
 ## \=> associativity
 
 From above code, the C# lambda operator (=>) is apparently [right-associative](http://en.wikipedia.org/w/index.php?title=Right-associative&redirect=no):
-```
+
+```csharp
 x => y => x + y
 ```
 
 is identical to:
-```
+
+```csharp
 x => (y => x + y)
 ```
 
 Or generally:
-```
+
+```csharp
 Func<T1, Func<T2, …, Func<TN, TResult>…>> curriedFunction = arg1 => arg2 => … => argN => result;
 ```
 
 is identical to:
-```
+
+```csharp
 Func<T1, Func<T2, …, Func<TN, TResult>…>> curriedFunction = arg1 => (arg2 => … => (argN => result)…);
 ```
 
 This is the same associativity as the [type constructor →](http://en.wikipedia.org/wiki/Type_constructor) in [typed lambda calculus](http://en.wikipedia.org/wiki/Simply_typed_lambda_calculus).
 
 In some functional languages, functions are curried by default, like F#:
-```
+
+```csharp
 let f1: int -> int -> int = fun x y -> x + y
 ```
 
 fun x y -> … looks like a function definition with multiple parameters, but it is curried as int -> int -> int. This function works similar as:
-```
+
+```csharp
 let f2: int -> (int -> int) = fun x -> fun y -> x + y
 ```
 
 And this is how to create an uncurried function with multiple parameters in F#:
-```
+
+```csharp
 let f3: int * int -> int = fun (x, y) -> x + y
 ```
 

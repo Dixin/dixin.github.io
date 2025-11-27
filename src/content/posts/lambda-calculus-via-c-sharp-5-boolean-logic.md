@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (5) Boolean Logic"
 published: 2018-11-05
 description: "After defining Boolean values True and False with functions, now the Boolean logics can be encoded, by functions too."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ After defining Boolean values True and False with functions, now the Boolean log
 ## And
 
 And can be defined by the following lambda:
-```
+
+```csharp
 And :=  λab.a b False
 ```
 
@@ -30,7 +31,8 @@ This is easy to understand. It is a function of 2 arity a and b and return a res
 -   When a is False, (False b False) returns False’s second argument False, This is also correct, since in Boolean logic, (And False b) ≡ False
 
 The C# implementation will be a function of type Func<Boolean, Boolean, Boolean>:
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     // And = a => b => a(b)(False)
@@ -54,7 +56,8 @@ Please also notice:
 ## Or
 
 Definition of Or is:
-```
+
+```csharp
 Or :=  λab.a True b
 ```
 
@@ -64,7 +67,8 @@ Proof:
 -   When a is False, (False True b) ≡ b
 
 C#:
-```
+
+```csharp
 // Or = a => b => a(True)(b)
 public static Boolean Or
     (this Boolean a, Boolean b) => (Boolean)a(new Boolean(True))(b);
@@ -73,7 +77,8 @@ public static Boolean Or
 ## Not
 
 Definition:
-```
+
+```csharp
 Not := λb.b False True
 ```
 
@@ -83,7 +88,8 @@ Proof:
 -   When b is False, (False False True) ≡ True
 
 C#:
-```
+
+```csharp
 // Not = boolean => boolean(False)(True)
 public static Boolean Not
     (this Boolean boolean) => (Boolean)boolean(new Boolean(False))(new Boolean(True));
@@ -92,7 +98,8 @@ public static Boolean Not
 ## Xor
 
 Definition:
-```
+
+```csharp
 Xor := λa.λb.a (b False True) (b True False)
 ```
 
@@ -106,7 +113,8 @@ Proof:
     -   When b is False, (False True False) ≡ False
 
 C#:
-```
+
+```csharp
 // Xor = a => b => a(b(False)(True))(b(True)(False))
 public static Boolean Xor
     (this Boolean a, Boolean b) =>
@@ -118,7 +126,8 @@ public static Boolean Xor
 ## Conversion between Church Boolean and System.Boolean
 
 The unit test can be easier if the Church Boolean can be directly compared with C#’s [Boolean](https://msdn.microsoft.com/en-us/library/system.boolean.aspx). To achieve this, 2 conversion methods can be created:
-```
+
+```csharp
 public static partial class ChurchEncoding
 {
     // System.Boolean to Boolean

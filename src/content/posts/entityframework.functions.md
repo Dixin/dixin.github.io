@@ -3,8 +3,8 @@ title: "EntityFramework.Functions: Code First Functions for Entity Framework"
 published: 2024-01-19
 description: "EntityFramework.Functions library implements  code first support for:"
 image: ""
-tags: ["SQL Server", "Entity Framework", "LINQ", "LINQ to Entities", "Code First", "SQL Stored Procedure", "SQL Functions"]
-category: "SQL Server"
+tags: ["Code First", "Entity Framework", "LINQ", "LINQ to Entities", "SQL Functions", "SQL Server", "SQL Stored Procedure"]
+category: "Code First"
 draft: false
 lang: ""
 ---
@@ -31,12 +31,14 @@ EntityFramework.Functions library implements [Entity Framework](https://en.wikip
 EntityFramework.Functions library works on .NET Standard with Entity Framework 6.4.0. It also works on .NET 4.0, .NET 4.5, .NET 4.6, .NET 4.7, .NET 4.8 with [Entity Framework 6.1.0 and later](https://msdn.microsoft.com/en-us/data/jj574253.aspx). Entity Framework is the only dependency of this library.
 
 It can be installed through [Nuget](https://www.nuget.org/packages/EntityFramework.Functions):
-```
+
+```csharp
 dotnet add package EntityFramework.Functions
 ```
 
 or:
-```
+
+```csharp
 Install-Package EntityFramework.Functions -DependencyVersion Highest
 ```
 
@@ -254,7 +256,8 @@ public class ManagerEmployee
 It is tagged with \[[ComplexType](https://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.schema.complextypeattribute.aspx)\], which is provided in System.ComponentModel.DataAnnotations.dll, and used by Entity Framework. When calling AddFunctions(typeof(TFunctions))/AddFunction<TFunctions>(), types tagged with \[ComplexType\] in the same assembly are added to entity model too.
 
 Now the mapping method can be defined:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public const string dbo = nameof(dbo);
@@ -277,7 +280,8 @@ public partial class AdventureWorks
 In its body, it should call ExecuteFunction on ObjectContext. Here ObjectContext method is an extension method provided by this library.
 
 Then it can be called as following:
-```
+
+```csharp
 [TestMethod]
 public void CallStoredProcedureWithSingleResult()
 {
@@ -290,7 +294,8 @@ public void CallStoredProcedureWithSingleResult()
 ```
 
 The above call is translated to the following SQL, which can be viewed with SQL Server Profiler:
-```
+
+```csharp
 exec [dbo].[uspGetManagerEmployees] @BusinessEntityID=2
 ```
 
@@ -309,7 +314,8 @@ public int LogError([Parameter(DbType = "int", ClrType = typeof(int))]ObjectPara
 ```
 
 Then it can be called as:
-```
+
+```csharp
 [TestMethod]
 public void CallStoreProcedureWithOutParameter()
 {
@@ -325,7 +331,8 @@ public void CallStoreProcedureWithOutParameter()
 ```
 
 The call is translated to:
-```
+
+```csharp
 declare @p1 int
 set @p1=0
 exec [dbo].[uspLogError] @ErrorLogID=@p1 output
@@ -353,7 +360,8 @@ GO
 ```
 
 The involved ProductCategory table and ProductSubcategory table can be represented as:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public const string Production = nameof(Production);
@@ -389,7 +397,8 @@ public partial class ProductSubcategory
 Above ProductCategory and ProductSubcategory classes are tagged with \[Table\], so they will be added to entity model automatically by Entity Framework.
 
 Multiple return types can be specified by \[ReturnType\]. The return type defined on the method will be merged into the return types from \[ReturnType\]s, and be at the first position:
-```
+
+```csharp
 // Defines stored procedure returning multiple result types: 
 // - a ProductCategory sequence.
 // - a ProductSubcategory sequence.
@@ -405,7 +414,8 @@ public ObjectResult<ProductCategory> uspGetCategoryAndSubCategory(int CategoryID
 ```
 
 Then it can be called to retrieve one ProductCategory sequence, and one ProductSubcategory sequence:
-```
+
+```csharp
 [TestMethod]
 public void CallStoreProcedureWithMultipleResults()
 {
@@ -422,7 +432,8 @@ public void CallStoreProcedureWithMultipleResults()
 ```
 
 The SQL translation is normal:
-```
+
+```csharp
 exec [dbo].[uspGetCategoryAndSubCategory] @CategoryID=1
 ```
 
@@ -447,7 +458,8 @@ public class ContactInformation
 ```
 
 Then the ufnGetContactInformation function can be mapped by:
-```
+
+```csharp
 // Defines table-valued function, which must return IQueryable<T>.
 [Function(FunctionType.TableValuedFunction, nameof(ufnGetContactInformation), Schema = dbo)]
 public IQueryable<ContactInformation> ufnGetContactInformation(
@@ -463,7 +475,8 @@ public IQueryable<ContactInformation> ufnGetContactInformation(
 ```
 
 Its return type should be IQueryable<T>, so that it is composable in LINQ to Entities. And it can be called:
-```
+
+```csharp
 [TestMethod]
 public void CallTableValuedFunction()
 {
@@ -499,7 +512,8 @@ exec sp_executesql N'SELECT TOP (2)
 ### Scalar-valued function, non-composable
 
 For scalar-valued function. the return value becomes a primitive non-collection type.
-```
+
+```csharp
 // Defines scalar-valued function (non-composable), 
 // which cannot be used in LINQ to Entities queries;
 // and can be called directly.
@@ -519,7 +533,8 @@ public decimal? ufnGetProductStandardCost(
 In this case, \[Parameter\] can tag its return type.
 
 It can be called directly just like other above methods:
-```
+
+```csharp
 [TestMethod]
 public void CallNonComposableScalarValuedFunction()
 {
@@ -539,7 +554,8 @@ exec sp_executesql N'SELECT [dbo].[ufnGetProductStandardCost](@ProductID, @Order
 ```
 
 However, since it is specified to be non-composable, it cannot be translated by Entity Framework in LINQ to Entities queries:
-```
+
+```csharp
 [TestMethod]
 public void NonComposableScalarValuedFunctionInLinq()
 {
@@ -565,7 +581,8 @@ This is by design of Entity Framework.
 ### Scalar-valued function, composable
 
 The composable scalar-valued function is very similar:
-```
+
+```csharp
 // Defines scalar-valued function (composable),
 // which can only be used in LINQ to Entities queries, where its body will never be executed;
 // and cannot be called directly.
@@ -578,7 +595,8 @@ public decimal? ufnGetProductListPrice(
 ```
 
 The difference is, it works in LINQ to Entities queries, but cannot be called directly. As a result, its body will never be executed. So in the body, it can just throw an exception. This library provides a Function.,CallNotSupported help methods for convenience, which just throws a NotSupportedException.
-```
+
+```csharp
 [TestMethod]
 public void ComposableScalarValuedFunctionInLinq()
 {
@@ -728,7 +746,8 @@ SELECT [dbo].[ConcatWith](Name, N' | ') FROM Production.ProductCategory;
 ```
 
 To map them in C#, the following methods can be defined:
-```
+
+```csharp
 public static class AdventureWorksFunctions
 {
     // Defines aggregate function, which must have one singele IEnumerable<T> or IQueryable<T> parameter.
@@ -748,7 +767,8 @@ public static class AdventureWorksFunctions
 Apparently, aggregate functions cannot be called directly, so their bodies just throw exception. Unfortunately, above ConcatWith cannot be translated, because currently Entity Framework does not support aggregate function with more than one parameters.
 
 They are defined as extension methods of IEnumerable<T>, so that they can easily be used in LINQ to :
-```
+
+```csharp
 [TestMethod]
 public void AggregateFunctionInLinq()
 {
@@ -794,7 +814,8 @@ The reason is Entity Framework does not support aggregate function with more tha
 SQL Server provides a lot of [built-in functions](https://msdn.microsoft.com/en-US/library/ms174318.aspx). They can be easily represented with \[Function\] tag. Take [LEFT function](https://msdn.microsoft.com/en-us/library/ms177601.aspx) as example:
 
 It is a [string function](https://msdn.microsoft.com/en-us/library/ms181984.aspx), returns the left part of a string with the specified number of characters. So, in C#, just defines a function accepting a string parameter and a int parameter, and returns a string:
-```
+
+```csharp
 public static class BuiltInFunctions
 {
     [Function(FunctionType.BuiltInFunction, "LEFT")]
@@ -803,7 +824,8 @@ public static class BuiltInFunctions
 ```
 
 Again, it can only be used in LINQ to Entities and cannot be called directly. So in its body, it just simply throw an exception. It is implemented as an extension method of string, for convenience.
-```
+
+```csharp
 [TestMethod]
 public void BuitInFunctionInLinq()
 {
@@ -856,7 +878,8 @@ SELECT
 -   USER
 
 In C#:
-```
+
+```csharp
 public static class NiladicFunctions
 {
     [Function(FunctionType.NiladicFunction, "CURRENT_TIMESTAMP")]
@@ -877,7 +900,8 @@ public static class NiladicFunctions
 ```
 
 When they are called:
-```
+
+```csharp
 [TestMethod]
 public void NiladicFunctionInLinq()
 {
@@ -944,7 +968,8 @@ SELECT
 ### Model defined function
 
 The following code defines a FormatName function for the Person model:
-```
+
+```csharp
 public static class ModelDefinedFunctions
 {
     [ModelDefinedFunction(nameof(FormatName), "EntityFramework.Functions.Tests.Examples",
@@ -962,7 +987,8 @@ public static class ModelDefinedFunctions
 ```
 
 When FormatName is called in LINQ to Entities query:
-```
+
+```csharp
 [TestMethod]
 public void ModelDefinedFunctionInLinqTest()
 {

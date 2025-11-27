@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (2) Modeling Database: Object
 published: 2019-03-12
 description: ".NET and SQL database and have 2 different data type systems. For example, .NET has System.Int64 and System.String, while SQL database has bigint and nvarchar; .NET has sequences and objects, while SQ"
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -40,7 +40,8 @@ EF/Core can map most SQL data types to .NET types:
 ## Database
 
 A SQL database is mapped to a type derived from DbContext:
-```
+
+```csharp
 public partial class AdventureWorks : DbContext { }
 ```
 
@@ -97,7 +98,8 @@ namespace Microsoft.EntityFrameworkCore
 > ```
 
 DbContext implements IDisposable. Generally, a database instance should be constructed and disposed for each [unit of work](http://martinfowler.com/eaaCatalog/unitOfWork.html) - a collection of data operations that should succeed or fail as a unit:
-```
+
+```csharp
 internal static void Dispose()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -128,7 +130,8 @@ The above MapCompositePrimaryKey, MapManyToMany, MapDiscriminator methods are im
 ### Connection resiliency and execution retry strategy
 
 As the mapping of the database, AdventureWorks also manages the connection to the database, which can be injected from the constructor:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public AdventureWorks(DbConnection connection = null)
@@ -143,7 +146,7 @@ Here when database connection is not provided to the constructor, a new database
 
 > In EF, the database connection can be injected through constructor too:
 > 
-> ```
+> ```csharp
 > public partial class AdventureWorks
 > {
 >     public AdventureWorks(DbConnection connection = null) : base(
@@ -209,7 +212,8 @@ GO
 ```
 
 This table definition can be mapped to a ProductCategory entity definition:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public const string Production = nameof(Production); // Production schema.
@@ -241,7 +245,8 @@ At runtime, each row of Production.ProductCategory table is mapped to a ProductC
 > EF by default does not directly instantiate ProductCategory. It dynamically defines another proxy type derived from ProductCategory, with a name like System.Data.Entity.DynamicProxies.Product\_F84B0F952ED22479EF48782695177D770E63BC4D8771C9DF78343B4D95926AE8. This proxy type is where EF injects more logic like lazy loading, so that at design time the mapping entity type can be clean and declarative.
 
 The rows of the entire table can be mapped to objects in an IQueryable<T> data source, exposed as a property of the database type. DbSet<T> implements IQueryable<T>, and is provided to represent a table data source:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<ProductCategory> ProductCategories { get; set; }
@@ -259,7 +264,8 @@ The following Person.Person table and HumanResources.Employee table has a one-to
 [![image_thumb4](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Entity-FrameworkCore-and-LINQ-to-Entitie_2797/image_thumb4_thumb.png "image_thumb4")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Entity-FrameworkCore-and-LINQ-to-Entitie_2797/image_thumb4_2.png)
 
 HumanResources.Employee table’s BusinessEntityID column is a foreign key that refers to Person.Person table’s primary key:
-```
+
+```csharp
 CREATE TABLE [Person].[Person](
     [BusinessEntityID] int NOT NULL
         CONSTRAINT [PK_Person_BusinessEntityID] PRIMARY KEY CLUSTERED,
@@ -286,7 +292,8 @@ GO
 ```
 
 So each row in HumanResources.Employee table refers to one row in Person.Person table (an employee must be a person). On the other hand, each row in Person.Person table can be referred by 0 or 1 row in HumanResources.Employee table (a person can be an employee, or not). This relationship can be represented by navigation property of entity type:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public const string Person = nameof(Person);
@@ -343,7 +350,8 @@ The Production.ProductCategory and Production.ProductSubcategory tables have a o
 [![image_thumb3](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Entity-FrameworkCore-and-LINQ-to-Entitie_2797/image_thumb3_thumb.png "image_thumb3")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Entity-FrameworkCore-and-LINQ-to-Entitie_2797/image_thumb3_2.png)
 
 Each row in Production.ProductCategory table can refer to many rows in Production.ProductSubcategory table (category can have many subcategories), and each row in Production.ProductSubcategory table can refer to many rows in Production.Product table (ubcategory can have many products):
-```
+
+```csharp
 CREATE TABLE [Production].[ProductSubcategory](
     [ProductSubcategoryID] int IDENTITY(1,1) NOT NULL
         CONSTRAINT [PK_ProductSubcategory_ProductSubcategoryID] PRIMARY KEY CLUSTERED,
@@ -374,7 +382,8 @@ GO
 ```
 
 These one-to-many relationships can be represented by navigation property of type ICollection<T>:
-```
+
+```csharp
 public partial class ProductCategory
 {
     public virtual ICollection<ProductSubcategory> ProductSubcategories { get; set; } // Collection navigation property.
@@ -426,7 +435,8 @@ Production.Product and Production.ProductPhoto tables has many-to-many relations
 [![image_thumb2](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Entity-FrameworkCore-and-LINQ-to-Entitie_2797/image_thumb2_thumb.png "image_thumb2")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Entity-FrameworkCore-and-LINQ-to-Entitie_2797/image_thumb2_2.png)
 
 This is implemented by 2 one-to-many relationships with another Production.ProductProductPhoto junction table:
-```
+
+```csharp
 CREATE TABLE [Production].[ProductPhoto](
     [ProductPhotoID] int IDENTITY(1,1) NOT NULL
         CONSTRAINT [PK_ProductPhoto_ProductPhotoID] PRIMARY KEY CLUSTERED,
@@ -455,7 +465,8 @@ GO
 ```
 
 So the many-to-many relationship can be mapped to 2 one-to-many relationships with the junction:
-```
+
+```csharp
 public partial class Product
 {
     public virtual ICollection<ProductProductPhoto> ProductProductPhotos { get; set; } // Collection navigation property.
@@ -567,7 +578,8 @@ public partial class AdventureWorks
 > ```
 
 Finally, the rows of each above table can be expose as an IQueryable<T> data source:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<Person> People { get; set; }
@@ -593,7 +605,8 @@ EF/Core also supports inheritance for entity types.
 > -   [Table per concrete type (TPC)](https://msdn.microsoft.com/en-us/data/jj591617#2.6): one table is mapped with one non-abstract entity type in the hierarchy.
 
 EF Core supports table per hierarchy (TPH) inheritance, which is also the default strategy of EF. With TPH, rows in 1 table is mapped to many entities in the inheritance hierarchy, so a discriminator column is needed to identify each specific row’s mapping entity. Take the following Production.TransactionHistory table as example:
-```
+
+```csharp
 CREATE TABLE [Production].[TransactionHistory](
     [TransactionID] int IDENTITY(100000,1) NOT NULL
         CONSTRAINT [PK_TransactionHistory_TransactionID] PRIMARY KEY CLUSTERED,
@@ -671,7 +684,8 @@ public partial class AdventureWorks
 ```
 
 Now these entities can all be exposed as data sources:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<TransactionHistory> Transactions { get; set; }
@@ -722,7 +736,8 @@ public class vEmployee
 ```
 
 And then expose as data source:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<vEmployee> vEmployees { get; set; }

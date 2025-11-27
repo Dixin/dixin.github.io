@@ -3,8 +3,8 @@ title: "Category Theory via C# (22) More Monad: Continuation Monad"
 published: 2018-12-23
 description: "In C#, callback is frequently used. For example, a very simple Add function, without asynchrony:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Continuation and continuation-passing style
 
 In C#, callback is frequently used. For example, a very simple Add function, without asynchrony:
-```
+
+```csharp
 // [Pure]
 public static partial class Cps
 {
@@ -29,7 +30,8 @@ public static partial class Cps
 ```
 
 With a callback, it becomes:
-```
+
+```csharp
 // AddWithCallback = (x, y, callback) => callback(x + y)
 public static TCallback AddWithCallback<TCallback>
     (int x, int y, Func<int, TCallback> callback) => callback(x + y);
@@ -38,27 +40,31 @@ public static TCallback AddWithCallback<TCallback>
 In functional programming, a continuation is like a callback. [Continuation-passing style (CPS)](http://en.wikipedia.org/wiki/Continuation-passing_style) is a style of programming to pass the control to a [continuation](http://en.wikipedia.org/wiki/Continuation), just like in above example, (x + y) is calculated then passed to the callback.
 
 For convenience, AddWithCallback can be curried a little bit:
-```
+
+```csharp
 // AddWithCallback = (x, y) => callback => callback(x + y)
 public static Func<Func<int, TCallback>, TCallback> AddWithCallback<TCallback>
     (int x, int y) => callback => callback(x + y);
 ```
 
 So that all the apperances of TCallback are in the return type Func<Func<int, TCallback>, TCallback>, then an alias Cps can be defined to make the code shorter:
-```
+
+```csharp
 // Cps<T, TContinuation> is alias of Func<Func<T, TContinuation>, TContinuation>
 public delegate TContinuation Cps<out T, TContinuation>(Func<T, TContinuation> continuation);
 ```
 
 Now a continuation-passing style function AddCps can be defined, which is exactly the same as above:
-```
+
+```csharp
 // AddCps = (x, y) => continuation => continuation(x + y)
 public static Cps<int, TContinuation> AddCps<TContinuation>
     (int x, int y) => continuation => continuation(x + y);
 ```
 
 Other examples are the SquareCps and SumOfSquareCps functions:
-```
+
+```csharp
 // SquareCps = x => continuation => continuation(x * x)
 public static Cps<int, TContinuation> SquareCps<TContinuation>
     (int x) => continuation => continuation(x * x);
@@ -76,7 +82,8 @@ In this case, CPS makes code and algorithms harder to understand and maintain.
 ## Continuation monad
 
 SelectMany can be implemented for Cps<T, TContinuation>:
-```
+
+```csharp
 [Pure]
 public static partial class CpsExtensions
 {
@@ -97,7 +104,8 @@ public static partial class CpsExtensions
 ```
 
 so that:
-```
+
+```csharp
 // [Pure]
 public static partial class CpsExtensions
 {
@@ -130,7 +138,8 @@ Cps< , > is a monad, monoidal functor, and functor.
 ## Monad laws, and unit tests
 
 2 helper functions can be created:
-```
+
+```csharp
 // [Pure]
 public static partial class CpsExtensions
 {
@@ -143,7 +152,8 @@ public static partial class CpsExtensions
 ```
 
 So the unit test becomes easy:
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]
@@ -183,7 +193,8 @@ public partial class MonadTests
 ```
 
 And following is unit test for continuation functor, which also demonstrate the CPS version of [factorial](http://en.wikipedia.org/wiki/Factorial):
-```
+
+```csharp
 public partial class FunctorTests
 {
     [TestMethod()]

@@ -19,7 +19,8 @@ Understanding C# async / await:
 
 -   In a async method with await keyword, all the code are compiled into a state machine’s MoveNext() method.
 -   When this async method is called, the state machine is started. Along with the change of the state, MoveNext() will be called in a callback-like style.
-```
+
+```csharp
 internal static async Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int arg3)
 {
     HelperMethods.Before();
@@ -33,7 +34,8 @@ internal static async Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg
 ```
 
 To demonstrate the callback-like mechanism, part 1 simply used Task.ContinueWith():
-```
+
+```csharp
 internal static Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int arg3)
 {
     TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>(); try {
@@ -63,7 +65,8 @@ Actually, the await infrastructure is [more than meets the eye](http://tfwiki.ne
 ## Threading issue
 
 A simple experiment can be done with a tiny WPF application. It has a window with a TextBox and a Button:
-```
+
+```csharp
 <Window x:Class="WpfAsync.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -100,7 +103,8 @@ namespace WpfAsync
 When the Button is clicked, a string will be downloaded asynchronously. When the download is completed, the string will be displayed in the TextBox.
 
 Of course this code works. But if it is rewritten in callback style with Task.ContinueWith():
-```
+
+```csharp
 this.Button.Click += (sender, e) =>
 {
     // string html = await new WebClient().DownloadStringTaskAsync("https://weblogs.asp.net/dixin");
@@ -124,13 +128,15 @@ When reschedule a bunch of code to thread pool - potentially on another thread -
 > The ExecutionContext class provides the functionality for user code to capture and transfer this context across user-defined asynchronous points. The common language runtime ensures that the ExecutionContext is consistently transferred across runtime-defined asynchronous points within the managed process.
 
 This is the public API to capture current thread’s ExecutionContext:
-```
+
+```csharp
 // See: System.Runtime.CompilerServices.AsyncMethodBuilderCore.GetCompletionAction()
 ExecutionContext executionContext = ExecutionContext.Capture();
 ```
 
 And this extension method demonstrates how to invoke a function with a specified ExecutionContext (typically, captured from another thread):
-```
+
+```csharp
 public static class FuncExtensions
 {
     public static TResult InvokeWith<TResult>(this Func<TResult> function, ExecutionContext executionContext)
@@ -170,14 +176,16 @@ etc.
 Similar to ExecutionContext, the state machine invocation mechanism captures the initial SynchronizationContext, and post each call of MoveNext() to that SynchronizationContext.
 
 This is the public API to capture current thread’s SynchronizationContext:
-```
+
+```csharp
 // See: System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Create()
 // See: System.Runtime.CompilerServices.AsyncMethodBuilderCore.MoveNextRunner.Run()
 SynchronizationContext synchronizationContext = SynchronizationContext.Current;
 ```
 
 And this extension method demonstrates how to invoke a function with a specified SynchronizationContext and ExecutionContext:
-```
+
+```csharp
 public static class FuncExtensions
 {
     public static Task<TResult> InvokeWith<TResult>(this Func<TResult> function, SynchronizationContext synchronizationContext, ExecutionContext executionContext)
@@ -224,7 +232,8 @@ public static class FuncExtensions
 ```
 
 And this is the version for action:
-```
+
+```csharp
 public static class ActionExtensions
 {
     public static Task InvokeWith(this Action action, SynchronizationContext synchronizationContext, ExecutionContext executionContext)
@@ -243,7 +252,8 @@ public static class ActionExtensions
 ## Callback with ExecutionContext and SynchronizationContext
 
 With the above extension methods, some enhanced methods can be created for Task.ContinueWith() callback mechanism. Here it is called ContinueWithContext() because it [takes care of ExecutionContext and SynchronizationContext](http://blogs.msdn.com/b/pfxteam/archive/2012/06/15/executioncontext-vs-synchronizationcontext.aspx) for ContinueWith(). This version is to continue with function:
-```
+
+```csharp
 public static class TaskExtensions
 {
     public static Task<TNewResult> ContinueWithContext<TResult, TNewResult>(this Task<TResult> task, Func<Task<TResult>, TNewResult> continuation)
@@ -279,7 +289,8 @@ public static class TaskExtensions
 ```
 
 And this is the version to continue with action:
-```
+
+```csharp
 public static class TaskExtensions
 {
     public static Task ContinueWithContext<TResult>(this Task<TResult> task, Action<Task<TResult>> continuation)
@@ -309,7 +320,8 @@ public static class TaskExtensions
 ```
 
 So the above WPF code can be easily fixed as:
-```
+
+```csharp
 this.Button.Click += (sender, e) =>
 {
     // string html = await new WebClient().DownloadStringTaskAsync("https://weblogs.asp.net/dixin");
@@ -328,7 +340,8 @@ Just replace ContinueWith() with ContinueWithContext(), the continuation (this.T
 -   When calling Task.ConfigureAwait(continueOnCapturedContext: false), only the initial ExecutionContext is captured for the continuation code:, not the initial SynchronizationContext.
 
 For example, in the above WPF application:
-```
+
+```csharp
 this.Button.Click += async (sender, e) =>
 {
     await Task.Run(() => { }).ConfigureAwait(false);

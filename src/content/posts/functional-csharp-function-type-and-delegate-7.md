@@ -3,8 +3,8 @@ title: "C# functional programming in-depth (5) Delegate: Function type, instance
 published: 2018-06-05
 description: "In C#, functions are represented by methods of types, and other function members of types. In C#, just like just objects have types, methods/functions have types too, which are represented by delegate"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -22,7 +22,8 @@ In C#, functions are represented by methods of types, and other function members
 ### Function type
 
 This tutorial uses notation input parameter types –> output return type for function type. For example, the simplest function type is parameterless, and returning void. Such function type is denoted () –> void. In C#, a delegate type can defined like a method signature with the delegate keyword:
-```
+
+```csharp
 // () -> void
 internal delegate void FuncToVoid();
 ```
@@ -46,7 +47,8 @@ namespace System.Diagnostics
 So these functions are all of function type () –> void; in another word, of FuncToVoid type.
 
 The following delegate type represents the string –> void function type, which accepts a string parameter, and returns void:
-```
+
+```csharp
 // string -> void
 internal delegate void FuncStringToVoid(string @string);
 ```
@@ -70,7 +72,8 @@ namespace System.Diagnostics
 These functions’ parameter names are different from the delegate type definition. In C#/.NET, parameter names are ignored when the compiler identifies function types, only parameter types, their order, and return type matter.
 
 The following delegate type represents the () –> int function type that is parameterless, and returns int:
-```
+
+```csharp
 // () -> int
 internal delegate int FuncToInt32();
 ```
@@ -92,7 +95,8 @@ namespace System.Runtime.InteropServices
 ```
 
 And the following delegate type represents the (string, int) –> int function type that accepts a string parameter, then a int parameter, and returns int:
-```
+
+```csharp
 // (string, int) -> int
 internal delegate int FuncStringInt32ToInt32(string @string, int int32);
 ```
@@ -112,7 +116,8 @@ namespace System.Globalization
 ```
 
 The following delegate type represents the string –> bool function type that accepts a string parameter, and returns bool:
-```
+
+```csharp
 // string –> bool
 internal delegate bool FuncStringToBoolean(string @string);
 ```
@@ -143,7 +148,8 @@ namespace System
 ### Generic delegate type
 
 Above FuncToInt32 represents the () –> int function type that is parameterless and return int. Similarly, for parameterless functions returning bool, string, or object, the following delegate types can be defined:
-```
+
+```csharp
 // () -> bool
 internal delegate bool FuncToBoolean();
 
@@ -155,7 +161,8 @@ internal delegate object FuncToObject();
 ```
 
 More similar definitions can go forever for different return types. Since C# 2.0. they can be replaced with one single generic delegate type. In the above series of delegate type defections, the return type varies, so the return type can be represented with a type parameter of any name, like TResult:
-```
+
+```csharp
 // () -> TResult
 internal delegate TResult Func<TResult>();
 ```
@@ -165,7 +172,8 @@ Similar to generic interface/class/structure, here type parameter TResult is als
 Since Func<int> and FuncToInt32 are equivalent, The above Marshal.GetExceptionCode, Marshal.HRForLastWin32Error, Marsha.GetLastWin32Error functions are of Func<int> type too.
 
 Here is another example:
-```
+
+```csharp
 // (T1, T2) -> TResult
 internal delegate TResult Func<T1, T2, TResult>(T1 value1, T2 value2);
 ```
@@ -207,7 +215,8 @@ namespace System
 ```
 
 The following custom delegate types can be defined too:
-```
+
+```csharp
 // (T, T) -> int
 internal delegate int NewComparison<in T>(T x, T y);
 
@@ -306,7 +315,8 @@ For consistency, this tutorial always uses the above Func and Action delegate ty
 Just like object can be instantiated from class, delegate instance can be instantiated from delegate type too. A delegate instance can represent a function, or a group of functions of the same function type.
 
 When delegate instance is used to represent a specified function, the instantiation syntax is similar to the constructor call when instantiating an object:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static void Constructor()
@@ -319,7 +329,8 @@ internal static partial class Functions
 ```
 
 The constructor call syntax can be omitted:
-```
+
+```csharp
 internal static void Instantiate()
 {
     Func<int, int, int> func = Math.Max;
@@ -333,7 +344,8 @@ With this syntax, above paradigm looks functional. Func<int, int, int> is the fu
 ### Delegate class and delegate instance
 
 The above functional paradigm is actually implemented by wrapping imperative object-oriented programming. For each delegate type definition, C# compiler generates a class definition. For example, System.Func<T1, T2, TResult> delegate type is compiled to the following class:
-```
+
+```csharp
 public sealed class CompiledFunc<in T1, in T2, out TResult> : MulticastDelegate
 {
     public CompiledFunc(object @object, IntPtr method);
@@ -347,7 +359,8 @@ public sealed class CompiledFunc<in T1, in T2, out TResult> : MulticastDelegate
 ```
 
 The generated class has a Invoke method, with the same signature as the delegate type itself. So above delegate instantiation code is a syntactic sugar compiled to normal object instantiation, and the function call is also a syntactic sugar compiled to above Invoke method call:
-```
+
+```csharp
 internal static void CompiledInstantiate()
 {
     CompiledFunc<int, int, int> func = new CompiledFunc<int, int, int>(null, Math.Max);
@@ -357,7 +370,8 @@ internal static void CompiledInstantiate()
 ```
 
 The generated Invoke method can be useful along with null conditional operator:
-```
+
+```csharp
 internal static void Invoke(Action<int> action)
 {
     action?.Invoke(0); // if (action != null) { action(0); }
@@ -365,7 +379,8 @@ internal static void Invoke(Action<int> action)
 ```
 
 The BeginInvoke and EndInvoke methods are for asynchronous programming:
-```
+
+```csharp
 internal static void TraceAllTextAsync(string path)
 {
     Func<string, string> func = File.ReadAllText;
@@ -403,7 +418,8 @@ namespace System
 ```
 
 So each delegate instance has Target/Method properties, and ==/!= operators. The following example demonstrates these members of delegate instance:
-```
+
+```csharp
 internal static void Static()
 {
     Func<int, int, int> func1 = Math.Max; // new Func<int, int, int>(Math.Max);
@@ -421,7 +437,8 @@ internal static void Static()
 As fore mentioned, func1 looks like a function and works like a function, but it is essentially an instance of the generated class. It has an Invoke method accepting 2 int parameters and return int. Its Target property inherited from Delegate returns the underlying object which has this method. Since the underlying method is a static method, Target returns null. Its Method property returns the underlying method, Math.Max. Then delegate instance func2 is instantiated with the same static method, and apparently it is another different instance from func1. However, func1 and func2 have the same underlying static method, so the == operator returns true.
 
 In contrast, take instance method object.Equals as example:
-```
+
+```csharp
 internal static void Instance()
 {
     object object1 = new object();
@@ -447,7 +464,8 @@ Apparently, func1’s Target property returns object1, which has the underlying 
 ## Delegate instance as function group
 
 Besides function, delegate instance can also represent function groups. The following methods are all of () –> string type:
-```
+
+```csharp
 internal static string A()
 {
     Trace.WriteLine(nameof(A));
@@ -474,7 +492,8 @@ internal static string D()
 ```
 
 They can be combined/uncombined with the +/- operators:
-```
+
+```csharp
 internal static void FunctionGroup()
 {
     Func<string> a = A;
@@ -497,7 +516,8 @@ internal static void FunctionGroup()
 ```
 
 Here functionGroup1 is combination of A + B + C + D. When functionGroup1 is called, the 4 internal functions are called one by one, so functionGroup1’s return value is the last function D’s return value “D”. functionGroup2 is functionGroup1 – A – D, which is B + C, so functionGroup2’s return value is “C”. functionGroup3 is functionGroup1 – functionGroup2 + A, which is A + B + A, so its return value is “A”. Actually, + is compiled to Delegate.Combine call and – is compiled to Delegate.Remove call:
-```
+
+```csharp
 internal static void CompiledFunctionGroup()
 {
     Func<string> a = A;
@@ -569,7 +589,8 @@ namespace System
 ```
 
 So EventHandler<DownloadEventArgs> represents (object, DownloadEventArgs) –> void function type, where the object argument is the Downloader instance which raises the event, and the DownloadEventArgs argument is the event info, the downloaded string. The Completed event’s handler must be function of the same (object, DownloadEventArgs) –> void type. The following are 2 examples:
-```
+
+```csharp
 // EventHandler<DownloadEventArgs>: (object, DownloadEventArgs) -> void
 internal static void TraceContent(object sender, DownloadEventArgs args)
 {
@@ -584,7 +605,8 @@ internal static void SaveContent(object sender, DownloadEventArgs args)
 ```
 
 Now the += operator can be used to add a event handler function to the event function group, and –= operator can be used to remove the event handler function from the event function group:
-```
+
+```csharp
 internal static void HandleEvent()
 {
     Downloader downloader = new Downloader();
@@ -679,7 +701,8 @@ So the C# event/event handler model is quite straight forward from functional pr
 -   To raise a event, just call the function group, as a result, all the event handler functions stored in the group are called to handle the event.
 
 This compilation of event member is similar to a auto property member, which can be compiled to a backing field, a getter and a setter. Actually C# has a event add/remove accessor syntax similar to property getter/setter:
-```
+
+```csharp
 internal class DownloaderWithEventAccessor
 {
     internal event EventHandler<DownloadEventArgs> Completed

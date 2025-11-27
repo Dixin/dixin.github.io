@@ -3,8 +3,8 @@ title: "Category Theory via C# (7) Natural Transformation"
 published: 2018-12-08
 description: "If F: C -> D and G: C -> D are both functors from categories C to category D, a mapping can be constructed between F and G, called [natural transformation](http://en.wikipedia.org/wiki/Natural_transfo"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -29,7 +29,8 @@ If F: C -> D and G: C -> D are both functors from categories C to category D, a 
 ## Natural transformations for LINQ
 
 Previous parts demonstrated IEnumerable<> is the built-in functor, and Tuple<>, Lazy<>, Func<>, Nullable<> are functors too. C# has full LINQ support for IEnumerable<> because all the required extension methods are built-in in .NET. In other functors, taking the simplest Id<> as example:
-```
+
+```csharp
 // Cannot be compiled.
 Nullable<int> query = from x in nullable
                       where x > 0
@@ -37,7 +38,8 @@ Nullable<int> query = from x in nullable
 ```
 
 This cannot be compiled. Apparently C# compiler does not know how to handle “where”. The [C# language spec](https://msdn.microsoft.com/en-us/library/ms228593.aspx) requires a list query methods to be implemented for corresponding LINQ syntax support, like Where is required for the above query to be compiled. It would be nice if the other functors can be mapped to IEnumerable<> by some natural transformations, so that the built in IEnumerable<> query methods can be leveraged. Actually, with the [yield syntactic sugar](/posts/understanding-linq-to-objects-5-implementing-iterator), these natural transformations are really easy to implement:
-```
+
+```csharp
 [Pure]
 public static partial class NaturalTransformations
 {
@@ -65,7 +67,8 @@ public static partial class NaturalTransformations
 ```
 
 Now full LINQ support are available for all those functors too, with the laziness remains.
-```
+
+```csharp
 IEnumerable<int> query = from x in function.ToEnumerable() 
                          where x > 0 
                          select x + 1;

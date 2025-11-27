@@ -69,7 +69,8 @@ as well as XML grammar:
 ## Language features
 
 Elements like div, li, etc., become more strict. For example, these elements should not includes block level elements and inline elements. These code are valid:
-```
+
+```csharp
 <div> 
     <em>...</em> 
     ...
@@ -82,7 +83,8 @@ Elements like div, li, etc., become more strict. For example, these elements sho
 [](http://11011.net/software/vspaste)
 
 But the following code is invalid:
-```
+
+```csharp
 <div> 
     <em>...</em> 
     <p>...</p> 

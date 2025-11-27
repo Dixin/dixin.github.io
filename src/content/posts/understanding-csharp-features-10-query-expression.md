@@ -3,7 +3,7 @@ title: "Understanding C# Features (10) Query Expression"
 published: 2009-12-16
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -12,7 +12,8 @@ lang: ""
 \[[LINQ via C#](/posts/linq-via-csharp)\] - \[[C# Features](/archive/?tag=C%23%20Features)\]
 
 C# query expression defines a SQL-like query. The following is a query expression working on an IEnumerable<int> sequence:
-```
+
+```csharp
 public static partial class LinqToObjects
 {
     public static IEnumerable<int> Positive(IEnumerable<int> source)
@@ -25,7 +26,8 @@ public static partial class LinqToObjects
 ```
 
 And the following query expression works on a IQeuryable<T> sequence:
-```
+
+```csharp
 public static string[] ProductNames(string categoryName)
 {
     using (AdventureWorksDataContext adventureWorks = new AdventureWorksDataContext())
@@ -43,7 +45,8 @@ public static string[] ProductNames(string categoryName)
 ## Syntax
 
 The syntax of C# query expression is like SQL:
-```
+
+```csharp
 from [Type] identifier in source
 [from [Type] identifier in source]
 [join [Type] identifier in source on expression equals expression [into identifier]]
@@ -75,7 +78,8 @@ Query expression is translated (compiled) to query methods (also called query op
 <table border="0" cellpadding="2" cellspacing="0" width="672"><tbody><tr><td valign="top" width="297">Query expression</td><td valign="top" width="373">Query method</td></tr><tr><td valign="top" width="297">single from clause with select clause</td><td valign="top" width="373">Select</td></tr><tr><td valign="top" width="297">multiple from clauses with select clause</td><td valign="top" width="373">SelectMany</td></tr><tr><td valign="top" width="297">T in from/join clauses</td><td valign="top" width="373">Cast</td></tr><tr><td valign="top" width="297">join clause without into</td><td valign="top" width="373">Join</td></tr><tr><td valign="top" width="297">join clause with into</td><td valign="top" width="373">GroupJoin</td></tr><tr><td valign="top" width="297">let clause</td><td valign="top" width="373">Select</td></tr><tr><td valign="top" width="297">where clauses</td><td valign="top" width="373">Where</td></tr><tr><td valign="top" width="297">orderby clause with or without ascending</td><td valign="top" width="373">OrderBy, ThenBy</td></tr><tr><td valign="top" width="297">orderby clause with descending</td><td valign="top" width="373">OrderByDescending, ThenByDescending</td></tr><tr><td valign="top" width="297">group clause</td><td valign="top" width="373">GroupBy</td></tr><tr><td valign="top" width="297">into with continuation</td><td valign="top" width="373">Nested query</td></tr></tbody></table>
 
 For example, the above 2 query expressions are compiled into query method calls:
-```
+
+```csharp
 public static partial class LinqToObjects
 {
     public static IEnumerable<int> Positive(IEnumerable<int> source)
@@ -189,7 +193,8 @@ In ProductNames method, the categoryName parameter is wrapped into a Closure cla
 ## Query expression pattern
 
 To enable above query keyword, the source for query expression must provide some certain methods. The following classes demonstrate those methods for full support of above query keywords:
-```
+
+```csharp
 public abstract class Source
 {
     public abstract Source<T> Cast<T>();
@@ -247,7 +252,8 @@ Here the query methods are all demonstrated as instance methods. Actually either
 -   System.Linq.Queryable class contains the extension methods for IQueryable<T>
 
 The built-in query methods are all for sequences - either IEnumerable<T> or IQueryable<T>. However, the query expression pattern applies to anything (any CLR type). To demonstrate [this great flexibility](http://www.infoq.com/interviews/LINQ-Erik-Meijer), a query method can be implemented for int (System.Int32 type):
-```
+
+```csharp
 public static partial class Int32Extensions
 {
     public static TResult Select<TResult>(this int value, Func<int, TResult> selector) => selector(value);
@@ -255,7 +261,8 @@ public static partial class Int32Extensions
 ```
 
 This Select method follows the Select signature in above query expression pattern. Also, notice in above compilation table, Select query method can be compiled from the select query keyword. As a result, int (System.Int32 type) now can be queried by LINQ query expression with select clause:
-```
+
+```csharp
 public static void QueryExpression()
 {
     int query1 = from zero in default(int) // 0
@@ -267,7 +274,8 @@ public static void QueryExpression()
 ```
 
 This looks a little too fancy. Actually, at compile time, they become just calls to above Select extension method for int:
-```
+
+```csharp
 public static void QueryMethod()
 {
     int query1 = Int32Extensions.Select(default(int), zero => zero);
@@ -280,7 +288,8 @@ public static void QueryMethod()
 If a Where query method is implemented for int, then the where keyword can be used in LINQ queries to int, and so on.
 
 Here the experiment with Select can go a little further. Select’s int argument can be replaced with any type:
-```
+
+```csharp
 public static partial class ObjectExtensions
 {
     public static TResult Select<TSource, TResult>(this TSource value, Func<TSource, TResult> selector) => selector(value);
@@ -288,13 +297,15 @@ public static partial class ObjectExtensions
 ```
 
 Then similarly there is:
-```
+
+```csharp
 string query = from newGuild in Guid.NewGuid()
                select newGuild.ToString();
 ```
 
 which will be compiled to:
-```
+
+```csharp
 string query = ObjectExtensions.Select(Guid.NewGuid(), newGuild => newGuild.ToString());
 ```
 
@@ -315,14 +326,16 @@ Regarding query expression is compiled to query method calls, either of them can
 -   Consistency. Query expression does not cover all query scenarios/query overloads, then query method has to be used, so that the query ends up a mix of query expression and query methods.
 
 For example, built-in query method Select has 2 overloads:
-```
+
+```csharp
 public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate);
 
 public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate);
 ```
 
 The first Where logic can be expressed by query expression, as fore mentioned, but the second Where cannot. The following query cannot be implemented with query expression:
-```
+
+```csharp
 public static partial class LinqToObjects
 {
     public static IEnumerable<Person> Where
@@ -331,7 +344,8 @@ public static partial class LinqToObjects
 ```
 
 Another example is, query expression cannot page the query results:
-```
+
+```csharp
 public static string[] ProductNames(string categoryName, int pageSize, int pageIndex)
 {
     using (AdventureWorksDataContext adventureWorks = new AdventureWorksDataContext())
@@ -349,7 +363,8 @@ public static string[] ProductNames(string categoryName, int pageSize, int pageI
 ```
 
 Query methods look more consistent:
-```
+
+```csharp
 public static string[] ProductNames2(string categoryName, int pageSize, int pageIndex)
 {
     using (AdventureWorksDataContext adventureWorks = new AdventureWorksDataContext())

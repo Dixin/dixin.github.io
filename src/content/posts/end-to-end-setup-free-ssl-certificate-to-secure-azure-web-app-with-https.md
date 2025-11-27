@@ -3,8 +3,8 @@ title: "End-to-End - Setup free SSL certificate to secure Azure Web App with HTT
 published: 2019-04-09
 description: "It is 2019 now, and HTTP is considered as “not secure”, and HTTPS is the default. This is a end-to-end tutorial of how to setup SSL certificate to secure Azure Web App with HTTPS. It is based on “[Let"
 image: ""
-tags: ["Azure", "Cloud", "Web", "Website", "ASP.NET Core", "PowerShell", "Security", "SSL", "HTTPS", "Encrypt"]
-category: "Azure"
+tags: ["ASP.NET Core", "Azure", "Cloud", "Encrypt", "HTTPS", "PowerShell", "Security", "SSL", "Web", "Website"]
+category: "ASP.NET Core"
 draft: false
 lang: ""
 ---

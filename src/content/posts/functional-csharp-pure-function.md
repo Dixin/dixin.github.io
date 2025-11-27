@@ -3,7 +3,7 @@ title: "C# Functional Programming In-Depth (13) Pure Function"
 published: 2019-06-13
 description: "The previous chapter discusses that functional programming encourages modelling data as immutable. Functional programming also encourages modelling operations as pure functions. The encouraged purity"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "LINQ", "LINQ via C#", "C# Features", "Functional Programming", "Functional C#"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -62,22 +62,24 @@ In contrast, the following examples are pure functions because they are both det
 · Most mathematics functions, like numeric primitive types and decimal’s arithmetic operators, most of System.Math type’s static methods, etc. Take Math.Max and Math.Min as examples, their computed output only depends on the input, and they do not produce any side effect, like mutating state/argument/global variable, producing I/O, etc.:
 
 namespace System
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Math
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static int Max(int val1, int val2) => (val1 >= val2) ? val1 : val2;
 ```
-```
+
+```csharp
 public static int Min(int val1, int val2) => (val1 <= val2) ? val1 : val2;
 ```
-```
+```csharp
 }
 ```
 
@@ -102,37 +104,41 @@ As mentioned in the introduction chapter, there is a specialized functional prog
 .NET Standard provides System.Diagnostics.Contracts.PureAttribute. It can be used for a function member to specify that function is pure, or be used for a type to specify all function members of that type are pure:
 
 \[Pure\]
-```
+
+```csharp
 internal static bool IsPositive(int int32) => int32 > 0;
 ```
-```
+
+```csharp
 internal static bool IsNegative(int int32) // Impure.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Console.WriteLine(int32); // Side effect: console I/O.
 ```
-```
+```csharp
 return int32 < 0;
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 [Pure]
 ```
-```
+```csharp
 internal static class AllFunctionsArePure
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 internal static int Increase(int int32) => int32 + 1; // Pure.
 ```
-```
+
+```csharp
 internal static int Decrease(int int32) => int32 - 1; // Pure.
 ```
 
@@ -151,16 +157,18 @@ Looks great. Unfortunately, this attribute is provided not for general purpose b
 In a function member, the contracts for its code can be specified declaratively with System.Diagnostics.Contracts.Contract type’s static methods. These contracts can be analysed at compile time and runtime. Apparently, they must be referential transparent and cannot rely on any side effect. So, only pure function (function with \[Pure\] contract) are allowed to be called with contracts APIs, like the above IsPositive function:
 
 internal static int DoubleWithPureContracts(int int32)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Contract.Requires<ArgumentOutOfRangeException>(IsPositive(int32)); // Function precondition.
 ```
-```
+```csharp
 Contract.Ensures(IsPositive(Contract.Result<int>())); // Function post condition.
 ```
-```
+
+```csharp
 return int32 + int32; // Function body.
 ```
 
@@ -169,16 +177,18 @@ return int32 + int32; // Function body.
 In contrast, the following example calls impure function (function without \[Pure\] contract) in contracts:
 
 internal static int DoubleWithImpureContracts(int int32)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Contract.Requires<ArgumentOutOfRangeException>(IsNegative(int32)); // Function precondition.
 ```
-```
+```csharp
 Contract.Ensures(IsNegative(Contract.Result<int>())); // Function post condition.
 ```
-```
+
+```csharp
 return int32 + int32; // Function body.
 ```
 
@@ -191,40 +201,42 @@ Code Contracts has been a very useful code tool for compile time and runtime, bu
 When code is compiled and built to assembly, its contracts can either be compiled to the same assembly, or to a separate contracts assembly. Since .NET Framework FCL assemblies are already shipped, Microsoft provides 25 contracts assemblies separately for 25 most commonly used assemblies, including mscorlib.Contracts.dll (contracts for mscorlib.dll core library), System.Core.Contracts.dll (contracts for System.Core.dll assembly of LINQ to Objects and LINQ to Parallel, and remote LINQ APIs), System.Xml.Linq.Contracts.dll (contracts for System.Xml.Linq.dll assembly of LINQ to XML), etc. For example, Math.Abs function is provided in mscorlib.dll, so its contracts are provided in mscorlib.Contracts.dll as empty function with the same signature, with only contracts:
 
 namespace System
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Math
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 [Pure]
 ```
-```
+```csharp
 public static int Abs(int value)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Contract.Requires(value != int.MinValue);
 ```
-```
+```csharp
 Contract.Ensures(Contract.Result<int>() >= 0);
 ```
-```
+```csharp
 Contract.Ensures((value - Contract.Result<int>()) <= 0);
 ```
-```
+
+```csharp
 return default;
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -233,100 +245,103 @@ return default;
 C# and .NET Standard are designed in impure paradigm to allow immutability and mutability, purity and impurity. As a result, only a small percentage of the provided functions are pure. This can be demonstrated by utilizing above contracts assemblies and \[Pure\] contract. The following example has 2 LINQ to Objects queries. The first query counts all pure public functions in the contract assemblies. As fore mentioned, if a function has \[Pure\] attribute, it is pure; if a type has \[Pure\] attribute, its functions are all pure. Then the second query counts all public functions in corresponding library assemblies. In both queries, Mono’s reflection library, Mono.Cecil NuGet package, is used, because it can load .NET Framework assemblies and contracts assemblies correctly from different platforms, including Linux/Mac/Windows.
 
 internal internal static void FunctionCount(
-```
+
+```csharp
 string contractsAssemblyDirectory, string assemblyDirectory)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 bool HasPureAttribute(ICustomAttributeProvider member) =>
 ```
-```
+```csharp
 member.CustomAttributes.Any(attribute =>
 ```
-```
+```csharp
 attribute.AttributeType.FullName.Equals(typeof(PureAttribute).FullName, StringComparison.Ordinal));
 ```
-```
+
+```csharp
 string[] contractsAssemblyPaths = Directory
 ```
-```
+```csharp
 .EnumerateFiles(contractsAssemblyDirectory, "*.Contracts.dll")
 ```
-```
+```csharp
 .ToArray();
 ```
-```
+```csharp
 // Query the count of pure functions in all contracts assemblies, including all public functions in public type with [Pure], and all public function members with [Pure] in public types.
 ```
-```
+```csharp
 int pureFunctionCount = contractsAssemblyPaths
 ```
-```
+```csharp
 .Select(AssemblyDefinition.ReadAssembly)
 ```
-```
+```csharp
 .SelectMany(contractsAssembly => contractsAssembly.Modules)
 ```
-```
+```csharp
 .SelectMany(contractsModule => contractsModule.GetTypes())
 ```
-```
+```csharp
 .Where(contractsType => contractsType.IsPublic)
 ```
-```
+```csharp
 .SelectMany(contractsType => HasPureAttribute(contractsType)
 ```
-```
+```csharp
 ? contractsType.Methods.Where(contractsFunction => contractsFunction.IsPublic)
 ```
-```
+```csharp
 : contractsType.Methods.Where(contractsFunction =>
 ```
-```
+```csharp
 contractsFunction.IsPublic && HasPureAttribute(contractsFunction)))
 ```
-```
+```csharp
 .Count();
 ```
-```
+```csharp
 pureFunctionCount.WriteLine(); // 2223
 ```
-```
+
+```csharp
 // Query the count of all public functions in public types in all FCL assemblies.
 ```
-```
+```csharp
 int functionCount = contractsAssemblyPaths
 ```
-```
+```csharp
 .Select(contractsAssemblyPath => Path.Combine(
 ```
-```
+```csharp
 assemblyDirectory,
 ```
-```
+```csharp
 Path.ChangeExtension(Path.GetFileNameWithoutExtension(contractsAssemblyPath), "dll")))
 ```
-```
+```csharp
 .Select(AssemblyDefinition.ReadAssembly)
 ```
-```
+```csharp
 .SelectMany(assembly => assembly.Modules)
 ```
-```
+```csharp
 .SelectMany(module => module.GetTypes())
 ```
-```
+```csharp
 .Where(type => type.IsPublic)
 ```
-```
+```csharp
 .SelectMany(type => type.Methods)
 ```
-```
+```csharp
 .Count(function => function.IsPublic);
 ```
-```
+```csharp
 functionCount.WriteLine(); // 82566
 ```
 
@@ -339,67 +354,75 @@ As a result, in the 25 most commonly used FCL assemblies, there are only 2.69% p
 All built-in LINQ query methods have 3 kinds of output: a queryable source, a collection, and a single value. All query methods with queryable source output type are pure functions, the other query methods are impure. For example, the fore mentioned Where, Select, OrderBy query methods of local and remote LINQ are pure:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IEnumerable<TSource> Where<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, bool> predicate);
 ```
-```
+
+```csharp
 public static IEnumerable<TResult> Select<TSource, TResult>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TResult> selector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 // Other members.
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class Queryable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IQueryable<TSource> Where<TSource>(
 ```
-```
+```csharp
 this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate);
 ```
-```
+
+```csharp
 public static IQueryable<TResult> Select<TSource, TResult>(
 ```
-```
+```csharp
 this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector);
 ```
-```
+
+```csharp
 public static IOrderedQueryable<TSource> ThenBy<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector);
 ```
-```
+
+```csharp
 // Other members.
 ```
-```
+```csharp
 }
 ```
 
@@ -408,22 +431,24 @@ this IOrderedQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelec
 The following ToArray, ToList query methods of local LINQ output collection, and they are impure:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static TSource[] ToArray<TSource>(this IEnumerable<TSource> source);
 ```
-```
+
+```csharp
 public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source);
 ```
-```
+```csharp
 }
 ```
 
@@ -432,31 +457,33 @@ public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source);
 The following First query methods of local and remote LINQ output a single value, and they are also impure:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static TSource First<TSource>(this IEnumerable<TSource> source);
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class Queryable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static TSource First<TSource>(this IQueryable<TSource> source);
 ```
-```
+```csharp
 }
 ```
 

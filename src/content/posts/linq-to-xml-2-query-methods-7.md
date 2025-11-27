@@ -3,8 +3,8 @@ title: "LINQ to XML in Depth (2) Query Methods (Operators)"
 published: 2018-08-26
 description: "As fore mentioned, LINQ to XML is just a specialized LINQ to Objects, so all the LINQ to Objects query methods can be used in LINQ to XML queries. LINQ to XML provides many function members and other"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -116,7 +116,8 @@ The functions with \* are extension methods provided in static type System.Xml.L
 ## Navigation
 
 LINQ to XML provides rich APIs for navigation. And the methods returning IEnumerable<XObject> are also called [axis methods or axes](https://msdn.microsoft.com/en-us/library/bb387055.aspx). The following example queries the parent element and ancestor element, where. ancestors are parent, parent’s parent, …, recursively:
-```
+
+```csharp
 internal static partial class QueryMethods
 {
     internal static void ParentAndAncestors()
@@ -141,7 +142,8 @@ internal static partial class QueryMethods
 Notice AncestorsAndSelf method yields self first, then yields ancestors recursively. It could be more intuitive if named as SelfAndAncestors.
 
 The following example queries direct child elements. In RSS feed, each <item> can have 0, 1, or multiple tags. And these tags are <category> elements under each <item> element. The following code queries a given RSS feed to get the items with a permalink, then queries the top 5 tags used by these items:
-```
+
+```csharp
 internal static void ChildElements()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -167,7 +169,8 @@ internal static void ChildElements()
 ```
 
 Similar to ancestors, descendants are children, children’s children, …, recursively:
-```
+
+```csharp
 internal static void ChildrenAndDescendants()
 {
     XElement root = XElement.Parse(@"
@@ -211,7 +214,8 @@ internal static void ChildrenAndDescendants()
 ```
 
 Regarding all the X\* types are reference types, when querying the same XML tree, multiple queries’ results from the same source tree can reference to the same instance:
-```
+
+```csharp
 internal static void ResultReferences()
 {
     XDocument rss1 = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -274,7 +278,8 @@ namespace System.Xml.Linq
 ## Ordering
 
 Besides the LINQ to Objects ordering query methods, additional ordering methods are provided by LINQ to XML. The InDocumentOrder query method orders nodes by their positions in the XML tree, from top node down. For example, above Ancestors yields parent, parent’s parent, …, recursively. InDocumentOrder can reorder them from top down. As a result, the query result is reversed:
-```
+
+```csharp
 internal static void DocumentOrder()
 {
     XElement element1 = new XElement("element");
@@ -300,7 +305,8 @@ internal static void DocumentOrder()
 ```
 
 Apparently, InDocumentOrder requires the source nodes sequence to be in the same XML tree. This is determined by looking up a common ancestor of the source nodes:
-```
+
+```csharp
 internal static void CommonAncestor()
 {
     XElement root = XElement.Parse(@"
@@ -341,7 +347,8 @@ LINQ to Objects provides many query methods accepting IComparer<T> or IEqualityC
 -   XNodeEqualityComparer, which implements IEqualityComparer<XNode>. Its Equals method simply calls XNode.DeepEquals. Its instance is provided by XNode.EqualityComparer property.
 
 For example, above InDocumentOrder query method simply calls OrderBy with XNodeDocumentOrderComparer. Its implementation is equivalent to:
-```
+
+```csharp
 public static partial class Extensions
 {
     public static IEnumerable<T> InDocumentOrder<T>(this IEnumerable<T> source) where T : XNode =>
@@ -352,7 +359,8 @@ public static partial class Extensions
 ## More useful queries
 
 With the knowledge of LINQ to Objects and LINQ to XML APIs, more useful query methods can be implemented. For example, the following DescendantObjects method queries an XObject source’s all descendant XObject instances:
-```
+
+```csharp
 public static partial class XExtensions
 {
     public static IEnumerable<XObject> DescendantObjects(this XObject source) =>
@@ -379,7 +387,8 @@ public static partial class XExtensions
 As fore mentioned, XObject can be either node or attribute. So in the query, If the source is element, it yields the element’s attributes; if the source is XContainer, it yields each descendant node; If a descendant node is element, it yields the attributes.
 
 The following SelfAndDescendantObjects method is straightforward to implement:
-```
+
+```csharp
 public static IEnumerable<XObject> SelfAndDescendantObjects(this XObject source) => 
     EnumerableEx
         .Return(source)
@@ -387,7 +396,8 @@ public static IEnumerable<XObject> SelfAndDescendantObjects(this XObject source)
 ```
 
 The Names method queries a XContainer source for all elements’ and attributes’ names:
-```
+
+```csharp
 public static IEnumerable<XName> Names(this XContainer source) =>
     (source is XElement element
         ? element.DescendantsAndSelf()
@@ -403,7 +413,8 @@ public static IEnumerable<XName> Names(this XContainer source) =>
 As fore mentioned, XName instances are cached, so Distinct is called to remove the duplicated references.
 
 Above built-in Attributes method is for querying an element’s attributes. The following AllAttributes queries an XContainer source’s attributes (if it is an element) and all its descendant elements’ attributes:
-```
+
+```csharp
 public static IEnumerable<XAttribute> AllAttributes(this XContainer source) =>
     (source is XElement element 
         ? element.DescendantsAndSelf() 
@@ -412,7 +423,8 @@ public static IEnumerable<XAttribute> AllAttributes(this XContainer source) =>
 ```
 
 The following Namespaces methods queries all namespaces defined in a XContainer source:
-```
+
+```csharp
 public static IEnumerable<(string, XNamespace)> Namespaces(this XContainer source) =>
     source // Namespaces are defined as xmlns:prefix="namespace" attributes.
         .AllAttributes()
@@ -458,7 +470,8 @@ This method is used later when working with XPath.
 LINQ to XML also provides a few extension methods to work with XPath. The latest XPath version is 3.0, .NET and LINQ to XML implements XPath 1.0.
 
 The CreateNavigator methods creates a XmlXPathNavigator, which can be used for navigation and querying:
-```
+
+```csharp
 internal static void XPathNavigator()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -488,7 +501,8 @@ internal static void XPathNavigator()
 It implements the same query as previous RSS tags example.
 
 The XPathSelectElements method is a shortcut of calling CreateNavigator to get an XPathNavigator and then call Evaluate. The above query can be shorten as:
-```
+
+```csharp
 internal static void XPathQuery()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -510,7 +524,8 @@ internal static void XPathQuery()
 And XPathSelectElement is simply a shortcut of calling XPathSelectElements to get a sequence, then call FirstOrDefault.
 
 XPathEvaluate also calls CreateNavigator and then Evaluate, but it is more flexible. When the XPath is evaluated to a single value, it just returns that value. The following example queries the RSS feed for the average tags count of each <item> element, and also the equivalent LINQ query:
-```
+
+```csharp
 internal static void XPathEvaluateValue()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -527,7 +542,8 @@ internal static void XPathEvaluateValue()
 ```
 
 When the XPath is evaluated to a sequence of values, XPathEvaluate returns IEnumerable<object>:
-```
+
+```csharp
 internal static void XPathEvaluateSequence()
 {
     XDocument rss = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -573,7 +589,8 @@ LINQ to XML also provides overloads for these XPath methods to accept an IXmlNam
 ```
 
 It contains additional information than the standard RSS format, and these additional elements/attributes are managed by namespaces. The following example calls the overload of XPathSelectElements to query the <media:category> elements:
-```
+
+```csharp
 internal static void XPathQueryWithNamespace()
 {
     XDocument rss = XDocument.Load("https://www.flickr.com/services/feeds/photos_public.gne?id=64715861@N07&format=rss2");
@@ -589,7 +606,8 @@ internal static void XPathQueryWithNamespace()
 Since prefix “media” is in XPath expression, An IXmlNamespaceResolver instance is required. XmlNamespaceManager implements IXmlNamespaceResolver, so simply call the the previously defined CreateNamespaceManager method to create it. In contrast, querying the same XPath expression without IXmlNamespaceResolver instance throws XPathException.
 
 The last example calls the overload of XPathEvaluate to query the items’ titles, which has the tag “microsoft” in the <media:category> element:
-```
+
+```csharp
 internal static void XPathEvaluateSequenceWithNamespace()
 {
     XDocument rss = XDocument.Load("https://www.flickr.com/services/feeds/photos_public.gne?id=64715861@N07&format=rss2");
@@ -621,7 +639,8 @@ To leverage LINQ to XML, one example is to generate XPath expression for a speci
 -   also, the position predicate can be omitted if current object has no ambiguous sibling objects, so that XPath of parent object combining XPath of current object selects one single object. For example, if current node is a comment node with no sibling comment node, then parentElement/comment() without position predicate is good enough
 
 First of all, a helper method is needed to calculate the current element or attribute’s name, which should be in simple localName format if the XName instance is not under any namespace, and should be in prefix:localName format if the XName instance is under a namespace. XName.ToString does not work for this requirement, because it returns the {namespaceUri}localName format, as already demonstrated. So the following XPath method can be defined for name:
-```
+
+```csharp
 public static string XPath(this XName source, XElement container)
 {
     string prefix = source.Namespace == XNamespace.None
@@ -667,7 +686,8 @@ private static string XPath<TSource>(
 ```
 
 Now, the following XPath method can be defined to generate XPath expression for an element:
-```
+
+```csharp
 public static string XPath(this XElement source, string parentXPath = null) => 
     string.IsNullOrEmpty(parentXPath) && source.Parent == null && source.Document == null
         ? "/" // source is an element on the fly, not attached to any parent node.
@@ -684,7 +704,8 @@ In this method, there is a special case for element. As fore mentioned, an eleme
 -   A lambda expression to identify ambiguous sibling elements with the same element name, so that the proper XPath predicate can be generated
 
 The XPath overloads for comment/text/processing instruction nodes are straightforward:
-```
+
+```csharp
 public static string XPath(this XComment source, string parentXPath = null) => 
     source.XPath(parentXPath ?? source.Parent?.XPath(), "comment()");
 
@@ -699,13 +720,15 @@ public static string XPath(this XProcessingInstruction source, string parentXPat
 ```
 
 And the XPath overload for attribute just combine parent element’s XPath with the format of @attributeName:
-```
+
+```csharp
 public static string XPath(this XAttribute source, string parentXPath = null) => 
     CombineXPath(parentXPath ?? source.Parent?.XPath(), $"@{source.Name.XPath(source.Parent)}");
 ```
 
 Here are some examples of using these methods:
-```
+
+```csharp
 internal static void GenerateXPath()
 {
     XDocument aspNetRss = XDocument.Load("https://weblogs.asp.net/dixin/rss");

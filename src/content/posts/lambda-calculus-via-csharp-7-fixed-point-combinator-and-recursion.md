@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (7) Fixed Point Combinator and Recursion"
 published: 2024-11-23
 description: "p is the ) (aka invariant point) of function f :"
 image: ""
-tags: ["LINQ via C#", "C#", ".NET", "Lambda Calculus", "Functional Programming", "Combinators", "Combinatory Logic", "Fixed Point Combinator", "Y Combinator"]
-category: "LINQ via C#"
+tags: [".NET", "C#", "Combinators", "Combinatory Logic", "Fixed Point Combinator", "Functional Programming", "Lambda Calculus", "LINQ via C#", "Y Combinator"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -14,7 +14,8 @@ lang: ""
 ## \[[Lambda Calculus via C# series](/archive/?tag=Lambda%20Calculus)\]
 
 p is the [fixed point](http://en.wikipedia.org/wiki/Fixed_point_\(mathematics\)) (aka invariant point) of function f [if and only if](http://en.wikipedia.org/wiki/If_and_only_if):
-```
+
+```csharp
 p
 ≡ f p
 ```
@@ -24,7 +25,8 @@ Take function Math.Sqrt as example, it has 2 fix point, 0 and 1, so that 0 ≡ M
 [![FixedPoint.fw_thumb2_thumb](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Lambda-Calculus-via-C-7-Fixed-Point-Comb_DA7/FixedPoint.fw_thumb2_thumb_thumb.png "FixedPoint.fw_thumb2_thumb")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Lambda-Calculus-via-C-7-Fixed-Point-Comb_DA7/FixedPoint.fw_thumb2_thumb_2.png)
 
 The above fixed point definition also leads to infinite substitution:
-```
+
+```csharp
 p
 ≡ f p
 ≡ f (f p)
@@ -34,7 +36,8 @@ p
 ```
 
 Similarly, the [fixed point combinator](http://en.wikipedia.org/wiki/Fixed_point_combinator) Y is defined as if Y f is the fixed point of f:
-```
+
+```csharp
 (Y f)
 ≡ f (Y f)
 ```
@@ -42,12 +45,14 @@ Similarly, the [fixed point combinator](http://en.wikipedia.org/wiki/Fixed_point
 ## Normal order fixed point combinator (Y combinator) and recursion
 
 The following [Y combinator](http://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed_point_combinators_in_lambda_calculus) is an implementation of fixed point combinator, discovered by Haskell Curry:
-```
+
+```csharp
 Y := λf.(λg.f (g g)) (λg.f (g g))
 ```
 
 It is called the normal order fixed point combinator:
-```
+
+```csharp
 Y f
 ≡ (λf.(λg.f (g g)) (λg.f (g g))) f
 ≡ (λg.f (g g)) (λg.f (g g))
@@ -58,17 +63,20 @@ Y f
 [![y_combinator](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/3c3b4cb86227_12489/y_combinator_1.jpg "y_combinator")](http://matt.might.net/articles/compiling-up-to-lambda-calculus/)
 
 The following is Y implemented in SKI:
-```
+
+```csharp
 Y := S (K (S I I)) (S (S (K S) K) (K (S I I)))
 ```
 
 And just in SK:
-```
+
+```csharp
 Y := S S K (S (K (S S (S (S S K)))) K)
 ```
 
 When Y f can also be substituted infinitely:
-```
+
+```csharp
 (Y f)
 ≡ f (Y f)
 ≡ f (f (Y f))
@@ -85,28 +93,33 @@ So Y can be used to implement [recursion](http://en.wikipedia.org/wiki/Recursion
 -   if n is 0, then factorial of n is 1
 
 So naturally:
-```
+
+```csharp
 Factorial := λn.If (n == 0) (λx.1) (λx.n * (Factorial (n - 1)))
 ```
 
 However, in lambda calculus the above definition is illegal, because the self reference does not work anonymously:
-```
+
+```csharp
 λn.If (n == 0) (λx.1) (λx.n * (? (n - 1)))
 ```
 
 Now with the power of Y combinator, the recursion can be implemented, but still in the anonymous way. First, in above definition, just pass the reference of itself as an variable/argument:
-```
+
+```csharp
 λf.λn.If (n == 0) (λx.1) (λx.n * (f (n - 1)))
 ```
 
 If the above function is called FactorialHelper, then the Factorial function can be implemented as:
-```
+
+```csharp
 FactorialHelper := λf.λn.If (n == 0) (λx.1) (λx.n * (f (n - 1)))
 Factorial := Y FactorialHelper
 ```
 
 So the recursive Factorial is implemented anonymously:
-```
+
+```csharp
 Factorial
 ≡ Y FactorialHelper
 ≡ (λf.(λg.f (g g)) (λg.f (g g))) FactorialHelper
@@ -114,7 +127,8 @@ Factorial
 ```
 
 When Factorial is applied, according to the definition of Factorial and Y:
-```
+
+```csharp
 Factorial 3
 ≡ Y FactorialHelper 3
 ≡ FactorialHelper (Y FactorialHelper) 3
@@ -123,7 +137,8 @@ Factorial 3
 Here (Y FactorialHelper) can be substituted by Factorial, according to the definition. So FactorialHelper is called with Factorial and n, exactly as expected.
 
 The normal order Y combinator does not work with applicative order reduction. In applicative order, here FactorialHelper is applied with (Y FactorialHelper), so the right most argument Y FactorialHelper should be reduced first, which leads to infinite reduction:
-```
+
+```csharp
 FactorialHelper (Y FactorialHelper) 3
 ≡ FactorialHelper (FactorialHelper (Y FactorialHelper)) 3
 ≡ FactorialHelper (FactorialHelper (FactorialHelper (Y FactorialHelper))) 3
@@ -131,7 +146,8 @@ FactorialHelper (Y FactorialHelper) 3
 ```
 
 The normal order Y combinator only works with normal order. In normal order, here FactorialHelper is applied with (Y FactorialHelper), so the left most function FactorialHelper should be reduced first:
-```
+
+```csharp
 FactorialHelper (Y FactorialHelper) 3
 ≡ (λf.λn.If (n == 0) (λx.1) (λx.n * (f (n - 1)))) (Y FactorialHelper) 3
 ≡ (λn.If (n == 0) (λx.1) (λx.n * (Y FactorialHelper (n - 1)))) 3
@@ -163,7 +179,8 @@ So the Y f infinite reduction is blocked in in normal order reduction. First, Y 
 -   If n is 0, Y Factorial n is reduced to 1. The reduction ends, so the recursion terminates.
 
 Y combinator is easy to implement in C#. Generally, for a recursive function f of type T -> TResult, its helper function accepts the T -> TResult function and a T value, then return TResult, so its helper function is of type (T -> TResult) –> T -> TResult. Y can be viewed as accepting helper function and returns f. so Y is of type ((T -> TResult) –> T -> TResult) -> (T -> TResult). So:
-```
+
+```csharp
 public static partial class FixedPointCombinators<T, TResult>
 {
     // Y = (g => f(g(g)))(g => f(g(g)))
@@ -182,7 +199,8 @@ Here are the types of the elements in above lambda expression:
 -   (g => f(g(g)))(g => f(g(g))): T -> TResult
 
 For Factorial, apparently it is of function type Numeral -> Numeral, so FactorialHelper is of function type (Numeral -> Numeral) –> Numeral -> Numeral:
-```
+
+```csharp
 using static FixedPointCombinators<Numeral, Numeral>;
 
 public static partial class ChurchNumeral
@@ -204,12 +222,14 @@ Calling above Factorial always throws StackOverflowException, because in C# exec
 ## Applicative order fixed point combinator (Z combinator) and recursion
 
 The above Y combinator does not work in C#. When reducing Y f in applicative order, the self application in expression f (g g) leads to infinite reduction, which need to be blocked. The solution is to eta convert f (g g) to λx.f (g g) x. So the applicative order fixed point combinator is:
-```
+
+```csharp
 Z := λf.(λg.λx.f (g g) x) (λg.λx.f (g g) x)
 ```
 
 It is called Z combinator. Now reduce Z f in applicative order:
-```
+
+```csharp
 Z f
 ≡ (λf.(λg.λx.f (g g) x) (λg.λx.f (g g) x)) f
 ≡ (λg.λx.f (g g) x) (λg.λx.f (g g) x)
@@ -218,7 +238,8 @@ Z f
 ```
 
 This time Z f is not reduced to f (Z f), but reduced to the eta expanded version λx.f (Z f) x, so any further reduction is blocked. Still take factorial as example:
-```
+
+```csharp
 Factorial 3
 ≡ Z FactorialHelper 3
 ≡ (λx.FactorialHelper (Z FactorialHelper) x) 3
@@ -256,7 +277,8 @@ Factorial 3
 ```
 
 In C#, Z combinator can be implemented in the same pattern. Just eta expand f(g(g)) to x => f(g(g))(x):
-```
+
+```csharp
 public static partial class FixedPointCombinators<T, TResult>
 {
     // Z = (g => x => f(g(g))(x))(g => x => f(g(g))(x))
@@ -292,23 +314,27 @@ Another recursion example is [Fibonacci](http://en.wikipedia.org/wiki/Fibonacci_
 -   if n is 1 or 0, then the nth Fibonacci number is n
 
 So naturally:
-```
+
+```csharp
 Fibonacci := λn.If (n > 1) (λx.(Fibonacci (n - 1)) + (Fibonacci (n - 2))) (λx.n)
 ```
 
 Again, the above recursive definition is illegal in lambda calculus, because the self reference does not work anonymously:
-```
+
+```csharp
 λn.If (n > 1) (λx.(? (n - 1)) + (? (n - 2))) (λx.n)
 ```
 
 Following the same helper function pattern as FactorialHelper, a FibonacciHelper can be defined to pass the Fibonacci function as a variable/argument, then Fibonacci can be defined with Z and FibonacciHelper:
-```
+
+```csharp
 FibonacciHelper := λf.λn.If (n > 1) (λx.(f (n - 1)) + (f (n - 2))) (λx.n)
 Fibonacci := Z FibonacciHelper
 ```
 
 Now Fibonacci is recursive but still can go anonymous, without any self reference:
-```
+
+```csharp
 Fibonacci
 ≡ Z FibonacciHelper
 ≡ (λf.(λg.λx.f (g g) x) (λg.λx.f (g g) x)) FibonacciHelper
@@ -331,18 +357,21 @@ public static readonly Func<Numeral, Numeral>
 ```
 
 Previously, in the [Church numeral arithmetic](/posts/lambda-calculus-via-c-sharp-11-predicates-and-divide), the following illegal DivideBy with self reference was temporarily used:
-```
+
+```csharp
 DivideBy := λa.λb.If (a >= b) (λx.1 + (DivideBy (a - b) b)) (λx.0)
 ```
 
 Finally, with Z, an legal DivideBy in lambda calculus can be defined, following the same helper function pattern:
-```
+
+```csharp
 DivideByHelper := λf.λa.λb.If (a >= b) (λx.1 + (f (a - b) b)) (λx.0)
 DivideBy := Z DivideByHelper
 ```
 
 The following is the formal version of DivideBy:
-```
+
+```csharp
 DivideBy
 ≡ Z DivideByHelper
 ≡ (λf.(λg.λx.f (g g) x) (λg.λx.f (g g) x)) DivideByHelper
@@ -365,7 +394,8 @@ public static readonly Func<Numeral, Func<Numeral, Numeral>>
 ```
 
 The following are a few examples
-```
+
+```csharp
 public static partial class NumeralExtensions
 {
     public static Numeral Factorial(this Numeral n) => ChurchNumeral.Factorial(n);

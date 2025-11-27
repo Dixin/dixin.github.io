@@ -23,7 +23,8 @@ Understanding C# Covariance And Conreavariance:
 Not many generic types in .NET have variant type parameter(s). LINQ can be uses to query these generic types from .NET libraries.
 
 The following method queries a specified directory, and retrieve all .NET assemblies:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<Assembly> GetAssemblies(string directory)
@@ -46,7 +47,8 @@ public static partial class ReflectionHelper
 ```
 
 The following method queries one specified assembly, and filter generic types with any variant type parameter:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<Type> GetTypesWithVariance(Assembly assembly)
@@ -70,7 +72,8 @@ public static partial class ReflectionHelper
 ```
 
 The last method queries the assemblies in the same directory of mscorlib.dll, and retrieves the wanted types, and orders them by name:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<Type> GetTypesWithVariance()

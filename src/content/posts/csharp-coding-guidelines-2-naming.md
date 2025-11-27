@@ -156,7 +156,8 @@ protected override void OnLoad(EventArgs e)
 [](http://11011.net/software/vspaste)
 
 For the other scenarios, like exception, error, element, event, … e should not be used:
-```
+
+```csharp
 try
 { 
 }

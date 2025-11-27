@@ -41,7 +41,8 @@ Apparently, a Derived object “[is a](https://en.wikipedia.org/wiki/Is-a)” Ba
 ## Non-generic delegate
 
 By using above Base/Derived as input/output of method, there are 4 combinations:
-```
+
+```csharp
 public static class Methods
 {
     public static Base DerivedIn_BaseOut(Derived @in)
@@ -69,12 +70,14 @@ public static class Methods
 ### Bind method to a delegate
 
 Before C# 4.0, C# already supported covariance and contravariance for delegates without generics. Consider the following delegate type:
-```
+
+```csharp
 public delegate Base DerivedIn_BaseOut(Derived @in);
 ```
 
 Above Methods.DerivedIn\_BaseOut’s signature matches this delegate type, so Methods.DerivedIn\_BaseOut can be bound to its delegate instance:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public static void Bind()
@@ -93,7 +96,8 @@ public static partial class NonGenericDelegate
 Methods.DerivedIn\_DerivedOut has a different signature from DerivedIn\_BaseOut delegate type. The former returns a more derived type. There is a “is-a” relationship between their return types, but there is no intuitive relationship between the two signatures.
 
 However, C# compiler and the CLR both allow the following binding (assignment) before C# 4.0:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public static void Covariance()
@@ -114,7 +118,8 @@ Here a bound method can return a more derived type than the delegate type. This 
 ### Contravariance
 
 Methods.BaseIn\_BaseOut required a less-derived parameter then DerivedIn\_BaseOut delegate type. The following binding also works before C# 4.0:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public static void Contravariance()
@@ -135,7 +140,8 @@ Here a method can have less derived parameter type than the delegate type. This 
 ### Covariance and contravariance
 
 It is easy to predict, Methods.BaseIn\_DerivedOut, with more derived parameter type and less derived return type, can be also bound to DerivedIn\_BaseOut:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
 
@@ -158,7 +164,8 @@ Here covariance and contravariance both happen for the same binding.
 ### Invalid variance
 
 In the following bindings, there is no valid variance, so they cannot be compiled:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public delegate Derived BaseIn_DerivedOut(Base @base);
@@ -196,12 +203,14 @@ Please notice these rules does not apply to value types. Basically value types h
 ## Generic delegate
 
 With C# 2.0 generic delegate, the above XxxIn\_XxxOut delegate types can be represented by the following:
-```
+
+```csharp
 public delegate TOut Func<TIn, TOut>(TIn @in);
 ```
 
 Then above method bindings become:
-```
+
+```csharp
 public static partial class GenericDelegateWithVariances
 {
     public static void BindMethods()
@@ -222,7 +231,8 @@ public static partial class GenericDelegateWithVariances
 ```
 
 C# 3.0 introduced lambda expression. However, the above bindings cannot be used for lambda expression:
-```
+
+```csharp
 public static partial class GenericDelegate
 {
     public static void BindLambdas()
@@ -249,12 +259,14 @@ public static partial class GenericDelegate
 ### The out and in keywords
 
 C# 4.0 uses the in/out keywords to specify a type parameter is contravariant/covariant. So above generic delegate can be defined as:
-```
+
+```csharp
 public delegate TOut Func<in TIn, out TOut>(TIn @in);
 ```
 
 Now the bindings work for both methods and lambda expressions:
-```
+
+```csharp
 public static partial class GenericDelegateWithVariances
 {
     public static void BindMethods()
@@ -292,7 +304,8 @@ public static partial class GenericDelegateWithVariances
 ```
 
 The in/out keywords also constrains the usage of the decorated type parameter to guarantee the variances. The following generic delegate types are invalid and cannot be compiled:
-```
+
+```csharp
 public static partial class GenericDelegateWithVariances
 {
 #if Uncompilable

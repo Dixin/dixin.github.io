@@ -3,8 +3,8 @@ title: "Category Theory via C# (13) Monoidal Functor-like Tuple<> And Task<>"
 published: 2018-12-14
 description: "Theoretically, Tuple<> should be counted as the Id<> monoidal functor. However, as previously mentioned, it is lack of laziness."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Tuple<>: lack of laziness
 
 Theoretically, Tuple<> should be counted as the Id<> monoidal functor. However, as previously mentioned, it is lack of laziness.
-```
+
+```csharp
 // [Pure]
 public static partial class TupleExtensions
 {
@@ -48,7 +49,8 @@ Tuple<> is most close to the [Haskell Id Applicative](https://hackage.haskell.or
 ## Task<>: lack of purity
 
 Task<> also seems monoidal functor, but is lack of purity:
-```
+
+```csharp
 // Impure.
 public static partial class TaskExtensions
 {
@@ -76,7 +78,8 @@ public static partial class TaskExtensions
 ## Unit tests
 
 Following unit tests demonstrate the usage of Tuple<> and Task<>. Notice Tuple is lack of laziness, and Task<>’s extension methods work for both cold tasks and hot tasks.
-```
+
+```csharp
 public partial class MonoidalFunctorTests
 {
     [TestMethod()]

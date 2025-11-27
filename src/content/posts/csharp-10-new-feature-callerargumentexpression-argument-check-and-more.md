@@ -3,7 +3,7 @@ title: "C# 10 new feature CallerArgumentExpression, argument check and more"
 published: 2021-11-14
 description: "The CallerArgumentExpression has been discussed for years, it was supposed to a part of C# 8.0 but got delayed. Finally this month it is delivered along with C# 10 and .NET 6."
 image: ""
-tags: [".NET", ".NET Core", ".NET Standard", "C# Features", "C# 10.0"]
+tags: [".NET", ".NET Core", ".NET Standard", "C# 10.0", "C# Features"]
 category: ".NET"
 draft: false
 lang: ""
@@ -26,7 +26,8 @@ void Function(int a, TimeSpan b, [CallerArgumentExpression("a")] string c = "", 
 ```
 
 When calling above function, The magic happens at compile time:
-```
+
+```csharp
 Function(1, default);
 // Compiled to: 
 Function(1, default, "1", "default");
@@ -47,7 +48,8 @@ Function’s parameter c is decorated with \[CallerArgumentExpression("a")\]. So
 ## Argument check
 
 The most useful scenario of this feature is argument check. In the past, a lot of argument check utility methods are created like this:
-```
+
+```csharp
 public static partial class Argument
 {
     public static void NotNull<T>([NotNull] T? value, string name) where T : class
@@ -77,7 +79,8 @@ public static partial class Argument
 ```
 
 So they can be used as:
-```
+
+```csharp
 public partial record Person
 {
     public Person(string name, int age, Uri link)
@@ -98,7 +101,8 @@ public partial record Person
 ```
 
 The problem is, it is very annoying to pass argument name every time. There are some ways to get rid of manually passing argument name, but these approaches introduces other issues. For example, a lambda expression with closure can be used:
-```
+
+```csharp
 public partial record Person
 {
     public Person(Uri link)
@@ -161,7 +165,8 @@ public static partial class Argument
 ```
 
 These approaches introduce the lambda syntax and performance overhead at runtime. And they are extremely fragile too. Now C# 10’s CallerArgumentExpression finally provides a cleaner solution:
-```
+
+```csharp
 public static partial class Argument
 {
     public static T NotNull<T>([NotNull] this T? value, [CallerArgumentExpression("value")] string name = "")
@@ -181,7 +186,8 @@ public static partial class Argument
 ```
 
 Now the argument check can be shorter and fluent:
-```
+
+```csharp
 public record Person
 {
     public Person(string name, int age, Uri link) => 
@@ -202,7 +208,8 @@ The argument name is generated at compile time and there is no performance overh
 ## Assertion and logging
 
 The other useful scenarios could be assertion and logging:
-```
+
+```csharp
 [Conditional("DEBUG")]
 static void Assert(bool condition, [CallerArgumentExpression("condition")] string expression = "")
 {

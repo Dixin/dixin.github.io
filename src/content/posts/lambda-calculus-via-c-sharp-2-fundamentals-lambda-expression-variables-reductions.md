@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (2) Fundamentals - Lambda Expression, Variables, 
 published: 2018-11-02
 description: "The C# lambda expression . This post will explain lambda expression and other concepts in lambda calculus."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -81,13 +81,15 @@ In the above example of λx.y (λx.z x), the inner lambda expression λx.z x can
 ### η-conversion / eta-conversion
 
 [Eta-conversion](http://en.wikipedia.org/wiki/Lambda_calculus#.CE.B7-conversion) means 2 functions are the same [if and only if](http://en.wikipedia.org/wiki/If_and_only_if) they give the same result for all arguments. It converts between λx.(f x) and f whenever x does not appear free in f. Here is an example in C#:
-```
+
+```csharp
 Func<int, bool> isEven = x => x % 2 == 0;
 Enumerable.Range(0, 5).Where(x => isEven(x)).ForEach(x => Console.WriteLine(x));
 ```
 
 It can be reduced to:
-```
+
+```csharp
 Enumerable.Range(0, 5).Where(isEven).ForEach(Console.WriteLine);
 ```
 

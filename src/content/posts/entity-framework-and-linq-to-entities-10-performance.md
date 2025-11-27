@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (10) Performance"
 published: 2016-02-17
 description: "The previous parts has discussed a few aspects that can impact the performance of Entity Framework and LINQ to Entities, and here is a summary:"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -36,7 +36,8 @@ This part continues discussing performance.
 ## Initialization
 
 The following example simply pulls categories from the repository, with one LINQ to Entities query:
-```
+
+```csharp
 internal static class Query
 {
     internal static void Table()
@@ -150,7 +151,8 @@ namespace System.Data.Entity.SqlServer
 For any on premise SQL engine newer than 11.0, just use “2012”.
 
 Also, apparently the AdventureWorks database does not have the migration history and entity data model info, and creating database is not needed as well. So the database initialization can be turned off, by setting the initializer to NullDatabaseInitializer<TContext>:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     static AdventureWorks()
@@ -200,7 +202,8 @@ Entity Framework provides several built-in initializers under System.Data.Entity
 -   CreateDatabaseIfNotExists<TContext>: Create database if not exist.
 
 CreateDatabaseIfNotExists<TContext>: is the default initializer, so it is executed here too. As a result, Entity Framework attempts to [query the existence of the mapped tables and views, database migration history, and entity data model info, etc](https://romiller.com/2014/06/10/reducing-code-first-database-chatter/). Apparently, here AdventureWorks database does not have the migration and entity data model info; recreating database is not needed as well. So the database initialization can be turned off, by setting the initializer to NullDatabaseInitializer<TContext>:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     static AdventureWorks()
@@ -294,7 +297,8 @@ internal static void UncachedEntity()
 ```
 
 DbSet.Find accept the primary keys and returns an entity. Calling Find can improve the performance, because it looks up cache before querying the repository:
-```
+
+```csharp
 internal static void Find()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -317,7 +321,8 @@ As discussed in the query translation part, Entity Framework translates a LINQ t
 -   Generate SQL from database command tree
 
 To improve the performance, the generated SQL is automatically cached for each database command tree. Take the following query as example:
-```
+
+```csharp
 internal static void TranslationCache()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -342,7 +347,8 @@ Entity Framework always convert the LINQ query’s expression tree to database c
 The translations are cached in a dictionary, so the generated key is used to look up a dictionary value. If not found, then generate SQL and add to the dictionary. This cached value is called query plan, and represented by System.Data.Entity.Core.Objects.Internal.ObjectQueryExecutionPlan. It includes the translated database query represented by DbCommand and System.Data.Entity.Core.Common.DbCommandDefinition, and other metadata, like parameters, result type, etc..
 
 The following example executes 2 LINQ to Entities queries:
-```
+
+```csharp
 internal static void UncachedTranslation()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -364,7 +370,8 @@ These first LINQ query builds expression trees with a ConstantExpression node re
 -   \[Filter\](BV'LQ1'=(\[Scan\](AdventureWorks.ProductCategories:Transient.collection\[Dixin.Linq.EntityFramework.ProductCategory(Nullable=True,DefaultValue=)\]))(\[>=\](FUNC<Edm.Length(In Edm.String(Nullable=True,DefaultValue=,MaxLength=,Unicode=,FixedLength=))>:ARGS((Var('LQ1')\[.\]Name)),10:Edm.Int32(Nullable=True,DefaultValue=))))
 
 So their query translation cannot be reused for each other. To resolve this problem, these queries can be parameterized by simply replace the constants with variables:
-```
+
+```csharp
 internal static void CachedTranslation()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -425,7 +432,8 @@ The variable access is compiled to filed access. So in the LINQ queries’ expre
 So the query translations have identical cache key, and their translations can be reused for each other.
 
 If a query method accepts values instead of lambda expression, this parameterization approach does not work. For example, Skip and Take accept int values as parameters:
-```
+
+```csharp
 internal static void UncachedSkipTake()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -463,7 +471,8 @@ namespace System.Data.Entity
 ```
 
 Now Skip and Take can access variables via closure:
-```
+
+```csharp
 internal static void CachedSkipTake()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -551,7 +560,8 @@ For these operations and APIs, Entity Framework provides async parities as IQuer
 -   QueryableExtensions provides async methods to return a new collection: ToArrayAsync, ToDictionaryAsync, ToListAsync
 
 For data changes, DbContext.SaveChangesAsync is provided as a parity of DbContext.SaveChanges. For example:
-```
+
+```csharp
 internal static async Task Async()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -697,7 +707,8 @@ internal static async Task TransactionScopeAsync()
 ### Asynchronous concurrency conflicts
 
 Entity Framework also provides async APIs for other database operations. In the previous concurrency part, a DbContext.SaveChanges overload is implemented to handle concurrency conflict, refresh entity, and retry saving changes. Here a async version can be implemented easily:
-```
+
+```csharp
 public static partial class DbContextExtensions
 {
     public static async Task<int> SaveChangesAsync(
@@ -737,7 +748,8 @@ public static partial class DbContextExtensions
 ```
 
 With the async/await syntactic sugar, the implementation looks very similar to the synchronous version. The following are the SaveChangesAsync overloads to accept RefreshConflict enumeration:
-```
+
+```csharp
 public static partial class DbContextExtensions
 {
     public static async Task<int> SaveChangesAsync(
@@ -777,7 +789,8 @@ public static partial class DbContextExtensions
 ```
 
 Instead of calling the previously defined Refresh extension method to refresh the DbEntityEntry object, here a async method RefreshAsync is called to refresh asynchronously:
-```
+
+```csharp
 public static partial class DbEntutyEntryExtensions
 {
     public static async Task<DbEntityEntry> RefreshAsync(this DbEntityEntry tracking, RefreshConflict refreshMode)
@@ -828,7 +841,8 @@ public static partial class DbEntutyEntryExtensions
 ```
 
 Now concurrency conflict can be resolved automatically and asynchronously:
-```
+
+```csharp
 internal static async Task SaveChangesAsync()
 {
     using (AdventureWorks adventureWorks1 = new AdventureWorks())

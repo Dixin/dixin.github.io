@@ -3,8 +3,8 @@ title: "Category Theory via C# (7) Monad and LINQ to Monads"
 published: 2024-12-26
 description: "As fore mentioned endofunctor category can be monoidal (the entire category. Actually, an endofunctor In the endofunctor category can be monoidal too. This kind of endofunctor is called monad. Monad i"
 image: ""
-tags: ["C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "LINQ via C#", "Monads"]
-category: "C#"
+tags: [".NET", "C#", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monads"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -52,7 +52,8 @@ public partial interface IMonad<TMonad<>> : IFunctor<TMonad<>> where TMonad<> : 
 ### Built-in IEnumerable<> monad
 
 The previously discussed IEnumerable<> functor is a built-in monad, it is straightforward to implement its (Multiply, Unit) method pair:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IMonad<IEnumerable<>>
 {
     // Multiply: IEnumerable<IEnumerable<TSource>> -> IEnumerable<TSource>
@@ -76,7 +77,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IMonad<IEnu
 ```
 
 The monoid unit η is exactly the same as the Wrap method for monoidal functor. It is easy to verify the above implementation preserves the monoid laws:
-```
+
+```csharp
 internal static void MonoidLaws()
 {
     IEnumerable<int> source = new int[] { 0, 1, 2, 3, 4 };
@@ -110,7 +112,8 @@ public partial interface IMonad<TMonad> where TMonad<> : IMonad<TMonad<>>
 ```
 
 And the alternative implementation is very similar:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IMonad<IEnumerable<>>
 {
     // SelectMany: (IEnumerable<TSource>, TSource -> IEnumerable<TSelector>, (TSource, TSelector) -> TResult) -> IEnumerable<TResult>
@@ -137,7 +140,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IMonad<IEnu
 ```
 
 The above 2 versions of monad definition are equivalent. First, the (SelectMany, Wrap) methods can be implemented with the (Select, Multiply, Unit) methods:
-```
+
+```csharp
 public static partial class EnumerableExtensions // (Select, Multiply, Unit) implements (SelectMany, Wrap).
 {
     // SelectMany: (IEnumerable<TSource>, TSource -> IEnumerable<TSelector>, (TSource, TSelector) -> TResult) -> IEnumerable<TResult>
@@ -157,7 +161,8 @@ public static partial class EnumerableExtensions // (Select, Multiply, Unit) imp
 ```
 
 And the (Select, Multiply, Unit) methods can be implemented with (SelectMany, Wrap) methods too:
-```
+
+```csharp
 public static partial class EnumerableExtensions // (SelectMany, Wrap) implements (Select, Multiply, Unit).
 {
     // Select: (TSource -> TResult) -> (IEnumerable<TSource> -> IEnumerable<TResult>).
@@ -181,7 +186,8 @@ public static partial class EnumerableExtensions // (SelectMany, Wrap) implement
 ```
 
 So monad support is built-in in the C# language. As discussed in the LINQ query expression pattern part, SelectMany enables multiple from clauses, which can chain operations together to build a workflow, for example:
-```
+
+```csharp
 internal static void Workflow<T1, T2, T3, T4>(
     Func<IEnumerable<T1>> source1,
     Func<IEnumerable<T2>> source2,
@@ -198,7 +204,8 @@ internal static void Workflow<T1, T2, T3, T4>(
 ```
 
 Here N + 1 from clauses are compiled to N SelectMany fluent calls:
-```
+
+```csharp
 internal static void CompiledWorkflow<T1, T2, T3, T4>(
     Func<IEnumerable<T1>> source1,
     Func<IEnumerable<T2>> source2,
@@ -223,7 +230,8 @@ Regarding monad (F, ◎, η) can be redefined as (F, SelectMany, Wrap), the mono
 
 -   Associativity law: SelectMany is the associative operator, since it is equivalent to Multiply.
 -   Left unit law and right unit law: Wrap is the unit η, since it is identical to Unit.
-```
+
+```csharp
 internal static void MonadLaws()
 {
     IEnumerable<int> source = new int[] { 0, 1, 2, 3, 4 };
@@ -266,7 +274,8 @@ internal static void MonadLaws()
 ```
 
 However, the monad laws are not intuitive. The Kleisli composition ∘ can help. For 2 monadic selector functions that can be passed to SelectMany,are also called Kleisli functions like s1: TSource –> TMonad<TMiddle> and s2: TMiddle –> TMonad<TResult>, their Kleisli composition is still a monadic selector (s2 ∘ s1): TSource –> TMonad<TResult>:
-```
+
+```csharp
 public static Func<TSource, IEnumerable<TResult>> o<TSource, TMiddle, TResult>( // After.
     this Func<TMiddle, IEnumerable<TResult>> selector2,
     Func<TSource, IEnumerable<TMiddle>> selector1) =>
@@ -276,7 +285,8 @@ public static Func<TSource, IEnumerable<TResult>> o<TSource, TMiddle, TResult>( 
 ```
 
 Or generally:
-```
+
+```csharp
 // Cannot be compiled.
 public static class FuncExtensions
 {
@@ -293,7 +303,8 @@ Now above monad laws can be expressed by monadic selectors and Kleisli compositi
 
 -   Associativity law: the Kleisli composition of monadic selectors is now the monoid multiplication, it is associative. For monadic selectors s1, s2, s3, there is (s3 ∘ s2) ∘ s1 = s3 ∘ (s2 ∘ s1).
 -   Left unit law and right unit law: Wrap is still the monoid unit η, it is of type TSource –> TMonad<TSource>, so it can also be viewed as a monadic selector too. For monadic selector s, there is η ∘ s = s and s = s ∘ η.
-```
+
+```csharp
 internal static void KleisliComposition()
 {
     Func<bool, IEnumerable<int>> selector1 =
@@ -356,7 +367,8 @@ As [Brian Beckman](https://www.linkedin.com/in/brianbeckman) said in [this Chann
 > The LINQ syntax is designed specifically to make operations on the sequence monad feel natural, but in fact the implementation is more general; what C# calls "SelectMany" is a slightly modified form of the "Bind" operation on an arbitrary monad.
 
 On the other hand, to enable the monad LINQ query expression (multiple from clauses with select clause) for a type does not require that type to be strictly a monad. This LINQ workflow syntax can be enabled for any generic or non generic type as long as it has such a SelectMany method, which can be virtually demonstrated as:
-```
+
+```csharp
 // Cannot be compiled.
 internal static void Workflow<TMonad<>, T1, T2, T3, T4, TResult>( // Non generic TMonad can work too.
     Func<TMonad<T1>> operation1,
@@ -376,7 +388,8 @@ internal static void Workflow<TMonad<>, T1, T2, T3, T4, TResult>( // Non generic
 ## Monad vs. monoidal/applicative functor
 
 Monad is monoidal functor and applicative functor. Monads’ (SelectMany, Wrap) methods implement monoidal functor’s Multiply and Unit methods, and applicative functor’s (Apply, Wrap) methods. This can be virtually demonstrated as:
-```
+
+```csharp
 // Cannot be compiled.
 public static partial class MonadExtensions // (SelectMany, Wrap) implements (Multiply, Unit).
 {
@@ -410,7 +423,8 @@ public static partial class MonadExtensions // (SelectMany, Wrap) implements (Ap
 ```
 
 If monad is defined with the (Multiply, Unit) methods, they implement monoidal functor’s Multiply and Unit methods, and applicative functor’s (Apply, Wrap) methods too:
-```
+
+```csharp
 // Cannot be compiled.
 public static class MonadExtensions // Monad (Multiply, Unit) implements monoidal functor (Multiply, Unit).
 {
@@ -457,7 +471,8 @@ public partial interface IMonad<TMonad<>> : IMonoidalFunctor<TMonad<>>, IApplica
 ## More LINQ to Monads
 
 Many other open generic type definitions provided by .NET can be monad. Take Lazy<> functor as example, first, apparently it is a type constructor of kind \* –> \*. Then, its SelectMany query method can be defined as extension method:
-```
+
+```csharp
 public static partial class LazyExtensions // Lazy<T> : IMonad<Lazy<>>
 {
     // Multiply: Lazy<Lazy<TSource> -> Lazy<TSource>
@@ -477,7 +492,8 @@ public static partial class LazyExtensions // Lazy<T> : IMonad<Lazy<>>
 ```
 
 Its Wrap method has been implemented previously, as a requirement of applicative functor. The following is an example of chaining operations into a workflow with Lazy<> monad:
-```
+
+```csharp
 internal static void Workflow()
 {
     Lazy<string> query = from filePath in new Lazy<string>(Console.ReadLine)
@@ -492,7 +508,8 @@ internal static void Workflow()
 Since SelectMany implements deferred execution, the above LINQ query is pure and the workflow is deferred. When the query is executed by calling Lazy<>.Value, the workflow is started.
 
 Func<> functor is also monad, with the following SelectMany:
-```
+
+```csharp
 public static partial class FuncExtensions // Func<T> : IMonad<Func<>>
 {
     // Multiply: Func<Func<T> -> Func<T>
@@ -515,7 +532,8 @@ public static partial class FuncExtensions // Func<T> : IMonad<Func<>>
 ```
 
 And the workflow is similar to Lazy<> monad’s workflow, because Lazy<T> is just a wrapper of Func<T> factory function:
-```
+
+```csharp
 internal static void Workflow()
 {
     Func<string> query = from filePath in new Func<string>(Console.ReadLine)
@@ -528,7 +546,8 @@ internal static void Workflow()
 ```
 
 The Optional<> monad is monad too, with the following SelectMany:
-```
+
+```csharp
 public static partial class OptionalExtensions // Optional<T> : IMonad<Optional<>>
 {
     // Multiply: Optional<Optional<TSource> -> Optional<TSource>
@@ -558,7 +577,8 @@ public static partial class OptionalExtensions // Optional<T> : IMonad<Optional<
 ```
 
 The LINQ workflow of Optional<> monad is also pure and deferred, where each operation in the chaining is an Optional<T> instance:
-```
+
+```csharp
 internal static void Workflow()
 {
     string input;
@@ -591,7 +611,8 @@ internal static void Workflow()
 So Optional<> covers the scenario that each operation of the workflow may not have invalid result. When an operation has valid result (Optional<T>.HasValue returns true), its next operation executes. And when all all the operations have valid result, the entire workflow has a valid query result.
 
 The ValueTuple<> functor is also monad. Again, its SelectMany cannot defer the call of selector, just like its Select:
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T, TResult> : IMonad<ValueTuple<T,>>
 {
     // Multiply: ValueTuple<T, ValueTuple<T, TSource> -> ValueTuple<T, TSource>
@@ -611,7 +632,8 @@ public static partial class ValueTupleExtensions // ValueTuple<T, TResult> : IMo
 ```
 
 So its workflow is the immediate execution version of Lazy<> monad’s workflow:
-```
+
+```csharp
 public static partial class ValueTupleExtensions
 {
     internal static void Workflow()
@@ -627,7 +649,8 @@ public static partial class ValueTupleExtensions
 ```
 
 The Task<> functor is monad too. Once again, its SelectMany is immediate and impure, just like its Select:
-```
+
+```csharp
 public static partial class TaskExtensions // Task<T> : IMonad<Task<>>
 {
     // Multiply: Task<Task<T> -> Task<T>
@@ -647,7 +670,8 @@ public static partial class TaskExtensions // Task<T> : IMonad<Task<>>
 ```
 
 So the following LINQ workflow with Task<> monad is also immediate and impure:
-```
+
+```csharp
 internal static async Task WorkflowAsync(string uri)
 {
     Task<string> query = from response in new HttpClient().GetAsync(uri) // Return Task<HttpResponseMessage>.
@@ -659,7 +683,8 @@ internal static async Task WorkflowAsync(string uri)
 ```
 
 It is easy to verify all the above SelectMany methods satisfy the monad laws, and all the above (Multiply, Unit) methods preserve the monoid laws. However, not any SelectMany or (Multiply, Unit) methods can automatically satisfy those laws. Take the ValueTuple<T,> functor as example, here are its SelectMany and (Multiply, Unit):
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T, TResult> : IMonad<ValueTuple<T,>>
 {
     // Multiply: ValueTuple<T, ValueTuple<T, TSource> -> ValueTuple<T, TSource>
@@ -679,7 +704,8 @@ public static partial class ValueTupleExtensions // ValueTuple<T, TResult> : IMo
 ```
 
 The above (Multiply, Unit) implementations cannot preserve the monoid left unit law:
-```
+
+```csharp
 internal static void MonoidLaws()
 {
     (string, int) source = ("a", 1);
@@ -705,7 +731,8 @@ internal static void MonoidLaws()
 ```
 
 And the above SelectMany implementation breaks the left unit monad law too:
-```
+
+```csharp
 internal static void MonadLaws()
 {
     ValueTuple<string, int> source = ("a", 1);

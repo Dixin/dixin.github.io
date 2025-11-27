@@ -10,13 +10,15 @@ lang: ""
 ---
 
 Here is a ToString(IFormatProvider) method on the System.Enum type. It looks a IformatProvider (like CultureInfo) can be passed to this method:
-```
+
+```csharp
 someEnum.ToString(cultureInfo);
 ```
 [](http://11011.net/software/vspaste)
 
 But this is the source code from .NET 1.1:
-```
+
+```csharp
 /// <summary>
 /// <para> Converts the value of this instance to 
 /// its equivalent string representation using the specified
@@ -37,7 +39,8 @@ public string ToString(IFormatProvider provider)
 Inside this method, it does nothing with the IFormatProvider parameter. Actually it does not make any sense to specify such a parameter for a enum. Enum should be used for programming.
 
 So since .NET 2.0, this method is marked as obsolete:
-```
+
+```csharp
 [Obsolete("The provider argument is not used. Please use ToString().")]
 public string ToString(IFormatProvider provider)
 {

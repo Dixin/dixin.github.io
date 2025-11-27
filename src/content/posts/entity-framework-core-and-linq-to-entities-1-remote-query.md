@@ -3,8 +3,8 @@ title: "Entity Framework Core and LINQ to Entities in Depth (1) Remote Query"
 published: 2019-10-01
 description: "The previous chapters discussed LINQ to Objects, LINQ to XML, and Parallel LINQ. All of these LINQ technologies query local in-memory objects managed by .NET. This chapter discusses a different kind o"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework Core", ".NET Core", "LINQ to Entities", "SQL Server", "SQL", "EF Core"]
-category: "C#"
+tags: [".NET", ".NET Core", "C#", "EF Core", "Entity Framework Core", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -74,13 +74,14 @@ o Azure Data Studio, a free cross-platform tool to manage data and edit query.
 To connect to the sample database, its connection string can be saved in the configuration of application or service during development and test. For .NET Core, the connection string can be saved for the application as a JSON file, for example, as app.json file:
 
 {
-```
+
+```csharp
 "ConnectionStrings": {
 ```
-```
+```csharp
 "AdventureWorks": "Server=tcp:dixin.database.windows.net,1433;Initial Catalog=AdventureWorks;Persist Security Info=False;User ID=***;Password=***;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 ```
-```
+```csharp
 }
 ```
 
@@ -89,16 +90,17 @@ To connect to the sample database, its connection string can be saved in the con
 For .NET Framework, the connection string can be saved in the application’s app.config file:
 
 <?xml version\="1.0" encoding\="utf-8"?>
-```
+
+```csharp
 <configuration>
 ```
-```
+```csharp
 <connectionStrings>
 ```
-```
+```csharp
 <add name="AdventureWorks" connectionString="Server=tcp:dixin.database.windows.net,1433;Initial Catalog=AdventureWorks;Persist Security Info=False;User ID=***;Password=***;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" />
 ```
-```
+```csharp
 </connectionStrings>
 ```
 
@@ -107,28 +109,29 @@ For .NET Framework, the connection string can be saved in the application’s ap
 Then the connection string can be loaded and used in C# code:
 
 internal static class ConnectionStrings
-```
+
+```csharp
 {
 ```
-```
+```csharp
 internal static string AdventureWorks { get; } =
 ```
-```
+```csharp
 #if NETFX
 ```
-```
+```csharp
 ConfigurationManager.ConnectionStrings[nameof(AdventureWorks)].ConnectionString;
 ```
-```
+```csharp
 #else
 ```
-```
+```csharp
 new ConfigurationBuilder().AddJsonFile("App.json").Build()
 ```
-```
+```csharp
 .GetConnectionString(nameof(AdventureWorks));
 ```
-```
+```csharp
 #endif
 ```
 
@@ -145,25 +148,28 @@ Remote LINQ (like LINQ to Entities) is provided as paraty of local LINQ (like LI
 <table border="1" cellpadding="0" cellspacing="0" class="MsoNormalTable" style="border: currentcolor; border-image: none; border-collapse: collapse; mso-border-alt: solid black .75pt; mso-yfti-tbllook: 1184;"><tbody><tr style="mso-yfti-irow: 0; mso-yfti-firstrow: yes;"><td style="padding: 0.75pt; border: 1pt solid black; border-image: none; mso-border-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableHead" style="margin: 3pt 0in; page-break-after: avoid;"><font style="font-size: 11pt;">LINQ to (local) Objects</font></p><font style="font-size: 12pt;"></font></td><td style="border-width: 1pt 1pt 1pt medium; border-style: solid solid solid none; border-color: black black black currentcolor; padding: 0.75pt; border-image: none; mso-border-alt: solid black .75pt; mso-border-left-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableHead" style="margin: 3pt 0in; page-break-after: avoid;"><font style="font-size: 11pt;">LINQ to (remote) Entities</font></p><font style="font-size: 12pt;"></font></td></tr><tr style="mso-yfti-irow: 1;"><td style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentcolor black black; padding: 0.75pt; border-image: none; mso-border-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpFirst" style="margin: 8pt 0in 0pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Collections.IEnumerable</font></p><font style="font-size: 12pt;"></font></td><td style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentcolor black black currentcolor; padding: 0.75pt; mso-border-alt: solid black .75pt; mso-border-left-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpLast" style="margin: 0in 0in 8pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Linq.IQueryable</font></p><font style="font-size: 12pt;"></font></td></tr><tr style="mso-yfti-irow: 2;"><td style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentcolor black black; padding: 0.75pt; border-image: none; mso-border-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpFirst" style="margin: 8pt 0in 0pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Collections.Generic.IEnumerable&lt;T&gt;</font></p><font style="font-size: 12pt;"></font></td><td style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentcolor black black currentcolor; padding: 0.75pt; mso-border-alt: solid black .75pt; mso-border-left-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpLast" style="margin: 0in 0in 8pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Linq.IQueryable&lt;T&gt;</font></p><font style="font-size: 12pt;"></font></td></tr><tr style="mso-yfti-irow: 3;"><td style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentcolor black black; padding: 0.75pt; border-image: none; mso-border-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpFirst" style="margin: 8pt 0in 0pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Linq.IOrderedEnumerable&lt;T&gt;</font></p><font style="font-size: 12pt;"></font></td><td style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentcolor black black currentcolor; padding: 0.75pt; mso-border-alt: solid black .75pt; mso-border-left-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpLast" style="margin: 0in 0in 8pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Linq.IOrderedQueryable&lt;T&gt;</font></p><font style="font-size: 12pt;"></font></td></tr><tr style="mso-yfti-irow: 4; mso-yfti-lastrow: yes;"><td style="border-width: medium 1pt 1pt; border-style: none solid solid; border-color: currentcolor black black; padding: 0.75pt; border-image: none; mso-border-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpFirst" style="margin: 8pt 0in 0pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Linq.Enumerable</font></p><font style="font-size: 12pt;"></font></td><td style="border-width: medium 1pt 1pt medium; border-style: none solid solid none; border-color: currentcolor black black currentcolor; padding: 0.75pt; mso-border-alt: solid black .75pt; mso-border-left-alt: solid black .75pt; mso-border-top-alt: solid black .75pt;"><font style="font-size: 12pt;"></font><p class="TableTextCxSpLast" style="margin: 0in 0in 8pt; line-height: 17pt;"><font style="font-size: 11pt;">System.Linq.Queryable</font></p><font style="font-size: 12pt;"></font></td></tr></tbody></table>
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public interface IQueryable : IEnumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Expression Expression { get; }
 ```
-```
+
+```csharp
 Type ElementType { get; }
 ```
-```
+
+```csharp
 IQueryProvider Provider { get; }
 ```
-```
+```csharp
 }
 ```
 
@@ -186,73 +192,83 @@ public interface IOrderedQueryable<out T> : IQueryable<T>, IEnumerable<T>, IOrde
 As the parity with System.Linq.Enumerable, System.Linq.Queryable static type provides the remote version of standard queries. For example, the following are the local and remote Where/Select/Concat/Cast queries side by side:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IEnumerable<TSource> Where<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, bool> predicate);
 ```
-```
+
+```csharp
 public static IEnumerable<TResult> Select<TSource, TResult>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TResult> selector);
 ```
-```
+
+```csharp
 public static IEnumerable<TSource> Concat<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource> first, IEnumerable<TSource> second);
 ```
-```
+
+```csharp
 public static IEnumerable<TResult> Cast<TResult>(this IEnumerable source);
 ```
-```
+
+```csharp
 // Other members.
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class Queryable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IQueryable<TSource> Where<TSource>(
 ```
-```
+```csharp
 this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate);
 ```
-```
+
+```csharp
 public static IQueryable<TResult> Select<TSource, TResult>(
 ```
-```
+```csharp
 this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector);
 ```
-```
+
+```csharp
 public static IQueryable<TSource> Concat<TSource>(
 ```
-```
+```csharp
 this IQueryable<TSource> source1, IEnumerable<TSource> source2);
 ```
-```
+
+```csharp
 public static IQueryable<TResult> Cast<TResult>(this IQueryable source);
 ```
-```
+
+```csharp
 // Other members.
 ```
-```
+```csharp
 }
 ```
 
@@ -261,73 +277,81 @@ public static IQueryable<TResult> Cast<TResult>(this IQueryable source);
 When defining each standard query in remote LINQ, the generic source and generic output are represented by IQueryable<T> instead of IEnumerable<T>, and the non-generic source is represented by IQueryable instead of IEnumerable. The iteratee functions are replaced by expression trees. Similarly, the following are the ordering queries side by side, where the ordered source and ordered output are represented by IOrderedQueryable<T> instead of IOrderedEnumerable<T>:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedEnumerable<TSource>source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class Queryable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(
 ```
-```
+```csharp
 this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedQueryable<TSource> OrderByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedQueryable<TSource> ThenBy<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedQueryable<TSource> ThenByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector);
 ```
-```
+```csharp
 }
 ```
 
@@ -352,70 +376,77 @@ Queryable also provides an additional query AsQueryable, as the paraty with AsEn
 Enumerable queries accept iteratee functions, and Queryable queries accept expression trees. As discussed in the lamda expression chapter, functions are executable .NET code, and expression trees are data structures representing the abstract syntax tree of functions, which can be translated to other domain-specific language. The lambda expression chapter also demonstrates compiling an arithmetic expression tree to CIL code at runtime, and executing it dynamically. The same approach can be used to translate arithmetic expression tree to SQL query, and execute it in a remote SQL database. The following function traverses an arithmetic expression tree with +, -, \*, / operators, and compile it to a SQL SELECT statement with infix arithmetic expression:
 
 internal static string InOrder(this LambdaExpression expression)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 string VisitNode(Expression node)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 switch (node.NodeType)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 case ExpressionType.Constant when node is ConstantExpression constant:
 ```
-```
+```csharp
 return constant.Value.ToString();
 ```
-```
+
+```csharp
 case ExpressionType.Parameter when node is ParameterExpression parameter:
 ```
-```
+```csharp
 return $"@{parameter.Name}";
 ```
-```
+
+```csharp
 // In-order output: left child, current node, right child.
 ```
-```
+```csharp
 case ExpressionType.Add when node is BinaryExpression binary:
 ```
-```
+```csharp
 return $"({VisitNode(binary.Left)} + {VisitNode(binary.Right)})";
 ```
-```
+
+```csharp
 case ExpressionType.Subtract when node is BinaryExpression binary:
 ```
-```
+```csharp
 return $"({VisitNode(binary.Left)} - {VisitNode(binary.Right)})";
 ```
-```
+
+```csharp
 case ExpressionType.Multiply when node is BinaryExpression binary:
 ```
-```
+```csharp
 return $"({VisitNode(binary.Left)} * {VisitNode(binary.Right)})";
 ```
-```
+
+```csharp
 case ExpressionType.Divide when node is BinaryExpression binary:
 ```
-```
+```csharp
 return $"({VisitNode(binary.Left)} / {VisitNode(binary.Right)})";
 ```
-```
+
+```csharp
 default:
 ```
-```
+```csharp
 throw new ArgumentOutOfRangeException(nameof(expression));
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -428,16 +459,17 @@ return $"SELECT {VisitNode(expression.Body)};";
 Here @ is prepended to each parameter name, which is the SQL syntax. The following code demonstrates the compilation:
 
 internal static void Infix()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Expression<Func<double, double, double, double, double, double>> expression =
 ```
-```
+```csharp
 (a, b, c, d, e) => a + b - c * d / 2D + e * 3D;
 ```
-```
+```csharp
 string sql = expression.InOrder();
 ```
 ```sql
@@ -449,37 +481,38 @@ sql.WriteLine(); // SELECT (((@a + @b) - ((@c * @d) / 2)) + (@e * 3));
 The following ExecuteSql function is defined to execute the compiled SQL statement with SQL parameters and SQL database connection string provided, and return the execution result from SQL database:
 
 internal static double ExecuteSql(
-```
+
+```csharp
 string connection,
 ```
-```
+```csharp
 string sql,
 ```
-```
+```csharp
 IDictionary<string, double> parameters)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (SqlConnection sqlConnection = new SqlConnection(connection))
 ```
-```
+```csharp
 using (SqlCommand sqlCommand = new SqlCommand(sql, sqlConnection))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 sqlConnection.Open();
 ```
-```
+```csharp
 parameters.ForEach(parameter => sqlCommand.Parameters.AddWithValue(parameter.Key, parameter.Value));
 ```
-```
+```csharp
 return (double)sqlCommand.ExecuteScalar();
 ```
-```
+```csharp
 }
 ```
 
@@ -488,118 +521,123 @@ return (double)sqlCommand.ExecuteScalar();
 And the following TranslateToSql function is defined to wrap the entire work. It accept an arithmetic expression tree, call the above InOrder to compile it to SQL, then emit a dynamic function, which extracts the parameters and calls above ExecuteScalar function to execute the SQL:
 
 public static TDelegate TranslateToSql<TDelegate>(
-```
+
+```csharp
 this Expression<TDelegate> expression, string connection)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 DynamicMethod dynamicMethod = new DynamicMethod(
 ```
-```
+```csharp
 string.Empty,
 ```
-```
+```csharp
 expression.ReturnType,
 ```
-```
+```csharp
 expression.Parameters.Select(parameter => parameter.Type).ToArray(),
 ```
-```
+```csharp
 MethodBase.GetCurrentMethod().Module);
 ```
-```
+```csharp
 EmitCil(dynamicMethod.GetILGenerator(), expression.InOrder());
 ```
-```
+```csharp
 return (TDelegate)(object)dynamicMethod.CreateDelegate(typeof(TDelegate));
 ```
-```
+
+```csharp
 void EmitCil(ILGenerator generator, string sql)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Dictionary<string, double> dictionary = new Dictionary<string, double>();
 ```
-```
+```csharp
 generator.DeclareLocal(typeof(Dictionary<string, double>));
 ```
-```
+```csharp
 generator.Emit(
 ```
-```
+```csharp
 OpCodes.Newobj,
 ```
-```
+```csharp
 typeof(Dictionary<string, double>).GetConstructor(Array.Empty<Type>()));
 ```
-```
+```csharp
 generator.Emit(OpCodes.Stloc_0);
 ```
-```
+
+```csharp
 for (int index = 0; index < expression.Parameters.Count; index++)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // dictionary.Add($"@{expression.Parameters[i].Name}", args[i]);
 ```
-```
+```csharp
 generator.Emit(OpCodes.Ldloc_0); // dictionary.
 ```
-```
+```csharp
 generator.Emit(OpCodes.Ldstr, $"@{expression.Parameters[index].Name}");
 ```
-```
+```csharp
 generator.Emit(OpCodes.Ldarg_S, index);
 ```
-```
+```csharp
 generator.Emit(
 ```
-```
+```csharp
 OpCodes.Callvirt,
 ```
-```
+```csharp
 typeof(Dictionary<string, double>).GetMethod(
 ```
-```
+```csharp
 nameof(Dictionary<string, double>.Add),
 ```
-```
+```csharp
 BindingFlags.Instance | BindingFlags.Public | BindingFlags.InvokeMethod));
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 // ExecuteSql(connection, expression, dictionary);
 ```
-```
+```csharp
 generator.Emit(OpCodes.Ldstr, connection);
 ```
-```
+```csharp
 generator.Emit(OpCodes.Ldstr, sql);
 ```
-```
+```csharp
 generator.Emit(OpCodes.Ldloc_0);
 ```
-```
+```csharp
 generator.Emit(
 ```
-```
+```csharp
 OpCodes.Call,
 ```
-```
+```csharp
 new Func<string, string, IDictionary<string, double>, double>(ExecuteSql).Method);
 ```
-```
+
+```csharp
 generator.Emit(OpCodes.Ret); // Returns the result.
 ```
-```
+```csharp
 }
 ```
 
@@ -608,25 +646,26 @@ generator.Emit(OpCodes.Ret); // Returns the result.
 As fore mentioned, .NET built-in Expression<TDelegate>.Compile method compiles expression tree to CIL, and emits a function to execute the CIL locally with current .NET application process. In contrast, here TranslateToSql compiles the arithmetic expression tree to SQL query, and emits a function to execute the SQL in a specified remote SQL database:
 
 internal static void TranslateAndExecute()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Expression<Func<double, double, double, double, double, double>> expression =
 ```
-```
+```csharp
 (a, b, c, d, e) => a + b - c * d / 2D + e * 3D;
 ```
-```
+```csharp
 Func<double, double, double, double, double, double> local = expression.Compile();
 ```
-```
+```csharp
 local(1, 2, 3, 4, 5).WriteLine(); // 12
 ```
-```
+```csharp
 Func<double, double, double, double, double, double> remote = expression.TranslateToSql(ConnectionStrings.AdventureWorks);
 ```
-```
+```csharp
 remote(1, 2, 3, 4, 5).WriteLine(); // 12
 ```
 

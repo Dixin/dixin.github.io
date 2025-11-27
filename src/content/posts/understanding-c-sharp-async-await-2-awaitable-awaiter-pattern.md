@@ -3,7 +3,7 @@ title: "Understanding C# async / await (2) The Awaitable-Awaiter Pattern"
 published: 2012-12-29
 description: "Understanding C# async / await:"
 image: ""
-tags: [".NET", "Async", "Await", "C#", "C# 5.0", "Rx", "Reactive Extensions", "Observable"]
+tags: [".NET", "Async", "Await", "C#", "C# 5.0", "Observable", "Reactive Extensions", "Rx"]
 category: ".NET"
 draft: false
 lang: ""
@@ -18,7 +18,8 @@ Understanding C# async / await:
 ## What is awaitable
 
 [Part 1](/posts/understanding-c-sharp-async-await-1-compilation) shows that any Task is awaitable. Actually there are other awaitable types. Here is an example:
-```
+
+```csharp
 Task<int> task = new Task<int>(() => 0);
 int result = await task.ConfigureAwait(false); // Returns a ConfiguredTaskAwaitable<TResult>.
 ```
@@ -63,12 +64,14 @@ public class Task<TResult> : Task
 ```
 
 Task.Yield() is another example:
-```
+
+```csharp
 await Task.Yield(); // Returns a YieldAwaitable.
 ```
 
 The returned YieldAwaitable is not Task either:
-```
+
+```csharp
 public struct YieldAwaitable
 {
     public YieldAwaiter GetAwaiter()
@@ -170,7 +173,8 @@ Here these interfaces are used only for better visualizing what is awaitable / a
 ## Await any function / action
 
 In C# await cannot be used with lambda. This code:
-```
+
+```csharp
 int result = await (() => 0);
 ```
 
@@ -179,7 +183,8 @@ will cause a compiler error:
 > Cannot await 'lambda expression'
 
 This is easy to understand because this [lambda expression](/posts/understanding-csharp-3-0-features-6-lambda-expression) (() => 0) [may be a function or a expression tree](/posts/understanding-linq-to-sql-3-expression-tree). Obviously we mean function here, and we can tell compiler in this way:
-```
+
+```csharp
 int result = await new Func<int>(() => 0);
 ```
 
@@ -244,14 +249,16 @@ public struct FuncAwaiter<TResult> : IAwaiter<TResult>
 ```
 
 Now a function can be awaited in this way:
-```
+
+```csharp
 int result = await new FuncAwaitable<int>(() => 0);
 ```
 
 ### GetAwaiter() extension method, without IAwaitable interfaces
 
 As IAwaitable shows, all that an awaitable needs is just a GetAwaiter() method. In above code, FuncAwaitable<TResult> is created as a wrapper of Func<TResult> and implements IAwaitable<TResult>, so that there is a GetAwaiter() instance method. If a GetAwaiter() extension method can be defined for Func<TResult>, then FuncAwaitable<TResult> is no longer needed:
-```
+
+```csharp
 public static class FuncExtensions
 {
     public static IAwaiter<TResult> GetAwaiter<TResult>(this Func<TResult> function)
@@ -262,14 +269,16 @@ public static class FuncExtensions
 ```
 
 So a Func<TResult> function can be directly awaited:
-```
+
+```csharp
 int result = await new Func<int>(() => 0);
 ```
 
 ### Use the built-in awaitable and awaiter: Task and TaskAwaiter
 
 Remember the most frequently used awaitable / awaiter - Task / TaskAwaiter. With Task / TaskAwaiter, FuncAwaitable / FuncAwaiter are no longer needed:
-```
+
+```csharp
 public static class FuncExtensions
 {
     public static TaskAwaiter<TResult> GetAwaiter<TResult>(this Func<TResult> function)
@@ -282,7 +291,8 @@ public static class FuncExtensions
 ```
 
 Similarly, with this extension method:
-```
+
+```csharp
 public static class ActionExtensions
 {
     public static TaskAwaiter GetAwaiter(this Action action)
@@ -295,17 +305,20 @@ public static class ActionExtensions
 ```
 
 an action can be awaited as well:
-```
+
+```csharp
 await new Action(() => { });
 ```
 
 Now any function / action can be awaited:
-```
+
+```csharp
 await new Action(() => HelperMethods.IO()); // or: await new Action(HelperMethods.IO);
 ```
 
 If function / action has parameter(s), closure can be used:
-```
+
+```csharp
 int arg0 = 0;
 int arg1 = 1;
 int result = await new Action(() => HelperMethods.IO(arg0, arg1));
@@ -337,19 +350,22 @@ public class Task
 ```
 
 In reality, this is how to await a function:
-```
+
+```csharp
 int result = await Task.Run(() => HelperMethods.IO(arg0, arg1));
 ```
 
 and await a action:
-```
+
+```csharp
 await Task.Run(HelperMethods.IO);
 ```
 
 ## Await IObservable<T>
 
 [IObservable<T>](https://msdn.microsoft.com/en-us/library/dd990377.aspx) and [IConnectableObservable<T>](https://msdn.microsoft.com/en-us/library/hh211887.aspx) become awaitable too, if a reference is added for [System.Reactive.Linq.dll](http://www.nuget.org/packages/Rx-Linq/), a part of [Rx (Reactive Extensions)](https://msdn.microsoft.com/en-us/data/gg577609.aspx). In this library, the GetAwaiter() extension methods are provided:
-```
+
+```csharp
 public static class Observable
 {
     public static AsyncSubject<TSource> GetAwaiter<TSource>(this IObservable<TSource> source);
@@ -359,7 +375,8 @@ public static class Observable
 ```
 
 Each method returns a AsyncSubject<T>, which is an awaiter:
-```
+
+```csharp
 public sealed class AsyncSubject<T> : INotifyCompletion, ISubject<T>, ISubject<T, T>, IObserver<T>, IObservable<T>, IDisposable
 {
     public bool IsCompleted { get; }
@@ -405,7 +422,8 @@ private static async Task<string> AwaitObservable2()
 ```
 
 where the GetTitleFromHtml is:
-```
+
+```csharp
 public static string GetTitleFromHtml(this string html)
 {
     Match match = new Regex(

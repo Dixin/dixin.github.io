@@ -25,7 +25,8 @@ Understanding C# Covariance And Conreavariance:
 Unlike C# 3.0 features are mostly C# level syntactical sugars, the variance feature of C# 4.0 is not just a CLR level feature.
 
 Take a look at the definition of System.Func<in T, out TResult>:
-```
+
+```csharp
 .class public auto ansi sealed System.Func`2<- T,+ TResult>
        extends System.MulticastDelegate
 {
@@ -33,7 +34,8 @@ Take a look at the definition of System.Func<in T, out TResult>:
 ```
 
 and the definition of System.IComparable<in T>:
-```
+
+```csharp
 .class interface public abstract auto ansi System.IComparable`1<- T>
 {
 }
@@ -46,7 +48,8 @@ Obviously, without the CLR supporting, those implicit type conversions in C# can
 ## The + and – operators
 
 Once again, take a look at these guys:
-```
+
+```csharp
 internal class Base
 {
 }

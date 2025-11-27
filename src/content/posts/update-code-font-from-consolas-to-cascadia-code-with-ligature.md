@@ -3,7 +3,7 @@ title: "Update code font from Consolas to Cascadia Code with ligature"
 published: 2020-05-31
 description: "A decade ago, I . They are both monospaced. The difference is:"
 image: ""
-tags: ["Font", "Windows Terminal", "Visual Studio", "Visual Studio Code"]
+tags: ["Font", "Visual Studio", "Visual Studio Code", "Windows Terminal"]
 category: "Font"
 draft: false
 lang: ""

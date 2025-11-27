@@ -24,7 +24,8 @@ Control the CPU curve in a multi-core CPU by make a thread spin / sleep is diffe
 ## Thread affinity
 
 On a multi-core CPU, Windows shares time-slice from a random core to the thread. This AssignCurrentThreadInCpu() method is defined to help assign a thread to a specified CPU:
-```
+
+```csharp
 internal static class NativeMethods
 {
     public static void AssignCurrentThreadInCpu(int cpuIndex)

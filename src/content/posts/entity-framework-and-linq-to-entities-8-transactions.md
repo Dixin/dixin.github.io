@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (8) Transactions"
 published: 2016-02-10
 description: "As discussed above, by default DbContext.SaveChanges execute all data creation, update and deletion in a transaction, so that all the work can succeed or fail as a unit. The following example tries to"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## **EF Core version of this article:** [**https://weblogs.asp.net/dixin/entity-framework-core-and-linq-to-entities-7-data-changes-and-transactions**](/posts/entity-framework-core-and-linq-to-entities-7-data-changes-and-transactions "https://weblogs.asp.net/dixin/entity-framework-core-and-linq-to-entities-7-data-changes-and-transactions")
 
 As discussed above, by default DbContext.SaveChanges execute all data creation, update and deletion in a transaction, so that all the work can succeed or fail as a unit. The following example tries to update 2 entities, so there will be 2 UPDATE statements in the transaction:
-```
+
+```csharp
 internal static partial class Transactions
 {
     internal static void Default()
@@ -199,7 +200,8 @@ COMMIT TRANSACTION
 ## DbTransaction
 
 Besides creating a transaction explicitly, Entity Framework can also use an existing ADO.NET transaction, represented by System.Data.Common.DbTransaction class. Such a DbTransaction object can be created by calling DbConnection.BeginTransaction, so an existing DbConnection object will be used here. To have Entity Framework use an existing connection as well, add a constructor for AdventureWorks class:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public AdventureWorks(DbConnection connection, bool contextOwnsConnection = false)

@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (7) Data Changes and Transact
 published: 2019-03-27
 description: "Besides LINQ to Entities queries, EF/Core also provides rich APIs for data changes, with imperative paradigm."
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -183,7 +183,8 @@ As fore mentioned in data loading part, DbContext.Entry also accepts an entity a
 ### Track entities
 
 By default, all entities read from repositories are tracked by the source DbContext. For example:
-```
+
+```csharp
 internal static partial class Tracking
 {
     internal static void EntitiesFromSameDbContext(AdventureWorks adventureWorks)
@@ -203,7 +204,8 @@ internal static partial class Tracking
 The single result from the first LINQ to Entities query is tracked by DbContext. Later, the second query has a single result too. EF/Core identifies both results map to the same data row of the same table, so they are reference to the same entity instance.
 
 If data from repositories are not entities mapping to table rows, they cannot be tracked:
-```
+
+```csharp
 internal static void ObjectsFromSameDbContext(AdventureWorks adventureWorks)
 {
     var productById = adventureWorks.Products
@@ -220,7 +222,8 @@ internal static void ObjectsFromSameDbContext(AdventureWorks adventureWorks)
 Here data is queries from repositories, and anonymous type instances are constructed on the fly. EF/Core cannot decide if 2 arbitrary instances semantically represent the same piece of data in remote database. This time 2 query results are independent from each other.
 
 Since the tracking is at DbContext scope. Entities of different DbContext instances belong to different units of work, and do not interfere each other:
-```
+
+```csharp
 internal static void EntitiesFromMultipleDbContexts()
 {
     Product productById;
@@ -240,7 +243,8 @@ internal static void EntitiesFromMultipleDbContexts()
 ### Track entity changes and property changes
 
 The following example demonstrate CRUD operations in the product repository, then examine all the tracking information:
-```
+
+```csharp
 internal static void EntityChanges(AdventureWorks adventureWorks)
 {
     Product create = new Product() { Name = nameof(create), ListPrice = 1 };
@@ -281,7 +285,8 @@ internal static void EntityChanges(AdventureWorks adventureWorks)
 ```
 
 If an entity is not read from a DbContext instance’s repositories, then it has nothing to do with that unit of work, and apparently is not tracked by that DbContext instance. DbSet<T> provides an Attach method to place an entity to the repository, and the DbContext tracks the entity as the Unchanged state:
-```
+
+```csharp
 internal static void Attach(AdventureWorks adventureWorks)
 {
     Product product = new Product() { ProductID = 950, Name = "ML Crankset", ListPrice = 539.99M };
@@ -301,7 +306,8 @@ internal static void Attach(AdventureWorks adventureWorks)
 ### Track relationship changes
 
 The relationship of entities is also tracked. Remember Product’s foreign key ProductSubcategoryID is nullable. The following example reads a subcategory and its products, then delete the relationship. As a result, each navigation property is cleared to empty collection or null. And each related subcategory’s foreign key property value is synced to null, which is tracked:
-```
+
+```csharp
 internal static void RelationshipChanges(AdventureWorks adventureWorks)
 {
     ProductSubcategory subcategory = adventureWorks.ProductSubcategories
@@ -329,7 +335,8 @@ internal static void RelationshipChanges(AdventureWorks adventureWorks)
 ### Enable and disable tracking
 
 DbContext’s default behavior is to track all changes automatically. This can be turned off if not needed. To disable tracking for specific entities queried from repository, call the EntityFrameworkQueryableExtensions.AsNoTracking extension method for IQueryable<T> query:
-```
+
+```csharp
 internal static void AsNoTracking(AdventureWorks adventureWorks)
 {
     Product untracked = adventureWorks.Products.AsNoTracking().First();
@@ -342,7 +349,8 @@ Tracking can also be enabled or disabled at the DbContext scope, by setting the 
 > In EF, the switch is DbContext.Configuration.AutoDetectChangesEnabled. And when AutoDetectChangesEnabled is true (by default), DetectChanges is called much more frequently than in EF Core.
 
 If needed, changes and be manually tracked by calling ChangeTracker.DetectChanges method:
-```
+
+```csharp
 internal static void DetectChanges(AdventureWorks adventureWorks)
 {
     adventureWorks.ChangeTracker.AutoDetectChangesEnabled = false;
@@ -481,7 +489,8 @@ internal static void UpdateWithoutRead(int categoryId)
 Here a category entity is constructed on the fly, with specified primary key and updated Name. To track and save the changes, ii is attached to the repository. As fore mentioned, the attached entity is tracked as Unchanged state, so just manually set its state to Modified. This time, only one UPDATE statement is translated and executed, without SELECT.
 
 When there is no change to save, SaveChanges does not translate or execute any SQL and returns 0:
-```
+
+```csharp
 internal static void SaveNoChanges(int categoryId)
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -587,7 +596,7 @@ Here the cascade deletion are translated and executed in the right order. The su
 
 > In EF, untracked entities’ changes cannot to be translated or executed. The following example tries to delete a untracked entity from the repository, it throws InvalidOperationException:
 > 
-> ```
+> ```csharp
 > internal static void UntrackedChanges()
 > {
 >     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -609,7 +618,8 @@ As discussed above, by default DbContext.SaveChanges execute all data creation, 
 ### Transaction with connection resiliency and execution strategy
 
 If the retry strategy is enabled for connection resiliency for DbContext by default, then this default retry strategy does not work custom transaction. Custom transaction works within a single retry operation, but not cross multiple retries. In EF Core, database façade’s CreateExecutionStrategy method can be called to explicitly specify a single retry operation:
-```
+
+```csharp
 internal static partial class Transactions
 {
     internal static void ExecutionStrategy(AdventureWorks adventureWorks)
@@ -662,7 +672,7 @@ internal static partial class Transactions
 > 
 > In EF, the database façade does not have CreateExecutionStrategy method, so a extension method can be defined for DbContext.Database:
 > 
-> ```
+> ```csharp
 > public static class DatabaseExtensions
 > {
 >     public static ExecutionStrategy CreateExecutionStrategy(this DatabaseFacade database) => 
@@ -741,7 +751,7 @@ When DbContext.SaveChanges is called to create entity. it detects a transaction 
 
 > In EF has built-in support to execute custom SQL with result of primitive type, so CurrentIsolationLevel can be implemented as:/p>
 > 
-> ```
+> ```csharp
 > public static string CurrentIsolationLevel(this DbContext context) =>
 >     context.Database.SqlQuery<string>(CurrentIsolationLevelSql).Single();
 > ```

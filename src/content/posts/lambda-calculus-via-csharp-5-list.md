@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (5) List"
 published: 2024-11-13
 description: "In lambda calculus and Church encoding, there are various ways to represent a list with anonymous functions."
 image: ""
-tags: ["LINQ via C#", "C#", ".NET", "Lambda Calculus", "Functional Programming", "Church Encoding", "Church Lists"]
-category: "LINQ via C#"
+tags: [".NET", "C#", "Church Encoding", "Church Lists", "Functional Programming", "Lambda Calculus", "LINQ via C#"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,19 +18,22 @@ In lambda calculus and Church encoding, there are various ways to represent a li
 ## Tuple as list node
 
 With Church pair, it is easy to model Church list as a linked list, where each list node is a a Church pair (2-tuple) of current node’s value and the next node, So that
-```
+
+```csharp
 CreateListNode := CreateTuple = λv.λn.λf.f v n
 ListNode := Tuple = λf.f v n
 ```
 
 Here variable v is the value of the current node, so it is the first item of the tuple; And variable n is the next node of the current node, so it is the second item of the tuple:
-```
+
+```csharp
 Value := Item1 = λl.l (λv.λn.v)
 Next := Item2 = λl.l (λv.λn.n)
 ```
 
 Here variable l is the list node. The C# implementation is similar to tuple and signed numeral, except ListNode<T> function type now has 1 type parameter, which is the type of its value:
-```
+
+```csharp
 // ListNode<T> is the alias of Tuple<T, ListNode<T>>.
 public delegate dynamic ListNode<out T>(Boolean f);
 
@@ -51,17 +54,20 @@ public static partial class ChurchList<T>
 ```
 
 Usually, when a list ends, its last node’s next node is flagged as a special null node. Here in lambda calculus, since a node is an anonymous function, the null node is also an anonymous function:
-```
+
+```csharp
 Null := λf.λx.x
 ```
 
 And IsNull predicate returns a Church Boolean to indicate whether a list node is null:
-```
+
+```csharp
 IsNull := λl.l (λv.λn.λx.False) True
 ```
 
 When IsNull is applied with a null node:
-```
+
+```csharp
 IsNull Null
 ≡ (λl.l (λv.λn.λx.False) True) (λf.λx.x)
 ≡ (λf.λx.x) (λv.λn.λx.False) True
@@ -70,7 +76,8 @@ IsNull Null
 ```
 
 And when IsNull is applied with a non-null node:
-```
+
+```csharp
 IsNull (CreateListNode 0 Null)
 ≡ IsNull (λf.f 0 Null)
 ≡ (λl.l (λv.λn.λx.False) True) (λf.f 0 Null)
@@ -82,7 +89,8 @@ IsNull (CreateListNode 0 Null)
 ```
 
 The C# implementation is noisy because a lot of type information has to be provided. This is Null:
-```
+
+```csharp
 using static ChurchBoolean;
 
 public static partial class ChurchList<T>
@@ -98,18 +106,21 @@ public static partial class ChurchList<T>
 ```
 
 And the indexer for list can be easily defined with as a function accepts a start node and a Church numeral i as the specified index. To return the node at the specified index, just call Next function for i times from the start node:
-```
+
+```csharp
 ListNodeAt := λl.λi.i Next l
 ```
 
 C#:
-```
+
+```csharp
 public static readonly Func<ListNode<T>, Func<Numeral, ListNode<T>>>
     ListNodeAt = start => index => index(node => Next(node))(start);
 ```
 
 The following are the extension methods wrapping the list operators:
-```
+
+```csharp
 public static class ListNodeExtensions
 {
     public static T Value<T>(this ListNode<T> node) => ChurchList<T>.Value(node);
@@ -195,7 +206,8 @@ public class ChurchListTests
 ## Aggregate function as list node
 
 Remember the LINQ Aggregate query method accepting a seed and a accumulator function:
-```
+
+```csharp
 TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func);
 ```
 
@@ -207,25 +219,29 @@ Assume seed is x, and accumulator function is f:
 -   When source is { 2, 1, 0 }, the aggregation result is f(f(f(x, 2), 1), 0)
 
 Church list can also be encoded with a similar Aggregate function with seed and accumulator function:
-```
+
+```csharp
 dynamic AggregateListNode<T>(dynamic x, Func<dynamic, T, dynamic> f);
 ```
 
 Its type parameter T is the type of node value. And since the seed can be anything, just leave it as dynamic as usual. So the list node is of above aggregate function type (dynamic, (dynamic , T) -> dynamic) -> dynamic. After currying the aggregate function and the accumulator function, it becomes dynamic -> (dynamic –> T -> dynamic) -> dynamic. So this is the function type of list node, and an alias can be defined as:
-```
+
+```csharp
 // Curried from: (dynamic, dynamic -> T -> dynamic) -> dynamic.
 // AggregateListNode is the alias of: dynamic -> (dynamic -> T -> dynamic) -> dynamic.
 public delegate Func<Func<dynamic, Func<T, dynamic>>, dynamic> AggregateListNode<out T>(dynamic x);
 ```
 
 And this is the creation and definition of list node:
-```
+
+```csharp
 CreateListNode := λv.λn.λx.λf.f (n x f) v
 ListNode := λx.λf.f (n x f) v
 ```
 
 In C#:
-```
+
+```csharp
 public static partial class ChurchAggregateList<T>
 {
     public static readonly Func<T, Func<AggregateListNode<T>, AggregateListNode<T>>>
@@ -234,12 +250,14 @@ public static partial class ChurchAggregateList<T>
 ```
 
 Similarly, here variable v is the value of current node, variable n is the next node of the current node. And variable x is the seed for aggregation, variable f is the accumulator function. The list is still modeled as a linked list, so Null is also needed to represent the end of list:
-```
+
+```csharp
 Null := λx.λf.x
 ```
 
 Null is defined to call f for 0 times. For example, to create a linked list { 2, 1, 0 }, first create the last list node, with value 2 and Null as its next node:
-```
+
+```csharp
 CreateListNode 0 Null
 ≡ (λv.λn.λx.λf.f (n x f) v) 0 (λx.λf.x)
 ≡ (λn.λx.λf.f (n x f) 0) (λx.λf.x)
@@ -248,7 +266,8 @@ CreateListNode 0 Null
 ```
 
 Then the previous node can be created with value 1 and the above node:
-```
+
+```csharp
 CreateListNode 1 (CreateListNode 0 Null)
 ≡ CreateListNode 1 (λx.λf.f x 0)
 ≡ (λv.λn.λx.λf.f (n x f) v) 1 (λx.λf.f x 0)
@@ -258,7 +277,8 @@ CreateListNode 1 (CreateListNode 0 Null)
 ```
 
 And the first node has value 0:
-```
+
+```csharp
 CreateListNode 2 (CreateListNode 1 (CreateListNode 0 Null))
 ≡ CreateListNode 2 (λx.λf.f (f x 0) 1)
 ≡ (λv.λn.λx.λf.f (n x f) v) 2 (λx.λf.f (f x 0) 1)
@@ -270,12 +290,14 @@ CreateListNode 2 (CreateListNode 1 (CreateListNode 0 Null))
 So the list nodes are represented in the same pattern as LINQ aggregation.
 
 The IsNull predicate can be defined as following:
-```
+
+```csharp
 IsNull := λl.l True (λx.λv.False)
 ```
 
 The variable l is the list node, which is an aggregate function, and is applied with seed True and accumulate function λv.λx.False. When IsNull is applied with a null node, the accumulate function is not applied, and seed True is directly returned:
-```
+
+```csharp
 IsNull Null
 ≡ (λl.l True (λx.λv.False)) (λx.λf.x)
 ≡ (λx.λf.x) True (λx.λv.False)
@@ -284,7 +306,8 @@ IsNull Null
 ```
 
 And when IsNull is applied with a non null node, the accumulator function is applied and constantly returns False, so IsNull returns False:
-```
+
+```csharp
 IsNull (CreateListNode 2 Null)
 ≡ IsNull (λx.λf.f x 2)
 ≡ (λl.l True (λx.λv.False)) (λx.λf.f x 2)
@@ -295,7 +318,8 @@ IsNull (CreateListNode 2 Null)
 ```
 
 In C#:
-```
+
+```csharp
 using static ChurchBoolean;
 
 public static partial class ChurchAggregateList<T>
@@ -309,12 +333,14 @@ public static partial class ChurchAggregateList<T>
 ```
 
 The following function returns the value from the specified node:
-```
+
+```csharp
 Value := λl.l Id (λx.λv.v)
 ```
 
 When Value is applied with a node, which has value v and next node n:
-```
+
+```csharp
 Value (CreateListNode v n)
 ≡ Value (λx.λf.f (n x f) v)
 ≡ (λl.l Id (λx.λv.v)) (λx.λf.f (n x f) v)
@@ -326,26 +352,30 @@ Value (CreateListNode v n)
 ```
 
 In C#:
-```
+
+```csharp
 // Value = node => node(Id)(x => value => value)
 public static readonly Func<AggregateListNode<T>, T>
     Value = node => node(Functions<T>.Id)(x => value => value);
 ```
 
 It is not very intuitive to get a node’s next node:
-```
+
+```csharp
 Next := λl.λx.λf.l (λf.x) (λx.λv.λg.g (x f) v) (λx.λv.v)
 ```
 
 In C#:
-```
+
+```csharp
 // Next = node => x => f => node(_ => x)(accumulate => value => (g => g(accumulate(f))(value)))(accumulate => value => accumulate);
 public static readonly Func<AggregateListNode<T>, AggregateListNode<T>>
     Next = node => x => f => node(new Func<Func<dynamic, Func<T, dynamic>>, dynamic>(_ => x))(accumulate => value => new Func<Func<dynamic, Func<T, dynamic>>, dynamic>(g => g(accumulate(f))(value)))(new Func<dynamic, Func<T, dynamic>>(accumulate => value => accumulate));
 ```
 
 The above definition is similar to the the pattern of initial version Subtract function for Church numeral. So it can be defined by shifting tuple too. Again, list node with value v and next node n is a aggregate function, it can be applied with a tuple of Null nodes as seed, and a accumulator function to swap the tuple:
-```
+
+```csharp
 (CreateListNode v n) (Null, Null) (λt.λv.Shift (CreateListNode v) t)
 ≡ (λx.λf.f (n x f) v) (Null, Null) (λt.λv.Shift (CreateListNode v) t)
 ≡ (λf.f (n (Null, Null) f) v) (λt.λv.Shift (CreateListNode v) t)
@@ -362,7 +392,8 @@ Take list { n, n – 1, …, 2, 1, 0 } as example, assume its nodes are ListNode
 -   …
 
 Now apply these nodes with above tuple seed and tuple shifting accumulator function:
-```
+
+```csharp
 ListNode0 (Null, Null) (λt.λv.Shift (CreateListNode v) t)
 ≡ (CreateListNode 0 Null) (Null, Null) (λt.λv.Shift (CreateListNode v) t)
 ≡ Shift (CreateListNode 0) (Null (Null, Null) (λt.λv.Shift (CreateListNode v)) t)
@@ -392,18 +423,21 @@ ListNode0 (Null, Null) (λt.λv.Shift (CreateListNode v) t)
 ```
 
 Generally, there is:
-```
+
+```csharp
 (CreateListNode v n) (Null, Null) (λt.λv.Shift (CreateListNode v) t)
 ≡ (n, Create v n)
 ```
 
 So Next can be defined as:
-```
+
+```csharp
 Next := λl.Item2 (l (CreateTuple Null Null) (λt.λv.Shift (CreateListNode v) t))
 ```
 
 In C#:
-```
+
+```csharp
 // Next = node => node((Null, Null))(tuple => value => tuple.Shift(ChurchTuple.Create(value))).Item1()
 public static readonly Func<AggregateListNode<T>, AggregateListNode<T>>
     Next = node =>
@@ -414,18 +448,21 @@ public static readonly Func<AggregateListNode<T>, AggregateListNode<T>>
 ```
 
 The indexer can be defined the same as above:
-```
+
+```csharp
 ListNodeAt := λl.λi.i Next l
 ```
 
 In C#;
-```
+
+```csharp
 public static readonly Func<AggregateListNode<T>, Func<Numeral, AggregateListNode<T>>>
     ListNodeAt = start => index => index(node => Next(node))(start);
 ```
 
 The following are the extension methods wrapping the list operators:
-```
+
+```csharp
 public static class AggregateListNodeExtensions
 {
     public static Boolean IsNull<T>(this AggregateListNode<T> node) => ChurchAggregateList<T>.IsNull(node);

@@ -14,7 +14,8 @@ Recently I needed to demonstrate some code with reflection, but I felt it inconv
 ## Problem
 
 One example for complex reflection is in LINQ to SQL. The DataContext class has a property Privider, and this Provider has an Execute() method, which executes the query expression and returns the result. Assume this Execute() needs to be invoked to query SQL Server database, then the following code will be expected:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     // Constructs the query.
@@ -35,7 +36,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 Of course, this code cannot compile. And, no one wants to write code like this. Again, this is just an example of complex reflection.
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     // Constructs the query.
@@ -71,7 +73,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 This may be not straight forward enough. So here is a solution implementing fluent reflection with a ToDynamic() extension method:
-```
+
+```csharp
 IEnumerable<Product> results = database.ToDynamic() // Starts fluent reflection. 
                                        .Provider.Execute(query.Expression).ReturnValue;
 ```
@@ -79,7 +82,8 @@ IEnumerable<Product> results = database.ToDynamic() // Starts fluent reflection.
 ## C# 4.0 dynamic
 
 In this kind of scenarios, it is easy to have dynamic in mind, which enables developer to write whatever code after a dot:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     // Constructs the query.
@@ -110,7 +114,8 @@ Where to put the custom code for dynamic? The answer is DynamicObject’s derive
 etc. (In 2008 they are called GetMember, SetMember, etc., with different signature.)
 
 For example, if dynamicDatabase is a DynamicObject, then the following code:
-```
+
+```csharp
 dynamicDatabase.Provider
 ```
 
@@ -191,7 +196,8 @@ public class DynamicWrapper<T> : DynamicObject
 ```
 
 In the above code, GetTypeProperty(), GetInterfaceMethod(), GetTypeField(), GetBaseProperty(), and GetBaseField() are extension methods for Type class. For example:
-```
+
+```csharp
 internal static class TypeExtensions
 {
     internal static FieldInfo GetBaseField(this Type type, string name)
@@ -253,7 +259,8 @@ internal static class TypeExtensions
 ```
 
 So now, when invoked, TryGetMember() searches the specified member and invoke it. The code can be written like this:
-```
+
+```csharp
 dynamic dynamicDatabase = new DynamicWrapper<NorthwindDataContext>(ref database);
 dynamic dynamicReturnValue = dynamicDatabase.Provider.Execute(query.Expression).ReturnValue;
 ```
@@ -263,7 +270,8 @@ This greatly simplified reflection.
 ## ToDynamic() and fluent reflection
 
 To make it even more straight forward, A ToDynamic() method is provided:
-```
+
+```csharp
 public static class DynamicWrapperExtensions
 {
     public static dynamic ToDynamic<T>(this T value)
@@ -288,7 +296,8 @@ public class DynamicWrapper<T> : DynamicObject
 In the above TryGetMember() method, please notice it does not output the member’s value, but output a wrapped member value (that is, memberValue.ToDynamic()). This is very important to make the reflection fluent.
 
 Now the code becomes:
-```
+
+```csharp
 IEnumerable<Product> results = database.ToDynamic() // Here starts fluent reflection. 
                                        .Provider.Execute(query.Expression).ReturnValue
                                        .ToStatic(); // Unwraps to get the static value.
@@ -308,7 +317,8 @@ public class DynamicWrapper<T> : DynamicObject
 ```
 
 ToStatic() can be omitted:
-```
+
+```csharp
 IEnumerable<Product> results = database.ToDynamic() 
                                        .Provider.Execute(query.Expression).ReturnValue;
                                        // Automatically converts to expected static value.
@@ -336,7 +346,8 @@ public class DynamicWrapper<T> : DynamicObject
 ```
 
 The reflection code should be like this:
-```
+
+```csharp
 dynamic wrapper = new DynamicWrapper<StaticClass>();
 int value = wrapper._value;
 int result = wrapper.PrivateMethod();
@@ -353,7 +364,8 @@ This is why ref keyword is used for the constructor. That is, if a value type in
 Consider FieldInfo.SetValue(). In the value type scenarios, invoking FieldInfo.SetValue(this.\_value, value) does not change this.\_value, because it changes the copy of this.\_value.
 
 I searched the Web and found a solution for setting the value of field:
-```
+
+```csharp
 internal static class FieldInfoExtensions
 {
     internal static void SetValue<T>(this FieldInfo field, ref T obj, object value)
@@ -373,7 +385,8 @@ internal static class FieldInfoExtensions
 Here \_\_makeref is a undocumented keyword of C#.
 
 But method invocation has problem. This is the source code of TryInvokeMember():
-```
+
+```csharp
 public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
 {
     if (binder == null)
@@ -406,7 +419,8 @@ If the returned value is of value type, it will definitely copied, because Metho
 The DynamicWrapper<T> provides a simplified solution for reflection programming. It works for normal classes (reference types), accessing both instance and static members.
 
 In most of the scenarios, just remember to invoke ToDynamic() method, and access whatever you want:
-```
+
+```csharp
 StaticType result = someValue.ToDynamic()._field.Method().Property[index];
 ```
 

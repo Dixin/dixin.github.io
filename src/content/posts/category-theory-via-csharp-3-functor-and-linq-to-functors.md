@@ -3,8 +3,8 @@ title: "Category Theory via C# (3) Functor and LINQ to Functors"
 published: 2024-12-13
 description: "In category theory,  is a ) from category to category. Giving category C and D, functor F from"
 image: ""
-tags: ["LINQ via C#", "C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "Functors"]
-category: "LINQ via C#"
+tags: [".NET", "C#", "Category Theory", "Functional Programming", "Functors", "LINQ", "LINQ via C#"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -94,7 +94,8 @@ public interface IEnumerable<T> : IFunctor<IEnumerable<T>>, IEnumerable
 ```
 
 In .NET, this equivalent version of Select is exactly the LINQ query method Select. The following is the comparison of functor Select method and LINQ Select method:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IFunctor<IEnumerable<>>
 {
     // Functor Select: (TSource -> TResult) -> (IEnumerable<TSource> -> IEnumerable<TResult>).
@@ -117,7 +118,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IFunctor<IE
 ```
 
 So the IEnumerable<> functor’s morphism mapping capability is implemented as the LINQ mapping query. As a part of the LINQ query expression pattern, functor support is built in in the C# language:
-```
+
+```csharp
 internal static void Map()
 {
     IEnumerable<int> source = System.Linq.Enumerable.Range(0, 5);
@@ -131,7 +133,8 @@ internal static void Map()
 ```
 
 And the above Select implementation satisfies the functor laws:
-```
+
+```csharp
 // using static Dixin.Linq.CategoryTheory.Functions;
 internal static void FunctorLaws()
 {
@@ -161,7 +164,8 @@ So LINQ Select mapping query’s quintessential mathematics is functor. Generall
 -   The implementation of Select satisfies the functor laws, so that DotNet category’s associativity law and identity law are preserved.
 
 On the other hand, to enable the LINQ functor query expression (single from clauses with select clause) for a type does not require that type to be strictly a functor. This LINQ syntax can be enabled for any generic or non generic type with as long as it has such a Select method, , which can be virtually demonstrated as:
-```
+
+```csharp
 // Cannot be compiled.
 internal static void Map<TFunctor<>, TSource, TResult>( // Non generic TFunctor can work too.
     TFunctor<TSource> functor, Func<TSource, TResult> selector) where TFunctor<> : IFunctor<TFunctor<>>
@@ -174,7 +178,8 @@ internal static void Map<TFunctor<>, TSource, TResult>( // Non generic TFunctor 
 ## More LINQ to Functors
 
 Many other open generic type definitions provided by .NET can be functor. Take Lazy<> as example, first, apparently it is a type constructor of kind \* –> \*. Then, its Select query method can be defined as extension method:
-```
+
+```csharp
 public static partial class LazyExtensions // Lazy<T> : IFunctor<Lazy<>>
 {
     // Functor Select: (TSource -> TResult) -> (Lazy<TSource> -> Lazy<TResult>)
@@ -201,7 +206,8 @@ public static partial class LazyExtensions // Lazy<T> : IFunctor<Lazy<>>
 ```
 
 Func<> with 1 type parameter is also a functor with the following Select implementation:
-```
+
+```csharp
 public static partial class FuncExtensions // Func<T> : IFunctor<Func<>>
 {
     // Functor Select: (TSource -> TResult) -> (Func<TSource> -> Func<TResult>)
@@ -228,7 +234,8 @@ public static partial class FuncExtensions // Func<T> : IFunctor<Func<>>
 ```
 
 Here Select maps TSource –> TResult function to Func<TSource> –> Func<TResult> function, which is straightforward. The other Func generic delegate types, like Func<,> with 2 type parameters, could be more interesting. Just like fore mentioned ValueTuple<,>, Func<,> is of kind \* –> \* –> \*, and can be viewed as a type constructor accepting 2 concrete types and returning another concrete type, which is different from functor. However, if Func<,> already has a concrete type T as its first type parameter, then Func<T,> can be viewed as a partially applied type constructor of kind \* –> \*, which can map one concrete type (its second type parameter) to another concrete type. So that Func<T,> is also a functor, with the following Select method:
-```
+
+```csharp
 public static partial class FuncExtensions // Func<T, TResult> : IFunctor<Func<T,>>
 {
     // Functor Select: (TSource -> TResult) -> (Func<T, TSource> -> Func<T, TResult>)
@@ -244,7 +251,8 @@ public static partial class FuncExtensions // Func<T, TResult> : IFunctor<Func<T
 ```
 
 This time Select maps TSource –> TResult function to Func<T, TSource> –> Func<T, TResult> function. Actually, Func<T,> functor’s Select is exactly the function composition:
-```
+
+```csharp
 internal static void Map<T>(T input)
 {
     Func<T, string> source = value => value.ToString();
@@ -264,7 +272,8 @@ internal static void Map<T>(T input)
 ```
 
 ValueTuple<> with 1 type parameter simply wraps a value. It is the eager version of Lazy<>, and it is also functor, with the following Select method:
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T> : IFunctor<ValueTuple<>>
 {
     // Functor Select: (TSource -> TResult) -> (ValueTuple<TSource> -> ValueTuple<TResult>)
@@ -280,7 +289,8 @@ public static partial class ValueTupleExtensions // ValueTuple<T> : IFunctor<Val
 ```
 
 Unlike all the previous Select, here ValueTuple<>’s Select query method cannot implement deferred execution. To construct a ValueTuple<TResult> instance and return, selector must be called immediately to evaluate the result value.
-```
+
+```csharp
 internal static void Map()
 {
     ValueTuple<int> source = new ValueTuple<int>(1);
@@ -298,7 +308,8 @@ internal static void Map()
 ```
 
 Similar to Func<T,>, ValueTuple<T,> is also functor, with the following Select method of immediate execution:
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T, T2> : IFunctor<ValueTuple<T,>>
 {
     // Functor Select: (TSource -> TResult) -> (ValueTuple<T, TSource> -> ValueTuple<T, TResult>)
@@ -329,7 +340,8 @@ public static partial class ValueTupleExtensions // ValueTuple<T, T2> : IFunctor
 ```
 
 Task is also an example of functor, with the following Select method:
-```
+
+```csharp
 public static partial class TaskExtensions // Task<T> : IFunctor<Task<>>
 {
     // Functor Select: (TSource -> TResult) -> (Task<TSource> -> Task<TResult>)
@@ -358,7 +370,8 @@ public static partial class TaskExtensions // Task<T> : IFunctor<Task<>>
 Similar to ValueTuple<>, above Select implementation is not deferred either. When Select is called, if the source task is already completed, the selector function is called immediately. And unlike all the previous Select methods are pure (referential transparent and side effect free), this Select use the await syntactic sugar to construct a state machine and start it immediately. So it changes state and is impure.
 
 Nullable<> is also an interesting type. It is of kind \* –> \* and the following Select method can be defined:
-```
+
+```csharp
 public static partial class NullableExtensions // Nullable<T> : IFunctor<Nullable<>>
 {
     // Functor Select: (TSource -> TResult) -> (Nullable<TSource> -> Nullable<TResult>)
@@ -417,7 +430,8 @@ public readonly struct Optional<T>
 ```
 
 Optional<T> is still a structure just like Nullable<T>, so its instance cannot be null. Its parameter is not constrained, so it can wrap any valid or invalid value of any type, Its constructor accepts a factory function just like Lazy<>, s the evaluation of its wrapped value can be deferred. And the factory function returns a tuple of bool value and T value, where the bool value indicates if the other T value is a valid value, and that bool value can be returned by the the HasValue property.
-```
+
+```csharp
 internal static void Optional()
 {
     int int32 = 1;
@@ -434,7 +448,8 @@ internal static void Optional()
 ```
 
 Apparently, Optional<> is a factor, and its Select can be defined with deferred execution:
-```
+
+```csharp
 public static partial class OptionalExtensions // Optional<T> : IFunctor<Optional<>>
 {
     // Functor Select: (TSource -> TResult) -> (Optional<TSource> -> Optional<TResult>)
@@ -474,14 +489,16 @@ public static partial class OptionalExtensions // Optional<T> : IFunctor<Optiona
 ```
 
 It is easy to verify all the above Select methods satisfy the functor laws. However, not any Select can automatically satisfy the functor laws. The following is a different Select implementation for Lazy<>:
-```
+
+```csharp
 public static Lazy<TResult> Select<TSource, TResult>(
     this Lazy<TSource> source, Func<TSource, TResult> selector) =>
         new Lazy<TResult>(() => default);
 ```
 
 And it breaks the functor because it does not preserve the identity law:
-```
+
+```csharp
 internal static void FunctorLaws()
 {
     Lazy<int> lazy = new Lazy<int>(() => 1);

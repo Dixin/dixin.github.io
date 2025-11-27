@@ -24,7 +24,8 @@ To secure websites from [cross-site request forgery](http://en.wikipedia.org/wik
 -   Server validates the tokens.
 
 To print tokens to browser, just invoke HtmlHelper.AntiForgeryToken():
-```
+
+```csharp
 <% using (Html.BeginForm())
    { %>
     <%: this.Html.AntiForgeryToken(Constants.AntiForgeryTokenSalt)%>
@@ -36,7 +37,8 @@ To print tokens to browser, just invoke HtmlHelper.AntiForgeryToken():
 ```
 
 This invocation generates a token and writes it inside the form:
-```
+
+```csharp
 <form action="..." method="post">
     <input name="__RequestVerificationToken" type="hidden" value="J56khgCvbE3bVcsCSZkNVuH9Cclm9SSIT/ywruFsXEgmV8CL2eW5C/gGsQUf/YuP" />
  
@@ -53,7 +55,8 @@ and also writes it into the cookie:
 When the above form is submitted, they are both sent to server.
 
 In the server side, \[ValidateAntiForgeryToken\] attribute is used to specify the controllers or actions to validate them:
-```
+
+```csharp
 [HttpPost]
 [ValidateAntiForgeryToken(Salt = Constants.AntiForgeryTokenSalt)]
 public ActionResult Action(/* ... */)
@@ -252,7 +255,8 @@ For browser side, once server side turns on anti-forgery validation for HTTP POS
 ### Problem
 
 In AJAX scenarios, the HTTP POST request is not sent by form. Take jQuery as an example:
-```
+
+```csharp
 $.post(url, {
     productName: "Tofu",
     categoryId: 1 // Token is not posted.
@@ -266,7 +270,8 @@ This kind of AJAX POST requests will always be invalid, because server side code
 Basically, the tokens must be printed to browser then sent back to server. So first of all, HtmlHelper.AntiForgeryToken() need to be called somewhere. Now the browser has token in both HTML and cookie.
 
 Then jQuery must find the printed token in the HTML, and append token to the data before sending:
-```
+
+```csharp
 $.post(url, {
     productName: "Tofu",
     categoryId: 1,
@@ -275,7 +280,8 @@ $.post(url, {
 ```
 
 To be reusable, this can be encapsulated into a tiny jQuery plugin:
-```
+
+```csharp
 /// <reference path="jquery-1.4.2.js" />
 
 (function ($) {
@@ -333,7 +339,8 @@ To be reusable, this can be encapsulated into a tiny jQuery plugin:
 ```
 
 In most of the scenarios, it is Ok to just replace $.post() invocation with $.postAntiForgery(), and replace $.ajax() with $.ajaxAntiForgery():
-```
+
+```csharp
 $.postAntiForgery(url, {
     productName: "Tofu",
     categoryId: 1
@@ -341,14 +348,16 @@ $.postAntiForgery(url, {
 ```
 
 There might be some scenarios of custom token, where $.appendAntiForgeryToken() is useful:
-```
+
+```csharp
 data = $.appendAntiForgeryToken(data, token);
 // Token is already in data. No need to invoke $.postAntiForgery().
 $.post(url, data, callback);
 ```
 
 or $.ajaxAntiForgery() can be used:
-```
+
+```csharp
 $.ajaxAntiForgery({
     type: "POST",
     url: url,
@@ -367,14 +376,16 @@ And there are special scenarios that the token is not in the current window. For
 -   An HTTP POST request can be sent from an popup window or a dialog, while the token is in the opener window;
 
 etc. Here, token's container window can be specified for $.getAntiForgeryToken():
-```
+
+```csharp
 data = $.appendAntiForgeryToken(data, $.getAntiForgeryToken(window.parent));
 // Token is already in data. No need to invoke $.postAntiForgery().
 $.post(url, data, callback);
 ```
 
 or $.ajaxAntiForgery() can be used:
-```
+
+```csharp
 $.ajaxAntiForgery({
     type: "POST",
     url: url,

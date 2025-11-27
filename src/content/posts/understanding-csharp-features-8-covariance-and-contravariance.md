@@ -3,7 +3,7 @@ title: "Understanding C# Features (8) Covariance and Contravariance"
 published: 2016-02-06
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 4.0", "LINQ", "LINQ via C#", "C# Features", "Covariance And Contravariance"]
+tags: [".NET", "C#", "C# 4.0", "C# Features", "Covariance And Contravariance", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -32,7 +32,8 @@ Apparently, a Derived object “[is a](https://en.wikipedia.org/wiki/Is-a)” Ba
 ## Non-generic delegate
 
 By using above Base/Derived as input/output of method, there are 4 combinations:
-```
+
+```csharp
 public static class Methods
 {
     public static Base DerivedIn_BaseOut(Derived @in)
@@ -60,12 +61,14 @@ public static class Methods
 ### Bind method to a delegate
 
 Before C# 4.0, C# already supported covariance and contravariance for delegates without generics. Consider the following delegate type:
-```
+
+```csharp
 public delegate Base DerivedIn_BaseOut(Derived @in);
 ```
 
 Above Methods.DerivedIn\_BaseOut’s signature matches this delegate type, so Methods.DerivedIn\_BaseOut can be bound to its delegate instance:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public static void Bind()
@@ -84,7 +87,8 @@ public static partial class NonGenericDelegate
 Methods.DerivedIn\_DerivedOut has a different signature from DerivedIn\_BaseOut delegate type. The former returns a more derived type. There is a “is-a” relationship between their return types, but there is no intuitive relationship between the two signatures.
 
 However, C# compiler and the CLR both allow the following binding (assignment) before C# 4.0:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public static void Covariance()
@@ -105,7 +109,8 @@ Here a bound method can return a more derived type than the delegate type. This 
 ### Contravariance
 
 Methods.BaseIn\_BaseOut required a less-derived parameter then DerivedIn\_BaseOut delegate type. The following binding also works before C# 4.0:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public static void Contravariance()
@@ -126,7 +131,8 @@ Here a method can have less derived parameter type than the delegate type. This 
 ### Covariance and contravariance
 
 It is easy to predict, Methods.BaseIn\_DerivedOut, with more derived parameter type and less derived return type, can be also bound to DerivedIn\_BaseOut:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
 
@@ -149,7 +155,8 @@ Here covariance and contravariance both happen for the same binding.
 ### Invalid variance
 
 In the following bindings, there is no valid variance, so they cannot be compiled:
-```
+
+```csharp
 public static partial class NonGenericDelegate
 {
     public delegate Derived BaseIn_DerivedOut(Base @base);
@@ -187,12 +194,14 @@ Please notice these rules does not apply to value types. Basically value types h
 ## Generic delegate
 
 With C# 2.0 generic delegate, the above XxxIn\_XxxOut delegate types can be represented by the following:
-```
+
+```csharp
 public delegate TOut Func<TIn, TOut>(TIn @in);
 ```
 
 Then above method bindings become:
-```
+
+```csharp
 public static partial class GenericDelegateWithVariances
 {
     public static void BindMethods()
@@ -213,7 +222,8 @@ public static partial class GenericDelegateWithVariances
 ```
 
 C# 3.0 introduced lambda expression. However, the above bindings cannot be used for lambda expression:
-```
+
+```csharp
 public static partial class GenericDelegate
 {
     public static void BindLambdas()
@@ -240,12 +250,14 @@ public static partial class GenericDelegate
 ### The out and in keywords
 
 C# 4.0 uses the in/out keywords to specify a type parameter is contravariant/covariant. So above generic delegate can be defined as:
-```
+
+```csharp
 public delegate TOut Func<in TIn, out TOut>(TIn @in);
 ```
 
 Now the bindings work for both methods and lambda expressions:
-```
+
+```csharp
 public static partial class GenericDelegateWithVariances
 {
     public static void BindMethods()
@@ -283,7 +295,8 @@ public static partial class GenericDelegateWithVariances
 ```
 
 The in/out keywords also constrains the usage of the decorated type parameter to guarantee the variances. The following generic delegate types are invalid and cannot be compiled:
-```
+
+```csharp
 public static partial class GenericDelegateWithVariances
 {
 #if ERROR
@@ -334,14 +347,16 @@ So far all the discussion are about first-order function. The variances of highe
 ### Variance of input
 
 The following delegate type:
-```
+
+```csharp
 public delegate void ActionIn<T>(Action<T> action);
 ```
 
 can represent a higher-order function type, which take a function as parameter.
 
 Regarding T for Action<T> is contravariant, is T still contravariant for ActionIn<T>? The answer is no. The following code cannot be compiled:
-```
+
+```csharp
 public static partial class HigherOrderFunction
 {
 #if ERROR
@@ -394,7 +409,8 @@ To examine the variance for higher-order functions:
     5.  \=> …
 
 In above code, ActionIn<T> is equivalent to Action<Action<T>>. So, T is covariant for Action<Action<T>>/ActionIn<T>, not contravariant. The fix is to use out keyword to decorate T, and swap the binding:
-```
+
+```csharp
 public static partial class HigherOrderFunction
 {
     // Action<Action<T>>
@@ -418,7 +434,8 @@ public static partial class HigherOrderFunction
 ```
 
 The other case, type parameter as output, is straightforward, because the type parameter is always covariant for any first-order/higher-order function:
-```
+
+```csharp
 public static partial class HigherOrderFunction
 {
     public delegate Func<TOut> FuncOut<out TOut>();
@@ -466,7 +483,8 @@ For higher-order functions:
     3.  \=> Action<Action<Derived>> “is a” Action<Action<Base>> (covariance)
     4.  \=> Action<Action<Action<Base>>> “is a” Action<Action<Action<Derived>>> (contravariance)
     5.  \=> …
-```
+
+```csharp
 public static class OutputCovarianceForHigherOrder
 {
     public delegate T Func<out T>(); // Covariant T as output.
@@ -505,7 +523,8 @@ public static class InputVarianceReversalForHigherOrder
 In C# 4.0+, covariance and contravariance are used for generic interfaces. Covariance and contravariance
 
 An interface can be viewed as a set of method signatures, for example:
-```
+
+```csharp
 public interface IOut<TOut> // TOut is only used as output.
 {
     TOut Out1(); // TOut is covariant for Out1 (Func<TOut>).
@@ -528,7 +547,8 @@ public interface IIn<TIn> // TIn is only used as input.
 ### Covariance
 
 For interface IOut<TOut>, TOut is covariant for all members, so TOut can be made covariant at interface level:
-```
+
+```csharp
 public interface IOut<out TOut> // TOut is covariant for all members of interface.
 {
     TOut Out1();
@@ -586,7 +606,8 @@ namespace System.Collections.Generic
 ### Contravariance
 
 For interface IIn<TIn>, TIn is contravariant for all members, so TIn can be made contravariant at interface level:
-```
+
+```csharp
 public interface IIn<in TIn> // TIn is contravariant for all members of interface.
 {
     void In1(TIn @in);
@@ -644,7 +665,8 @@ namespace System
 ### Covariance and contravariance
 
 A generic interface can have both covariant and contravariance type parameters, for example:
-```
+
+```csharp
 public interface IIn_Out<in TIn, out TOut>
 {
     void In(TIn @in);
@@ -653,7 +675,8 @@ public interface IIn_Out<in TIn, out TOut>
 ```
 
 Then:
-```
+
+```csharp
 public static partial class GenericInterfaceWithVariances
 {
     public static void CovarianceAndContravariance()
@@ -670,7 +693,8 @@ public static partial class GenericInterfaceWithVariances
 ### Invariance
 
 In the following generic interface:
-```
+
+```csharp
 public interface IIn_Out<T>
 {
     T Out(); // T is covariant for Out (Func<T>).
@@ -712,7 +736,8 @@ An array T\[\] can be viewed as an IList<T>. As fore mentioned, T is invariant f
 ### Covariance
 
 C# unexpectedly support covariance for array:
-```
+
+```csharp
 public static partial class Array
 {
     public static void Covariance()
@@ -741,7 +766,8 @@ public static partial class Array
 ```
 
 The above code can be compiled but throws ArrayTypeMismatchException at runtime. In some scenarios, this can be confusing and makes code buggy. For example, when using array as parameter:
-```
+
+```csharp
 public static partial class Array
 {
     public static void ProcessArray(Base[] array)
@@ -758,7 +784,8 @@ public static partial class Array
 ```
 
 As fore mentioned, value type has nothing to do with variances, the following code cannot be compiled:
-```
+
+```csharp
 public static partial class Array
 {
     public static void ValueType()
@@ -803,7 +830,8 @@ This is a C# feature that should never be used.
 ## Compilation
 
 C# 3.0 features are C# level syntactical sugars provided by C# compiler, but the covariance/contravariance is a feature of C# 4.0/CLR 4. The ore mentioned System.Func<in TIn, out TOut> generic delegate is compiled to following IL:
-```
+
+```csharp
 .class public auto ansi sealed System.Func`2<-TIn, +TOut>
        extends System.MulticastDelegate
 {
@@ -811,7 +839,8 @@ C# 3.0 features are C# level syntactical sugars provided by C# compiler, but the
 ```
 
 and the definition of System.IComparable<in T>:
-```
+
+```csharp
 .class interface public abstract auto ansi System.IComparable`1<-T>
 {
 }
@@ -824,7 +853,8 @@ C#’s out/in decorators is compiled to CLR’s +/- operators, which is more dif
 Not many generic types in .NET have variant type parameter(s). LINQ can be uses to query these generic types from .NET libraries.
 
 The following method queries a specified directory, and retrieve all .NET assemblies:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<Assembly> GetAssemblies(string directory)
@@ -847,7 +877,8 @@ public static partial class ReflectionHelper
 ```
 
 The following method queries one specified assembly, and filter generic types with any variant type parameter:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<Type> GetTypesWithVariance(Assembly assembly)
@@ -871,7 +902,8 @@ public static partial class ReflectionHelper
 ```
 
 The last method queries the assemblies in the same directory of mscorlib.dll, and retrieves the wanted types, and orders them by name:
-```
+
+```csharp
 public static partial class ReflectionHelper
 {
     public static IEnumerable<Type> GetTypesWithVariance()
@@ -932,7 +964,8 @@ namespace System.Collections.Generic
 ```
 
 T is also covariant for IEnumerable<T>, since T is covariant for all member(s). In another word: Derived “is a” Base => IEnumerable<Derived> “is an” IEnumerable<Base>.
-```
+
+```csharp
 public static partial class GenericInterfaceWithVariances
 {
     public static void Linq()
@@ -947,6 +980,7 @@ public static partial class GenericInterfaceWithVariances
 ```
 
 Before C# 4.0, IEnumerable<Derived> is not an IEnumerable<Base>, above code cannot be compiled, unless explicitly telling compiler derivedEnumerable is an IEnumerable<Base>:
-```
+
+```csharp
 baseEnumerable = baseEnumerable.Concat(derivedEnumerable.Cast<Base>());
 ```

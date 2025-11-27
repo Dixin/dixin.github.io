@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (2) Object-Relational Mapping"
 published: 2016-02-20
 description: ".NET and SQL database and have 2 different data type systems. For example:"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL", "Object-Relational Mapping"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "Object-Relational Mapping", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -41,7 +41,8 @@ Entity Framework can map most SQL data types to .NET types:
 ## Database
 
 A SQL database is mapped to a class that derives from System.Data.Entity.DbContext:
-```
+
+```csharp
 public partial class AdventureWorks : DbContext
 {
     public AdventureWorks()
@@ -76,7 +77,8 @@ namespace System.Data.Entity
 ```
 
 The database is specified in the connection string provided to DbContext’s constructor:
-```
+
+```csharp
 internal static partial class ConnectionStrings
 {
     internal const string AdventureWorks = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\AdventureWorks_Data.mdf;Integrated Security=True;Connect Timeout=30";
@@ -84,7 +86,8 @@ internal static partial class ConnectionStrings
 ```
 
 Please replace the application domain property |DataDirectory| to the actual directory of the database file, or initialize it for current application domain before it is used:
-```
+
+```csharp
 internal static partial class ConnectionStrings
 {
     static ConnectionStrings()
@@ -95,7 +98,8 @@ internal static partial class ConnectionStrings
 ```
 
 Generally, a database object should be constructed and disposed for each [unit of work](http://martinfowler.com/eaaCatalog/unitOfWork.html):
-```
+
+```csharp
 internal static partial class Query
 {
     internal static void Dispose()
@@ -134,7 +138,8 @@ GO
 ```
 
 Above Production.ProductCategory table definition can be mapped to a ProductCategory entity class definition:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public const string Production = nameof(Production); // Production schema.
@@ -176,7 +181,8 @@ In the Entity Framework code first approach for existing database, the mapping p
 As a result, each row of Production.ProductCategory table is mapped to a ProductCategory object. However, at runtime, Entity Framework by default does not directly instantiate ProductCategory. It dynamically defines another proxy class to derive from ProductCategory class, with a name looks like System.Data.Entity.DynamicProxies.Product\_F84B0F952ED22479EF48782695177D770E63BC4D8771C9DF78343B4D95926AE8. This proxy class is where Entity Framework injects more detailed logic, so that at design time, the mapping entity class can be clean and declarative.
 
 The rows of the entire table can be mapped to objects in an IQueryable<T> data source, exposed as a property of the database class. Entity Framework provides System.Data.Entity.DbSet<T> class to represent a table data source:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<ProductCategory> ProductCategories { get; set; }
@@ -213,7 +219,8 @@ namespace System.Data.Entity
 ```
 
 The next example is the Production.ProductSubcategory table:
-```
+
+```csharp
 CREATE TABLE [Production].[ProductSubcategory](
     [ProductSubcategoryID] int IDENTITY(1,1) NOT NULL
         CONSTRAINT [PK_ProductSubcategory_ProductSubcategoryID] PRIMARY KEY CLUSTERED,
@@ -229,7 +236,8 @@ GO
 ```
 
 Similarly, it can be mapped to:
-```
+
+```csharp
 [Table(nameof(ProductSubcategory), Schema = AdventureWorks.Production)]
 public partial class ProductSubcategory
 {
@@ -248,7 +256,8 @@ public partial class ProductSubcategory
 Here ProductCategoryID is a foreign key. It will be further discussed soon.
 
 In this tutorial, a few more tables of AdventureWorks database will be involved. Here is the Production.Product table definition:
-```
+
+```csharp
 CREATE TABLE [Production].[Product](
     [ProductID] int IDENTITY(1,1) NOT NULL
         CONSTRAINT [PK_Product_ProductID] PRIMARY KEY CLUSTERED,
@@ -270,7 +279,8 @@ GO
 ```
 
 It can be mapped to following Product entity class definition
-```
+
+```csharp
 [Table(nameof(Product), Schema = AdventureWorks.Production)]
 public partial class Product
 {
@@ -296,7 +306,8 @@ In the mapping:
 -   The Style column can only have value U, M, W, or NULL. It does not have a property mapping, because it will be used to demonstrate conditional mapping in inheritance later in this part.
 
 And this is the Production.ProductPhoto table definition:
-```
+
+```csharp
 CREATE TABLE [Production].[ProductPhoto](
     [ProductPhotoID] int IDENTITY(1,1) NOT NULL
         CONSTRAINT [PK_ProductPhoto_ProductPhotoID] PRIMARY KEY CLUSTERED,
@@ -311,7 +322,8 @@ GO
 ```
 
 It can be mapped to the following ProductPhoto entity class definition:
-```
+
+```csharp
 [Table(nameof(ProductPhoto), Schema = AdventureWorks.Production)]
 public partial class ProductPhoto
 {
@@ -330,7 +342,8 @@ public partial class ProductPhoto
 ModifiedDate has a \[ConcurrencyCheck\] attribute for concurrency conflict check, which will be discussed later.
 
 Again, the rows of each table can be expose as objects in IQueryable<T> data source:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<ProductSubcategory> ProductSubcategories { get; set; }
@@ -350,7 +363,8 @@ In SQL database, tables can have [foreign key relationships](https://msdn.micros
 ### One-to-many
 
 From top down, the Production.ProductCategory table and Production.ProductSubcategory has a one-to-many relationship. A row in Production.ProductCategory table can have many matching rows in Production.ProductSubcategory table. In Entity Framework, this relashionship is mapped to the associations between ProductCategory and ProductSubcategory entity classes:
-```
+
+```csharp
 public partial class ProductCategory
 {
     public virtual ICollection<ProductSubcategory> ProductSubcategories { get; set; } 
@@ -367,7 +381,8 @@ public partial class ProductSubcategory
 One ProductCategory object can have many ProductSubcategory objects, and one ProductSubcategory object can have one ProductCategory object. These association properties are also called navigation properties. They are virtual properties, so that the association implementation details can be provided by the override of proxy class.
 
 Production.ProductSubcategory table and Production.Product table has the same one-to-many relationship. So the mapping associations are:
-```
+
+```csharp
 public partial class ProductSubcategory
 {
     public virtual ICollection<Product> Products { get; set; } = new HashSet<Product>();
@@ -383,7 +398,8 @@ public partial class Product
 ### Many-to-many
 
 Production.Product table and Production.ProductPhoto table has many-to-many relationship. This is implemented by 2 one-to-many relationships with another Production.ProductProductPhoto junction table. In Entity Framework, there are 2 options to map this. The first option is to directly defined the to-many navigation properties for the entities:
-```
+
+```csharp
 public partial class Product
 {
     public virtual ICollection<ProductPhoto> ProductPhotos { get; set; }
@@ -418,7 +434,8 @@ public partial class AdventureWorks
 ```
 
 The other options is to map whatever the database has. The junction table \[Production\].\[ProductProductPhoto\] is defined as:
-```
+
+```csharp
 CREATE TABLE [Production].[ProductProductPhoto](
     [ProductID] int NOT NULL
         CONSTRAINT [FK_ProductProductPhoto_Product_ProductID] FOREIGN KEY
@@ -435,7 +452,8 @@ GO
 ```
 
 It is mapped to ProductProductPhoto entity class:
-```
+
+```csharp
 [Table(nameof(ProductProductPhoto), Schema = AdventureWorks.Production)]
 public partial class ProductProductPhoto
 {
@@ -452,7 +470,8 @@ public partial class ProductProductPhoto
 Production.ProductProductPhoto table’s primary key is defined on both 2 columns, so the ProductID and ProductPhotoID properties are both attributed as \[Key\]. And because of this, the \[Column\] attribute must be used to specify their orders.
 
 The many-to-many relationship is implemented by a one-to-many relationship between Production.Product and junction table, and another one-to-many relationship between Production.Product and junction table. These relationships are mapped to the following navigation properties:
-```
+
+```csharp
 public partial class Product
 {
     public virtual ICollection<ProductProductPhoto> ProductProductPhotos { get; set; } 
@@ -580,7 +599,8 @@ public class vProductAndDescriptionMapping : EntityTypeConfiguration<vProductAnd
 ```
 
 \[Table\] is required for the view’s entity class. Also, in SQL database, views cannot have unique keys, but in the entity class, \[Key\] is still required just like tables. An additional mapping class and ToTable call are needed to make the view mapping work. And, finally, the rows in the view can be exposed as IQueryable<T> data source, still represented by DbSet<T>:
-```
+
+```csharp
 public partial class AdventureWorks
 {
     public DbSet<vProductAndDescription> ProductAndDescriptions { get; set; }

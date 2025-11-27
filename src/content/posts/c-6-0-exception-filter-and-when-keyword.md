@@ -3,8 +3,8 @@ title: "C# 6.0 Exception Filter and when Keyword"
 published: 2016-03-07
 description: "C# 6.0 introduces a new feature exception filter and a new keyword when. , but exception filter/when keyword is not."
 image: ""
-tags: ["C#", ".NET", "C# 6.0"]
-category: "C#"
+tags: [".NET", "C#", "C# 6.0"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -203,7 +203,8 @@ The catch keyword is gone, and C# when condition is compiled to a IL filter bloc
 ## Runtime: stack unwinding
 
 The catch block and when predicate refers to the same exception object. In the following example:
-```
+
+```csharp
 internal static void Log()
 {
     try

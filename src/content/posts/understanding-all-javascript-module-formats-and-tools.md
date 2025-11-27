@@ -3,8 +3,8 @@ title: "Understanding (all) JavaScript module formats and tools"
 published: 2025-02-09
 description: "When you build an application with JavaScript, you always want to modularize your code. However, JavaScript language was initially invented for simple form manipulation, with no built-in features like"
 image: ""
-tags: ["JavaScript", "TypeScript", "Web", "Webpack", "Babel", "CommonJS", "Node.js", "AMD", "UMD"]
-category: "JavaScript"
+tags: ["AMD", "Babel", "CommonJS", "JavaScript", "Node.js", "TypeScript", "UMD", "Web", "Webpack"]
+category: "AMD"
 draft: false
 lang: ""
 ---

@@ -3,8 +3,8 @@ title: "Category Theory via C# (15) IEnumerable<> Monad And LINQ: SelectMany For
 published: 2018-12-16
 description: "Previous part introduced SelectMany for monad IEnumerable<>. Actually SelectMany is more than meets the eye, and can be used to implement other LINQ queries."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -30,7 +30,8 @@ This part will demonstrate how to use SelectMany to implement following LINQ que
 -   Cancatening: Concat
 
 First, create a help method to make the code shorter:
-```
+
+```csharp
 [Pure]
 public static partial class EnumerableSelectManyExtensions
 {
@@ -47,7 +48,8 @@ public static partial class EnumerableSelectManyExtensions
 ```
 
 And here comes this long list of 15 methods:
-```
+
+```csharp
 public static IEnumerable<TSource> Concat<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
 {
     return new IEnumerable<TSource>[] { first, second }
@@ -208,7 +210,8 @@ So these SelectMany usages are not authentically functional.
 ### Query methods in LINQ syntax
 
 Above implementations in LINQ syntax:
-```
+
+```csharp
 public static IEnumerable<TSource> Concat<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
 {
     return from enumerable in new IEnumerable<TSource>[] { first, second }

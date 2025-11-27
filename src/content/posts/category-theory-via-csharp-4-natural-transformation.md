@@ -3,8 +3,8 @@ title: "Category Theory via C# (4) Natural Transformation"
 published: 2024-12-14
 description: "If F: C → D and G: C → D are both functors from categories C to category D, the mapping from F to G is called  and denoted"
 image: ""
-tags: ["LINQ via C#", "C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "Functors", "Natural Transformation", "Categories"]
-category: "LINQ via C#"
+tags: [".NET", "C#", "Categories", "Category Theory", "Functional Programming", "Functors", "LINQ", "LINQ via C#", "Natural Transformation"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -22,7 +22,8 @@ If F: C → D and G: C → D are both functors from categories C to category D, 
 In another word, for m: X → Y in category C, there must be αY ∘ F(m) ≡ G(m) ∘ αX , or equivalently αY ∘ SelectF(m) ≡ SelectG(m) ∘ αX in category D.
 
 In DotNet category, the following ToLazy<> generic method transforms Func<> functor to Lazy<> functor:
-```
+
+```csharp
 public static partial class NaturalTransformations
 {
     // ToLazy: Func<> -> Lazy<>
@@ -43,7 +44,8 @@ Apparently, for above natural transformation: ToLazy<>: Func<> ⇒ Lazy<>:
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/public-static-partial-class-Optio.------_E2EC/image_thumb_1.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/public-static-partial-class-Optio.------_E2EC/image_4.png)
 
 The following example is a simple naturality square that commutes for ToLazy<>:
-```
+
+```csharp
 internal static void Naturality()
 {
     Func<int, string> selector = int32 => Math.Sqrt(int32).ToString("0.00");
@@ -66,7 +68,8 @@ internal static void Naturality()
 ```
 
 And the following are a few more examples of natural transformations:
-```
+
+```csharp
 // ToFunc: Lazy<T> -> Func<T>
 public static Func<T> ToFunc<T>(this Lazy<T> lazy) => () => lazy.Value;
 
@@ -100,7 +103,8 @@ Regarding the category laws:
 -   Identity law: similarly, identity natural transform’s components are the id morphisms idF(X): F(X) → F(X) in D. Identity natural transform satisfy identity law, since all its components satisfy identity law.
 
 Here is an example of natural transformations composition:
-```
+
+```csharp
 // ToFunc: Lazy<T> -> Func<T>
 public static Func<T> ToFunc<T>(this Lazy<T> lazy) => () => lazy.Value;
 #endif

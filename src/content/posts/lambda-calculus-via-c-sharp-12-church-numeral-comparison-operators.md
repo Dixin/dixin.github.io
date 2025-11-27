@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (12) Church Numeral Comparison Operators"
 published: 2018-11-12
 description: "With the predicates defined in , operators can be defined in [\_Numeral class](/posts/lambda-calculus-via-c-sharp-9-wrapping"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Church Numeral Comparison Operators
 
 With the predicates defined in [previous part](/posts/lambda-calculus-via-c-sharp-11-predicates-and-divide), operators can be defined in [\_Numeral class](/posts/lambda-calculus-via-c-sharp-9-wrapping-church-numerals-and-arithmetic). Once again, class does not exist in lambda calculus, but C# class provides a place to define operators, which greatly improve the readability.
-```
+
+```csharp
 public partial class _Numeral
 {
     public static Boolean operator <=
@@ -44,7 +45,8 @@ public partial class _Numeral
 ### C# object equality
 
 This has nothing to do with lambda calculus and Church encoding. In C#, since == and != are customized, [Object.Equals](https://msdn.microsoft.com/en-us/library/bsc2ak47.aspx) and [Object.GetHashCode](https://msdn.microsoft.com/en-us/library/system.object.gethashcode.aspx) are required to be overridden too:
-```
+
+```csharp
 public partial class _Numeral
 {
     public override int GetHashCode

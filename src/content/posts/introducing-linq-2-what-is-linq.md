@@ -3,7 +3,7 @@ title: "Functional Programming and LINQ Paradigm (3) LINQ to Data Sources"
 published: 2019-05-30
 description: "As fore mentioned, LINQ is a functional programming model, consists of syntax in languages and APIs in libraries:"
 image: ""
-tags: [".NET", "C#", "LINQ", "Introducing LINQ"]
+tags: [".NET", "C#", "Introducing LINQ", "LINQ"]
 category: ".NET"
 draft: false
 lang: ""
@@ -60,37 +60,38 @@ C# developer can use a single LINQ language syntax to work with different data. 
 LINQ to Objects queries .NET objects in memory. The following example queries positive integers from the integer array in memory, and get the integers’ square roots in ascending order:
 
 internal static void LinqToObjectsWithQueryExpression()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 IEnumerable<int> source = new int[] { 4, 3, 2, 1, 0, -1 }; // Get source.
 ```
-```
+```csharp
 IEnumerable<double> query =
 ```
-```
+```csharp
 from int32 in source
 ```
-```
+```csharp
 where int32> 0
 ```
-```
+```csharp
 orderby int32
 ```
-```
+```csharp
 select Math.Sqrt(int32); // Define query.
 ```
-```
+```csharp
 foreach (double result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
 
@@ -111,34 +112,35 @@ Building the query does not execute it. Later, when pulling the results from the
 Besides above query expression syntax. There is another query method call syntax to build LINQ query:
 
 internal static void LinqToObjectsWithQueryMethods()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 IEnumerable<int>source = new int[] { 4, 3, 2, 1, 0, -1 }; // Get source.
 ```
-```
+```csharp
 IEnumerable<double> query = source
 ```
-```
+```csharp
 .Where(int32 => int32 > 0)
 ```
-```
+```csharp
 .OrderBy(int32 => int32)
 ```
-```
+```csharp
 .Select(int32 => Math.Sqrt(int32)); // Define query.
 ```
-```
+```csharp
 foreach (double result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
 
@@ -151,46 +153,47 @@ These 2 versions of query are identical. The query expression is compiled to que
 The above LINQ to Object query executes sequentially. The filter-sort-map computation are executed for all integers with a single thread, and the query results are produced one by one in a deterministic order. Parallel LINQ (to Objects) is the parallel version of the LINQ to Objects APIs. It also works with objects in memory but can execute the query in parallel with multiple threads, in order to utilize multiple processor cores and improve the LINQ query performance. The following are the parallel version of the above queries:
 
 internal static void ParallelLinq()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 int[] values = { 4, 3, 2, 1, 0, -1 };
 ```
-```
+```csharp
 ParallelQuery<int>source = values.AsParallel(); // Get source.
 ```
-```
+```csharp
 ParallelQuery<double> query =
 ```
-```
+```csharp
 from int32 in source
 ```
-```
+```csharp
 where int32 > 0
 ```
-```
+```csharp
 orderby int32
 ```
-```
+```csharp
 select Math.Sqrt(int32); // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // ParallelQuery<double> query = source
 ```
-```
+```csharp
 // .Where(int32 => int32 > 0)
 ```
-```
+```csharp
 // .OrderBy(int32 => int32)
 ```
-```
+```csharp
 // .Select(int32 => Math.Sqrt(int32));
 ```
-```
+```csharp
 query.ForAll(result => Trace.WriteLine(result)); // Execute query.
 ```
 
@@ -203,61 +206,62 @@ The query creation syntax is exactly the same as sequential LINQ to Objects. The
 LINQ to XML queries XML data. The ASP.NET blog RSS feed https://weblogs.asp.net/dixin/rss is XML and can be the source:
 
 <?xml version\="1.0" encoding\="utf-8"?>
-```
+
+```csharp
 <rss version="2.0">
 ```
-```
+```csharp
 <channel>
 ```
-```
+```csharp
 <title>Dixin's Blog</title>
 ```
-```
+```csharp
 <link>https://weblogs.asp.net:443/dixin/</link>
 ```
-```
+```csharp
 <description>https://weblogs.asp.net:443/dixin/</description>
 ```
-```
+```csharp
 <item>
 ```
-```
+```csharp
 <title>EntityFramework.Functions: Code First Functions for Entity Framework</title>
 ```
-```
+```csharp
 <link>https://weblogs.asp.net/dixin/entityframework.functions</link>
 ```
-```
+```csharp
 <description><!-- Description. --></description>
 ```
-```
+```csharp
 <pubDate>Mon Dec 17, 2015 06:27:56 GMT</pubDate>
 ```
-```
+```csharp
 <guid isPermaLink="true">https://weblogs.asp.net/dixin/entityframework.functions</guid>
 ```
-```
+```csharp
 <category>.NET</category>
 ```
-```
+```csharp
 <category>LINQ</category>
 ```
-```
+```csharp
 <category>Entity Framework</category>
 ```
-```
+```csharp
 <category>LINQ to Entities</category>
 ```
-```
+```csharp
 <category>Code First</category>
 ```
-```
+```csharp
 </item>
 ```
-```
+```csharp
 <!-- More items. -->
 ```
-```
+```csharp
 </channel>
 ```
 
@@ -266,55 +270,56 @@ LINQ to XML queries XML data. The ASP.NET blog RSS feed https://weblogs.asp.net/
 The following example queries the items with permalink from the feed and get the items’ titles in ascending order of the items’ publish dates:
 
 internal static void LinqToXml()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 XDocument feed = XDocument.Load("https://weblogs.asp.net/dixin/rss");
 ```
-```
+```csharp
 IEnumerable<XElement>source = feed.Descendants("item"); // Get source.
 ```
-```
+```csharp
 IEnumerable<string> query =
 ```
-```
+```csharp
 from item in source
 ```
-```
+```csharp
 where (bool)item.Element("guid").Attribute("isPermaLink")
 ```
-```
+```csharp
 orderby (DateTime)item.Element("pubDate")
 ```
-```
+```csharp
 select (string)item.Element("title"); // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // IEnumerable<string> query = source
 ```
-```
+```csharp
 // .Where(item => (bool)item.Element("guid").Attribute("isPermaLink"))
 ```
-```
+```csharp
 // .OrderBy(item => (DateTime)item.Element("pubDate"))
 ```
-```
+```csharp
 // .Select(item => (string)item.Element("title"));
 ```
-```
+```csharp
 foreach (string result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
 
@@ -327,70 +332,71 @@ In this example, the data source is XML data loaded in memory. It queries all <i
 .NET Framework provides System.Data.DataSet type to cache tabular data from relational database. When working with relational database, this book uses Microsoft SQL database and Microsoft AdventureWorks sample database. In the following example, data is read from the AdventureWorks database’s Production.Product table, and cached in a DataSet instance. The following example queries the products in the specified subcategory, and get the products’ names, in ascending order of products’ list prices.
 
 internal static void LinqToDataSets(string connectionString)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 using (DataSet dataSet = new DataSet())
 ```
-```
+```csharp
 using (DataAdapter dataAdapter = new SqlDataAdapter(
 ```
 ```sql
 @"SELECT [Name], [ListPrice], [ProductSubcategoryID] FROM [Production].[Product]", connectionString))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 dataAdapter.Fill(dataSet);
 ```
-```
+```csharp
 EnumerableRowCollection<DataRow> source = dataSet.Tables[0].AsEnumerable(); // Get source.
 ```
-```
+```csharp
 EnumerableRowCollection<string> query =
 ```
-```
+```csharp
 from product in source
 ```
-```
+```csharp
 where product.Field<int>("ProductSubcategoryID") == 1
 ```
-```
+```csharp
 orderby product.Field<decimal>("ListPrice")
 ```
-```
+```csharp
 select product.Field<string>("Name"); // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // EnumerableRowCollection<string> query = source
 ```
-```
+```csharp
 // .Where(product => product.Field<int>("ProductSubcategoryID") == 1)
 ```
-```
+```csharp
 // .OrderBy(product => product.Field<decimal>("ListPrice"))
 ```
-```
+```csharp
 // .Select(product => product.Field<string>("Name"));
 ```
-```
+```csharp
 foreach (string result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -407,61 +413,62 @@ Microsoft Entity Framework Core provides LINQ to Entities to enable LINQ queries
 The following example queries Production.Product table for the products under the specified category, and get the products’ names in the order of their list prices:
 
 internal static void LinqToEntities()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 using (AdventureWorks adventureWorks = new AdventureWorks())
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 IQueryable<Product>source = adventureWorks.Products; // Get source.
 ```
-```
+```csharp
 IQueryable<string> query =
 ```
-```
+```csharp
 from product in source
 ```
-```
+```csharp
 where product.ProductSubcategory.ProductCategory.Name == "Bikes"
 ```
-```
+```csharp
 orderby product.ListPrice
 ```
-```
+```csharp
 select product.Name; // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // IQueryable<string> query = source
 ```
-```
+```csharp
 // .Where(product => product.ProductSubcategory.ProductCategory.Name == "Bikes")
 ```
-```
+```csharp
 // .OrderBy(product => product.ListPrice)
 ```
-```
+```csharp
 // .Select(product => product.Name);
 ```
-```
+```csharp
 foreach (string result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -474,67 +481,68 @@ Here the data source is the relational data stored in the remote database table,
 LINQ to SQL is a lightweight database access technology provided by .NET Framework. As the name suggests, LINQ to SQL only works with Microsoft SQL Server. Its APIs are similar to LINQ to Entities APIs. So, if the above queries are implemented by LINQ to SQL, the code can have the same looking:
 
 #if NETFX
-```
+
+```csharp
 internal static void LinqToSql()
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (AdventureWorks adventureWorks = new AdventureWorks())
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 IQueryable<Product>source = adventureWorks.Products; // Get source.
 ```
-```
+```csharp
 IQueryable<string> query =
 ```
-```
+```csharp
 from product in source
 ```
-```
+```csharp
 where product.ProductSubcategory.ProductCategory.Name == "Bikes"
 ```
-```
+```csharp
 orderby product.ListPrice
 ```
-```
+```csharp
 select product.Name; // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // IQueryable<string> query = source
 ```
-```
+```csharp
 // .Where(product => product.ProductSubcategory.ProductCategory.Name == "Bikes")
 ```
-```
+```csharp
 // .OrderBy(product => product.ListPrice)
 ```
-```
+```csharp
 // .Select(product => product.Name);
 ```
-```
+```csharp
 foreach (string result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -547,49 +555,50 @@ Here the AdventureWorks type is a LINQ to SQL data context, which is different f
 Microsoft provides LINQ APIs in client library to work with its non-relational database (aka NoSQL database) service, CosmosDB. To setup a data source for LINQ, create a free account, then follow the Microsoft documents to import some JSON documents representing some stores with addresses:
 
 \[
-```
+
+```csharp
 {
 ```
-```
+```csharp
 "id": "1424",
 ```
-```
+```csharp
 "Name": "Closeout Boutique",
 ```
-```
+```csharp
 "Address": {
 ```
-```
+```csharp
 "AddressType": "Main Office",
 ```
-```
+```csharp
 "AddressLine1": "1050 Oak Street",
 ```
-```
+```csharp
 "Location": {
 ```
-```
+```csharp
 "City": "Seattle",
 ```
-```
+```csharp
 "StateProvinceName": "Washington"
 ```
-```
+```csharp
 },
 ```
-```
+```csharp
 "PostalCode": "98104",
 ```
-```
+```csharp
 "CountryRegionName": "United States"
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 },
 ```
-```
+```csharp
 // More documents.
 ```
 
@@ -598,64 +607,65 @@ Microsoft provides LINQ APIs in client library to work with its non-relational d
 Here the source is the database’s Store collection. The following example queries the stores in the specified city, and get their names in the alphabetic order:
 
 internal static void LinqToNoSql(string key)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 using (DocumentClient client = new DocumentClient(
 ```
-```
+```csharp
 new Uri("https://dixin.documents.azure.com:443/"), key))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 IOrderedQueryable<Store>source = client.CreateDocumentQuery<Store>(
 ```
-```
+```csharp
 UriFactory.CreateDocumentCollectionUri("dixin", "Store")); // Get source.
 ```
-```
+```csharp
 IQueryable<string> query = from store in source
 ```
-```
+```csharp
 where store.Address.Location.City == "Seattle"
 ```
-```
+```csharp
 orderby store.Name
 ```
-```
+```csharp
 select store.Name; // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // IQueryable<string> query = source
 ```
-```
+```csharp
 // .Where(store => store.Address.CountryRegionName == "United States")
 ```
-```
+```csharp
 // .OrderBy(store => store.Address.PostalCode)
 ```
-```
+```csharp
 // .Select(store => store.Name);
 ```
-```
+```csharp
 foreach (string result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -668,112 +678,113 @@ The query is created to filter the products in the collection, and only keeps th
 LINQ to JSON is a third party set of APIs enabling LINQ for JSON data. Tumblr provides APIs returning JSON data, which can be a data source:
 
 {
-```
+
+```csharp
 "meta": {
 ```
-```
+```csharp
 "status": 200,
 ```
-```
+```csharp
 "msg": "OK"
 ```
-```
+```csharp
 },
 ```
-```
+```csharp
 "response": {
 ```
-```
+```csharp
 "posts": [
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 "type": "photo",
 ```
-```
+```csharp
 "blog_name": "dixinyan",
 ```
-```
+```csharp
 "id": 94086491678,
 ```
-```
+```csharp
 "post_url": "http://dixinyan.tumblr.com/post/94086491678/microsoft-way-microsoft-campus-microsoft-campus",
 ```
-```
+```csharp
 "slug": "microsoft-way-microsoft-campus-microsoft-campus",
 ```
-```
+```csharp
 "date": "2014-08-07 19:11:43 GMT",
 ```
-```
+```csharp
 "timestamp": 1407438703,
 ```
-```
+```csharp
 "state": "published",
 ```
-```
+```csharp
 "format": "html",
 ```
-```
+```csharp
 "reblog_key": "FZQVzcFD",
 ```
-```
+```csharp
 "tags": [ "Microsoft" ],
 ```
-```
+```csharp
 "short_url": "https://tmblr.co/Z_W6Et1Nd-UuU",
 ```
-```
+```csharp
 "summary": "Microsoft Way, Microsoft Campus Microsoft Campus is the informal name of Microsoft's corporate headquarters, located at One...",
 ```
-```
+```csharp
 "recommended_source": null,
 ```
-```
+```csharp
 "recommended_color": null,
 ```
-```
+```csharp
 "note_count": 4,
 ```
-```
+```csharp
 "caption": "<h2>Microsoft Way, Microsoft Campus </h2><p>Microsoft Campus is the informal name of Microsoft&rsquo;s corporate headquarters, located at One Microsoft Way in Redmond, Washington. Microsoft initially moved onto the grounds of the campus on February 26, 1986. <a href=\"http://en.wikipedia.org/wiki/Microsoft_Redmond_Campus\" target=\"_blank\">en.wikipedia.org/wiki/Microsoft_Redmond_Campus</a>\n\n<a href=\"https://www.flickr.com/dixin\" target=\"_blank\"></a></p>",
 ```
-```
+```csharp
 "image_permalink": "http://dixinyan.tumblr.com/image/94086491678",
 ```
-```
+```csharp
 "can_like": true,
 ```
-```
+```csharp
 "can_reblog": true,
 ```
-```
+```csharp
 "can_send_in_message": true,
 ```
-```
+```csharp
 "can_reply": false,
 ```
-```
+```csharp
 "display_avatar": true
 ```
-```
+```csharp
 // More post info.
 ```
-```
+```csharp
 },
 ```
-```
+```csharp
 // More posts.
 ```
-```
+```csharp
 ],
 ```
-```
+```csharp
 "total_posts": 20
 ```
-```
+```csharp
 }
 ```
 
@@ -782,70 +793,71 @@ LINQ to JSON is a third party set of APIs enabling LINQ for JSON data. Tumblr pr
 The following example queries the posts with specified tag, and get their summary in the order of items’ publish dates:
 
 internal static void LinqToJson(string apiKey)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 using (WebClient webClient = new WebClient())
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 string feedUri = $"https://api.tumblr.com/v2/blog/dixinyan.tumblr.com/posts/photo?api_key={apiKey}";
 ```
-```
+```csharp
 JObject feed = JObject.Parse((webClient.DownloadString(feedUri)));
 ```
-```
+```csharp
 IEnumerable<JToken>source = feed["response"]["posts"]; // Get source.
 ```
-```
+```csharp
 IEnumerable<string> query =
 ```
-```
+```csharp
 from post in source
 ```
-```
+```csharp
 where post["tags"].Any(tag => "Microsoft".Equals((string)tag, StringComparison.OrdinalIgnoreCase))
 ```
-```
+```csharp
 orderby (DateTime)post["date"]
 ```
-```
+```csharp
 select (string)post["summary"]; // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // IEnumerable<string> query = source
 ```
-```
+```csharp
 // .Where(post => post["tags"].Any(tag =>
 ```
-```
+```csharp
 // "Microsoft".Equals((string)tag, StringComparison.OrdinalIgnoreCase)))
 ```
-```
+```csharp
 // .OrderBy(post => (DateTime)post["date"])
 ```
-```
+```csharp
 // .Select(post => (string)post["summary"]);
 ```
-```
+```csharp
 foreach (string result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -858,103 +870,104 @@ It queries all posts in the JSON document, filter them and only keep the items w
 LINQ to Twitter is another third-party library enabling LINQ queries for Twitter data. To access Twitter as a data source, registering an app with Twitter to get the consumer key, consumer secrete, OAuth token, and OAuth token secrete. The following example queries the tweets with specified search keyword:
 
 internal static void LinqToTwitter(
-```
+
+```csharp
 string consumerKey, string consumerSecret, string oAuthToken, string oAuthTokenSecret)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 SingleUserAuthorizer credentials = new SingleUserAuthorizer()
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 CredentialStore = new InMemoryCredentialStore()
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 ConsumerKey = consumerKey,
 ```
-```
+```csharp
 ConsumerSecret = consumerSecret,
 ```
-```
+```csharp
 OAuthToken = oAuthToken,
 ```
-```
+```csharp
 OAuthTokenSecret = oAuthTokenSecret
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 };
 ```
-```
+```csharp
 using (TwitterContext twitter = new TwitterContext(credentials))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 IQueryable<Search>source = twitter.Search; // Get source.
 ```
-```
+```csharp
 IQueryable<List<Status>> query =
 ```
-```
+```csharp
 from search in source
 ```
-```
+```csharp
 where search.Type == SearchType.Search && search.Query == "LINQ"
 ```
-```
+```csharp
 orderby search.SearchMetaData.Count
 ```
-```
+```csharp
 select search.Statuses; // Define query.
 ```
-```
+```csharp
 // Equivalent to:
 ```
-```
+```csharp
 // IQueryable<List<Status>> query = source
 ```
-```
+```csharp
 // .Where(search => search.Type == SearchType.Search && search.Query == "LINQ")
 ```
-```
+```csharp
 // .OrderBy(search => search.SearchMetaData.Count)
 ```
-```
+```csharp
 // .Select(search => search.Statuses);
 ```
-```
+```csharp
 foreach (List<Status> search in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 foreach (Status status in search)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(status.Text);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -971,37 +984,38 @@ LINQ is one of Microsoft’s most exciting, powerful new development technologie
 Traditionally, to work with a specific data domain, a domain specific language and a set of domain specific APIs are used. For example, the following example is equivalent to above LINQ to XML query logic, implemented in traditional programming model, which calls XML APIs to execute query expression in XPath language:
 
 internal static void Xml()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 XPathDocument feed = new XPathDocument("https://weblogs.asp.net/dixin/rss");
 ```
-```
+```csharp
 XPathNavigator navigator = feed.CreateNavigator();
 ```
-```
+```csharp
 XPathExpression selectExpression = navigator.Compile("//item[guid/@isPermaLink='true']/title/text()");
 ```
-```
+```csharp
 XPathExpression sortExpression = navigator.Compile("../../pubDate/text()");
 ```
-```
+```csharp
 selectExpression.AddSort(sortExpression, Comparer<DateTime>.Default);
 ```
-```
+```csharp
 XPathNodeIterator nodes = navigator.Select(selectExpression);
 ```
-```
+```csharp
 foreach (object node in nodes)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(node);
 ```
-```
+```csharp
 }
 ```
 
@@ -1010,19 +1024,20 @@ Trace.WriteLine(node);
 For SQL database, the traditional programming model implements the above LINQ to Entities query logic by calling ADO.NET data access APIs to execute query statement in SQL language:
 
 internal static void Sql(string connectionString)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 using (DbConnection connection = new SqlConnection(connectionString))
 ```
-```
+```csharp
 using (DbCommand command = connection.CreateCommand())
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 command.CommandText =
 ```
 ```sql
@@ -1031,64 +1046,64 @@ command.CommandText =
 ```sql
 FROM [Production].[Product] AS [Product]
 ```
-```
+```csharp
 LEFT OUTER JOIN [Production].[ProductSubcategory] AS [Subcategory]
 ```
-```
+```csharp
 ON [Subcategory].[ProductSubcategoryID] = [Product].[ProductSubcategoryID]
 ```
-```
+```csharp
 LEFT OUTER JOIN [Production].[ProductCategory] AS [Category]
 ```
-```
+```csharp
 ON [Category].[ProductCategoryID] = [Subcategory].[ProductCategoryID]
 ```
 ```sql
 WHERE [Category].[Name] = @categoryName
 ```
-```
+```csharp
 ORDER BY [Product].[ListPrice] DESC";
 ```
-```
+```csharp
 DbParameter parameter = command.CreateParameter();
 ```
-```
+```csharp
 parameter.ParameterName = "@categoryName";
 ```
-```
+```csharp
 parameter.Value = "Bikes";
 ```
-```
+```csharp
 command.Parameters.Add(parameter);
 ```
-```
+```csharp
 connection.Open();
 ```
-```
+```csharp
 using (DbDataReader reader = command.ExecuteReader())
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 while (reader.Read())
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 string productName = (string)reader["Name"];
 ```
-```
+```csharp
 Trace.WriteLine(productName);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -1099,37 +1114,38 @@ Similarly, for Twitter data, there are network APIs to query Twitter’s REST en
 C# is a strongly typed language. In C#, any value has a type, including any value in LINQ query. And any expression is evaluated to a type, including LINQ query expressions. Any method has a type for each parameter and a type for return value, including LINQ query methods. So, LINQ queries are checked by compiler and runtime for type safety, which is great help for productivity, unless dynamic typing is used to bypass the compiler check:
 
 internal static void Dynamic()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 IEnumerable<int> source = new int[] { 4, 3, 2, 1, 0, -1 }; // Get source.
 ```
-```
+```csharp
 IEnumerable<dynamic> query =
 ```
-```
+```csharp
 from dynamic value in source
 ```
-```
+```csharp
 where value.ByPass.Compiler.Check > 0
 ```
-```
+```csharp
 orderby value.ByPass().Compiler().Check()
 ```
-```
+```csharp
 select value & new object(); // Define query.
 ```
-```
+```csharp
 foreach (dynamic result in query) // Execute query.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.WriteLine(result);
 ```
-```
+```csharp
 }
 ```
 

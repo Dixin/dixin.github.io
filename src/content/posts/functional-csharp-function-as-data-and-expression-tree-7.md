@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (7) Expression Tree: Function as Data
 published: 2018-06-07
 description: "C# lambda expression is a powerful syntactic sugar. Besides representing anonymous function, the same syntax can also represent expression tree."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ C# lambda expression is a powerful syntactic sugar. Besides representing anonymo
 ## Lambda expression as expression tree
 
 An expression tree can be created with the same lambda expression syntax for anonymous function:
-```
+
+```csharp
 internal static partial class ExpressionTree
 {
     internal static void ExpressionLambda()
@@ -36,7 +37,8 @@ This time, the expected type for the lambda expression is no longer a Func<int, 
 ### Metaprogramming: function as data
 
 The above lambda expression is compiled to expression tree building code:
-```
+
+```csharp
 internal static void CompiledExpressionLambda()
 {
     ParameterExpression parameterExpression = Expression.Parameter(typeof(int), "int32"); // int32 parameter.
@@ -106,7 +108,8 @@ namespace System.Linq.Expressions
 ```
 
 The above expression tree data structure can be visualized as:
-```
+
+```csharp
 Expression<Func<int, bool>> (NodeType = Lambda, Type = Func<int, bool>)
 |_Parameters
 | |_ParameterExpression (NodeType = Parameter, Type = int)
@@ -124,12 +127,14 @@ Expression<Func<int, bool>> (NodeType = Lambda, Type = Func<int, bool>)
 So this expression tree is an [abstract syntactic tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree), representing the abstract syntactic structure of C# function source code int32 => int32 > 0. Notice each node has NodeType property and Type property. NodeType returns the represented construct type in the tree, and Type returns the represented .NET type. For example, above ParameterExpression is parameter node representing an int parameter in the source code, so its NodeType is Parameter and its Type is int.
 
 To summarize, the differences between
-```
+
+```csharp
 Func<int, bool> isPositive = int32 => int32 > 0; // Code.
 ```
 
 and
-```
+
+```csharp
 Expression<Func<int, bool>> isPositiveExpression = int32 => int32 > 0; // Data.
 ```
 
@@ -181,7 +186,8 @@ Besides above ParameterExpression, ConstantExpression, BinaryExpression, LambdaE
 -   UnaryExpression
 
 And, as demonstrated above, expression can be instantiated by calling the factory methods of Expression type:
-```
+
+```csharp
 public abstract partial class Expression
 {
     public static ParameterExpression Parameter(Type type, string name);
@@ -195,7 +201,8 @@ public abstract partial class Expression
 ```
 
 Expression has many other factory methods to cover all the expression instantiation cases:
-```
+
+```csharp
 public abstract partial class Expression
 {
     public static BinaryExpression Add(Expression left, Expression right);
@@ -230,7 +237,8 @@ Some expression node can have multiple possible NodeType values. For example:
 -   BinaryExpression represents any binary operation with an operator, a left operand, and a right operand, its NodeType can be Add, And, Assign, Divide, Equal, .GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, Modulo, Multiply, NotEqual, Or, Power, Subtract, etc.
 
 So far C# compiler only implements this “function as data” syntactic sugar for expression lambda, and it is not available to statement lambda yet. The following code cannot be compiled:
-```
+
+```csharp
 internal static void StatementLambda()
 {
     Expression<Func<int, bool>> isPositiveExpression = int32 =>
@@ -242,7 +250,8 @@ internal static void StatementLambda()
 ```
 
 It results a compiler error: A lambda expression with a statement body cannot be converted to an expression tree. The above expression tree has to be built manually:
-```
+
+```csharp
 internal static void StatementLambda()
 {
     ParameterExpression parameterExpression = Expression.Parameter(typeof(int), "int32"); // int32 parameter.
@@ -259,7 +268,8 @@ internal static void StatementLambda()
 ## Compile expression tree to CIL
 
 Expression tree is data - abstract syntactic tree. In C# and LINQ, expression tree is usually used to represent the abstract syntactic structure of function, so that it can be compiled to other [domain-specific languages](https://en.wikipedia.org/wiki/Domain-specific_language), like SQL query, URI query, etc. To demonstrate this, take a simple mathematics function as example, which accepts double parameters and execute the 4 basic binary arithmetical calculation: add, subtract, multiply, divide:
-```
+
+```csharp
 internal static void ArithmeticalExpression()
 {
     Expression<Func<double, double, double, double, double, double>> expression =
@@ -268,7 +278,8 @@ internal static void ArithmeticalExpression()
 ```
 
 The entire tree can be visualized as:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> (NodeType = Lambda, Type = Func<double, double, double, double, double, double>)
 |_Parameters
 | |_ParameterExpression (NodeType = Parameter, Type = double)
@@ -413,7 +424,8 @@ internal class PrefixVisitor : BinaryArithmeticExpressionVisitor<string>
 ```
 
 When visiting a binary node, it recursively outputs in prefix style operator(left, right). For example, the infix expression a + b is converted to add(a, b), which can be viewed as calling add function with arguments a and b. The following code outputs the function body’s logic in prefixed, function call style:
-```
+
+```csharp
 internal static partial class ExpressionTree
 {
     internal static void Prefix()
@@ -473,7 +485,8 @@ internal class PostfixVisitor : BinaryArithmeticExpressionVisitor<List<(OpCode, 
 ```
 
 The following code outputs a sequence of CIL code:
-```
+
+```csharp
 internal static void Cil()
 {
     Expression<Func<double, double, double, double, double, double>> infix =
@@ -544,7 +557,8 @@ internal static class BinaryArithmeticCompiler
 ```
 
 The following code demonstrate how to use it:
-```
+
+```csharp
 internal static void Compile()
 {
     Expression<Func<double, double, double, double, double, double>> expression =
@@ -556,7 +570,8 @@ internal static void Compile()
 ```
 
 .NET provides a built-in API, System.Linq.Expressions.Expression<TDelegate>’s Compile method, for this purpose - compile expression tree to executable function at runtime:
-```
+
+```csharp
 internal static void BuiltInCompile()
 {
     Expression<Func<double, double, double, double, double, double>> infix =
@@ -571,7 +586,8 @@ Internally, Expression<TDelegate>.Compile calls APIs of System.Linq.Expressions.
 ## Expression tree and LINQ remote query
 
 Expression tree is very important in LINQ remote query, because it is easy to build expression tree, especially with the lambda expression, and it is also easy to compile/convert/translate a C# expression tree’s logic to a different domain or different language. In above examples, expression tree is converted to executable CIL. As fore mentioned, there are local and remote LINQ queries, like relational database. The following examples are a local LINQ to Objects query for local in memory objects, and a remote LINQ to Entities query for relational database:
-```
+
+```csharp
 internal static partial class ExpressionTree
 {
     internal static void LinqToObjects(IEnumerable<Product> source)

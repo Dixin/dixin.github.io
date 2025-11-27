@@ -3,8 +3,8 @@ title: "Category Theory via C# (9) Bifunctor"
 published: 2018-12-10
 description: "As discussed in all the previous functor parts, a functor is a wrapper of a object with a “Select” ability to preserve a morphism to another‘"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -107,7 +107,8 @@ public class Lazy<T1, T2>
 The difference from Lazy<> functor is, as the definition said, Lazy< , > wraps 2 types of values.
 
 To make Lazy< , > a bifunctor, just create these bi-Select extension methods (in [Haskell](http://en.wikipedia.org/wiki/Haskell_\(programming_language\)) this is called [bimap](https://hackage.haskell.org/package/bifunctors-3.2.0.1/docs/Data-Bifunctor.html)):
-```
+
+```csharp
 // [Pure]
 public static partial class LazyExtensions
 {

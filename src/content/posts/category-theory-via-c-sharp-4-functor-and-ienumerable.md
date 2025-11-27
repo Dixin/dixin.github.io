@@ -3,8 +3,8 @@ title: "Category Theory via C# (4) Functor And IEnumerable<>"
 published: 2018-12-05
 description: "A  F: C → D is a structure-preserving ) from category C to category D:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -104,7 +104,8 @@ So, instead of higher-kinded polymorphism, C# [recognizes the functor pattern](h
 ### The built-in IEnumerable<> functor
 
 IEnumerable<T> is the a built-in functor in C#/.NET. Why it is a functor and How is this implemented? First, in DotNet category, if IEnumerable<> is a functor, it should be an endofunctor IEnumerable<>: DotNet → DotNet.
-```
+
+```csharp
 public static IMorphism<IEnumerable<TSource>, IEnumerable<TResult>, DotNet> Select<TSource, TResult>(
     IMorphism<TSource, TResult, DotNet> selector)
 {
@@ -115,7 +116,8 @@ public static IMorphism<IEnumerable<TSource>, IEnumerable<TResult>, DotNet> Sele
 IEnumerable<T> should be able to do the above select/map from DotNet category to DotNet category.
 
 Second, in DotNet category, morphisms are functions. That is, IMorphism<TSouece, TResult, DotNet> and Func<TSouece, TResult> can convert to each other. So above select/map is equivalent to:
-```
+
+```csharp
 // Select = selector -> (source => result)
 public static Func<IEnumerable<TSource>, IEnumerable<TResult>> Select<TSource, TResult>(
     Func<TSource, TResult> selector)
@@ -125,7 +127,8 @@ public static Func<IEnumerable<TSource>, IEnumerable<TResult>> Select<TSource, T
 ```
 
 Now Select’s type is Func<T1, Func<T2, TResult>>, so it is a curried function. It can be uncurried to a equivalent Func<T1, T2, TResult>:
-```
+
+```csharp
 // Select = (selector, source) -> result
 public static IEnumerable<TResult> Select<TSource, TResult>( // Uncurried
     Func<TSource, TResult> selector, IEnumerable<TSource> source)
@@ -135,7 +138,8 @@ public static IEnumerable<TResult> Select<TSource, TResult>( // Uncurried
 ```
 
 The positions of 2 parameters can be swapped:
-```
+
+```csharp
 // Select = (source, selector) -> result
 public static IEnumerable<TResult> Select<TSource, TResult>( // Parameter swapped
     IEnumerable<TSource> source, Func<TSource, TResult> selector)
@@ -145,7 +149,8 @@ public static IEnumerable<TResult> Select<TSource, TResult>( // Parameter swappe
 ```
 
 The final step is to make Select [an extension method by adding a this keyword](/posts/understanding-csharp-3-0-features-5-extension-method):
-```
+
+```csharp
 // Select = (this source, selector) -> result
 public static IEnumerable<TResult> Select<TSource, TResult>( // Extension method
     this IEnumerable<TSource> source, Func<TSource, TResult> selector)
@@ -160,7 +165,8 @@ which is just [a syntactic sugar](/posts/understanding-csharp-3-0-features-5-ext
 -   If the last Select version above can be implemented, then IEnumerable<T> is a functor.
 
 IEnumerable<T>’s Select extension method is already implemented as System.Linq.Enumerable.Select. But it is easy to implement manually:
-```
+
+```csharp
 [Pure]
 public static partial class EnumerableExtensions
 {
@@ -196,13 +202,15 @@ then:
     -   F<> maps objects TSource, TResult ∈ ob(DotNet) to objects F<TSource>, F<TResult> ∈ ob(DotNet)
     -   F<> also selects morphism selector : TSource → TResult ∈ hom(DotNet) to new morphism : F<TSource> → F<TResult> ∈ hom(DotNet)
 -   F<> is a C# functor, its Select method can be recognized by C# compiler, so the LINQ syntax can be used:
-```
+
+```csharp
 IEnumerable<int> enumerableFunctor = Enumerable.Range(0, 3);
 IEnumerable<int> query = from x in enumerableFunctor select x + 1;
 ```
 
 which is compiled to:
-```
+
+```csharp
 IEnumerable<int> enumerableFunctor = Enumerable.Range(0, 3);
 Func<int, int> addOne = x => x + 1;
 IEnumerable<int> query = enumerableFunctor.Select(addOne);
@@ -211,7 +219,8 @@ IEnumerable<int> query = enumerableFunctor.Select(addOne);
 ## IEnumerable<>, functor laws, and unit tests
 
 To test IEnumerable<> with the functor laws, some helper functions can be created for shorter code:
-```
+
+```csharp
 [Pure]
 public static class MorphismExtensions
 {
@@ -231,7 +240,8 @@ public static class MorphismExtensions
 The above extension methods are created to use ∘ as infix operator instead of prefix, for [fluent coding](/posts/understanding-linq-to-objects-2-method-chaining), and to convert a C# function to a morphism in DotNet category.
 
 And an Id helper function can make code shorter:
-```
+
+```csharp
 [Pure]
 public static partial class Functions
 {
@@ -242,7 +252,8 @@ public static partial class Functions
 ```
 
 Finally, an assertion method for IEnumerable<T>:
-```
+
+```csharp
 // Impure.
 public static class EnumerableAssert
 {
@@ -254,7 +265,8 @@ public static class EnumerableAssert
 ```
 
 The following is the tests for IEnumerable<T> as a general functor - selecting/mapping between objects and morphisms:
-```
+
+```csharp
 [TestClass()]
 public partial class FunctorTests
 {
@@ -278,7 +290,8 @@ public partial class FunctorTests
 ```
 
 And the following is the tests for IEnumerable<T> as a C# functor:
-```
+
+```csharp
 public partial class FunctorTests
 {
     [TestMethod()]

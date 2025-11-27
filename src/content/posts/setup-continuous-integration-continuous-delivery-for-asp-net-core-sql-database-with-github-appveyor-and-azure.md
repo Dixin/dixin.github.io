@@ -3,8 +3,8 @@ title: "End-to-end: Setup continuous integration/continuous delivery for ASP.NET
 published: 2016-01-14
 description: "I have a web project “Chinese Etymology ()” for searching Chinese character’s etymologies and ancient Chinese characters. It is developed with Microsoft tec"
 image: ""
-tags: ["ASP.NET Core", ".NET Core", "Node.js", "GitHub", "Azure SQL Database", "Azure", "SQL Server", "CI", "CD", "Continuous Integration", "Continuous Delivery", "DevOps", "AppVeyor", "Debug", "Deployment", "YAML", "YML"]
-category: "ASP.NET Core"
+tags: [".NET Core", "AppVeyor", "ASP.NET Core", "Azure", "Azure SQL Database", "CD", "CI", "Continuous Delivery", "Continuous Integration", "Debug", "Deployment", "DevOps", "GitHub", "Node.js", "SQL Server", "YAML", "YML"]
+category: ".NET Core"
 draft: false
 lang: ""
 ---
@@ -63,7 +63,8 @@ AppVeyor has a [Build Configuration](https://www.appveyor.com/docs/build-configu
 ## Initialize environment
 
 My project is built with ASP.NET Core 2.0, so I used the build worker image “Visual Studio 2017”, and turned on .NET Core patching:
-```
+
+```csharp
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -75,14 +76,16 @@ dotnet_csproj:
 ```
 
 I also used WebPack for the website UI, so I need install Node.js and NPM:
-```
+
+```csharp
 install:
 - ps: >-
     Install-Product node 8
 ```
 
 By default, AppVeyor runs msbuild to build the solution. So before build, dotnet restore is needed to install all the NuGet packages. npm install is also needed to install all the NPM packages.
-```
+
+```csharp
 before_build:
 - cmd: >-
     dotnet restore
@@ -104,7 +107,8 @@ I am using MSTest framework. After build, the tests will be automatically discov
 ### Connect to Azure SQL database with secure variables
 
 My tests needs to connect to Azure SQL database to run. In this case, we can hide the secretes in connection string with secure variables. The following is the settings file containing the connection string:
-```
+
+```csharp
 {
   "ConnectionStrings": {
     "Etymology": "Server=tcp:{server}.database.windows.net,1433;Initial Catalog={database};Persist Security Info=False;User ID={user};Password={password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
@@ -117,7 +121,8 @@ This file is committed to repository and exposed to public. Now encrypt the real
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Continuous-Integration-with-GitHub-AppVe_2A0D/image_thumb_8.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Continuous-Integration-with-GitHub-AppVe_2A0D/image_18.png)
 
 Now these encrypted secretes can go to appveyor.yml and expose to public, along with other [environment variables](https://www.appveyor.com/docs/environment-variables/):
-```
+
+```csharp
 environment:
   Server:
     secure: TvXoVEeYYNoo2cXBZTeGuQ==
@@ -133,7 +138,8 @@ environment:
 ```
 
 In AppVeyor, these secure variables can be access just like othernormal environment variables. So before build, just replace the connection string with decrypted values:
-```
+
+```csharp
 install:
 - ps: >-
     Install-Product node 8
@@ -151,7 +157,8 @@ On the Azure side, go to the SQL database’s server, in the firewall settings, 
 ### Connect to on-premise SQL Server database
 
 What if on-premise SQL Server is used? I have an .NET Framework project using .mdf and ldf files with SQL Server LocalDB. In AppVeyor, I just enable SQL Server, attach the .mdf and ldf files, and update the connection string:
-```
+
+```csharp
 services: mssql2016
 before_test:
 - ps: >-
@@ -209,7 +216,8 @@ And specify the Azure deployment credential user name and password created just 
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Continuous-Integration-with-GitHub-AppVe_2A0D/image_thumb_3.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Continuous-Integration-with-GitHub-AppVe_2A0D/image_8.png)
 
 The YAML will be like this:
-```
+
+```csharp
 build:
   publish_wap_xcopy: true
   parallel: true

@@ -25,7 +25,8 @@ An array T\[\] can be viewed as an IList<T>. As fore mentioned, T is invariant f
 ## Covariance
 
 C# unexpectedly support covariance for array:
-```
+
+```csharp
 public static partial class Array
 {
     public static void Covariance()
@@ -54,7 +55,8 @@ public static partial class Array
 ```
 
 The above code can be compiled but throws ArrayTypeMismatchException at runtime. In some scenarios, this can be confusing and makes code buggy. For example, when using array as parameter:
-```
+
+```csharp
 public static partial class Array
 {
     public static void ProcessArray(Base[] array)
@@ -71,7 +73,8 @@ public static partial class Array
 ```
 
 As fore mentioned, value type has nothing to do with variances, the following code cannot be compiled:
-```
+
+```csharp
 public static partial class Array
 {
     public static void ValueType()

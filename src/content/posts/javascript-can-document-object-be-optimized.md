@@ -10,18 +10,21 @@ lang: ""
 ---
 
 In JavaScript, document is a property of window. When access document directly, window.document is accessed. Recently, a colleague demonstrated a way to optimize document, which looks weird:
-```
+
+```csharp
 // Accessing _document might be faster than accessing document;
 var _document = window.document;
 ```
 
 To avoid changing context code accessing document, like document.getElementById() invocation, etc., the above code should be:
-```
+
+```csharp
 var document = window.document;
 ```
 
 However, this results an error in most browsers. There is one way to work around:
-```
+
+```csharp
 try {
     var _document = window.document;
     eval("var document = _document");

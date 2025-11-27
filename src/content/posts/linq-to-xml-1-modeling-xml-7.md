@@ -3,8 +3,8 @@ title: "LINQ to XML in Depth (1) Modeling XML"
 published: 2018-08-15
 description: "(eXtensible Markup Language) is widely used to represent, store, and transfer data. Since .NET 3.5, the built in LINQ to XML APIs are provided to enable LINQ q"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -53,7 +53,8 @@ The XML DOM APIs are provided since .NET Framework 1.0. There a set of Xml\* typ
 -   XmlQualifiedName
 
 These DOM APIs for XML can be used to model and manipulate XML structures in imperative paradigm. Take the following XML fragment as example:
-```
+
+```csharp
 <rss version="2.0" xmlns:dixin="https://weblogs.asp.net/dixin">
   <channel>
     <item>
@@ -74,7 +75,8 @@ These DOM APIs for XML can be used to model and manipulate XML structures in imp
 ```
 
 It is a simple RSS feed with one single <item> element. The following example calls XML DOM APIs to build such a XML tree, and serialize the XML tree to string:
-```
+
+```csharp
 internal static class Dom
 {
     internal static void CreateAndSerialize()
@@ -261,7 +263,8 @@ XName is different. LINQ to XML provides 2 equivalent ways to instantiate XName:
 -   implicitly converting from string (which is implemented with XName.Get as well).
 
 The constructor is not exposed, because LINQ to XML caches all the constructed XName instances at runtime, so a XName instance is constructed only once for a specific name. LINQ to XML also implements the == and != operator by checking the reference equality:
-```
+
+```csharp
 internal static void Name()
 {
     XName attributeName1 = "isPermaLink"; // Implicitly convert string to XName.
@@ -293,7 +296,8 @@ internal static void Namespace()
 ```
 
 XElement can be explicitly converted to .NET primitive types, e.g.:
-```
+
+```csharp
 internal static void Element()
 {
     XElement pubDateElement = XElement.Parse("<pubDate>Mon, 07 Sep 2009 00:00:00 GMT</pubDate>");
@@ -305,7 +309,8 @@ internal static void Element()
 The above conversion is implemented by calling DateTime.Parse with the string value returned by XElement.Value.
 
 XAttribute can be converted to primitive types too:
-```
+
+```csharp
 internal static void Attribute()
 {
     XName name = "isPermaLink";
@@ -318,7 +323,8 @@ internal static void Attribute()
 Here the conversion is implemented by calling System.Xml.XmlConvert’s ToBoolean method with the string value returned by XElement.Value.
 
 XComment, XDocument, XElement, XDocumentType, XProcessingInstruction, XText, and XCData types inherit XNode. XNode provides a DeepEquals method to compare any 2 nodes:
-```
+
+```csharp
 internal static void DeepEquals()
 {
     XElement element1 = XElement.Parse("<parent><child></child></parent>");
@@ -367,7 +373,8 @@ internal static void Read()
 Reading an RSS feed to construct an XML tree usually work smoothly, since RSS is just XML. Reading a web page usually has bigger chance to fail, because in the real world, a HTML document may be not strictly structured.
 
 The above example reads entire XML document and deserialize the string to XML tree in the memory. Regarding the specified XML can have arbitrary size, XmlReader and XNode.ReadFrom can also read XML fragment by fragment:
-```
+
+```csharp
 internal static IEnumerable<XElement> RssItems(string rssUri)
 {
     using (XmlReader reader = XmlReader.Create(rssUri))
@@ -399,7 +406,8 @@ The following APIs are provided to serialize XML to string, or write XML to some
 -   XStramingElement.Save, XStramingElement.ToString, XStreamingElement.WriteTo
 
 For example:
-```
+
+```csharp
 internal static void Write()
 {
     XDocument document1 = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -430,7 +438,8 @@ internal static void Write()
 ```
 
 XNode also provides a ToString overload to accept a SaveOptions flag:
-```
+
+```csharp
 internal static void XNodeToString()
 {
     XDocument document = XDocument.Parse(
@@ -453,7 +462,8 @@ To serialize XML with even more custom settings, the XmlWriter with XmlWriterSet
 ## Deferred construction
 
 The XStreamingElement is a special type. It is used to defer the build of element. For example:
-```
+
+```csharp
 internal static void StreamingElementWithChildElements()
 {
     IEnumerable<XElement> ChildElementsFactory() =>
@@ -475,7 +485,8 @@ internal static void StreamingElementWithChildElements()
 Here a factory function is defined to generate a sequence of child elements. It calls the Do query method from Interactive Extension (Ix) to prints each value when that pulled from the sequence. Next, the XElement constructor is called, which immediately pulls all child elements from the sequence returned by the factory function, so that the parent element is immediately built with those child elements. Therefore, the Do query is executed right away, and prints the values of the generated child elements. In contrast, XStreamingElement constructor does not pull the child elements from the sequence, the values are not printed yet by Do. The pulling is deferred until the parent element needs to be built, for example, when XStreamingElement.Save/XStreamingElement.ToString/XStreamingElement.WriteTo is called.
 
 This feature can also be demonstrated by modifying the child elements. For XElement, once constructed, the element is built immediately, and is not impacted by modifying the original child elements In contrast, .XStreamingElement can be impacted by the modification:
-```
+
+```csharp
 internal static void StreamingElementWithChildElementModification()
 {
     XElement source = new XElement("source", new XElement("child", "a"));

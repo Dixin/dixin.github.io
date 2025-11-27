@@ -65,7 +65,8 @@ Please notice that, since IQuerayable<T> implements IEnumerable<T>, IEnumerable<
 ## Table<T>
 
 In LINQ to SQL, most of the time, the query works on (the model of) SQL data table:
-```
+
+```csharp
 Table<Product> source = database.Products; // Products table of Northwind database.
 IQueryable<string> results = source.Where(product =>
                                             product.Category.CategoryName == "Beverages")
@@ -73,7 +74,8 @@ IQueryable<string> results = source.Where(product =>
 ```
 
 The actual type of (the model of) Products table is Table<T>:
-```
+
+```csharp
 [Database(Name = "Northwind")]
 public partial class NorthwindDataContext : DataContext
 {
@@ -141,7 +143,8 @@ namespace System.Data.Linq
 ```
 
 Please notice that the above Where() method invocation satisfies both of the signatures:
-```
+
+```csharp
 source.Where(product => product.Category.CategoryName == "Beverages").Select(...
 ```
 
@@ -155,7 +158,8 @@ How does the compiler choose the 2 satisfied Where() methods? Because Queryable.
 Because Queryable.Where() returns an IQueryable<T>, then, again, Queryable.Select() is choosed by compiler instead of Enumerable.Select().
 
 So the above qeury is equal to:
-```
+
+```csharp
 IQueryable<Product> source = database.Products; // Products table of Northwind database.
 // Queryable.Where() is choosed by compiler.
 IQueryable<Product> products = source.Where(product =>

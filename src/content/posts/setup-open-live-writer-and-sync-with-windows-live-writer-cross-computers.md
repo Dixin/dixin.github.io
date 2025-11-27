@@ -3,8 +3,8 @@ title: "Setup Open Live Writer and sync with Windows Live Writer cross computers
 published: 2019-07-22
 description: "Today I am setting up a new PC. I use Windows Live Writer to write for this blog for years, and found the new installation can no longer work for my blog. I tried Open Live Writer. Fortunately Open Li"
 image: ""
-tags: ["Windows Live Writer", "Windows Live"]
-category: "Windows Live Writer"
+tags: ["Windows Live", "Windows Live Writer"]
+category: "Windows Live"
 draft: false
 lang: ""
 ---

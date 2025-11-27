@@ -3,8 +3,8 @@ title: "Category Theory via C# (8) Advanced LINQ to Monads"
 published: 2024-12-31
 description: "Monad is a powerful structure, with the LINQ support in C# language, monad enables chaining operations to build fluent workflow, which can be pure. With these features, monad can be used to manage I/O"
 image: ""
-tags: ["C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "LINQ via C#", "Monads"]
-category: "C#"
+tags: [".NET", "C#", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monads"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,13 +18,15 @@ Monad is a powerful structure, with the LINQ support in C# language, monad enabl
 ## IO monad
 
 IO is impure. As already demonstrated, the Lazy<> and Func<> monads can build purely function workflows consists of I/O operations. The I/O is produced only when the workflows is started. So the Func<> monad is also called IO monad (Again, Lazy<T> is just a wrapper of Func<T> factory function, so Lazy<> and Func<> can be viewed as equivalent.). Here, to be more intuitive, rename Func<> to IO<>:
-```
+
+```csharp
 // IO: () -> T
 public delegate T IO<out T>();
 ```
 
 Func<T> or IO<T> is just a wrapper of T. Generally, the difference is, if a value T is obtained, effect is already produced; and if a Func<T> or IO<T> function wrapper is obtained, the effect can be delayed to produce, until explicitly calling this function to pull the wrapped T value. The following example is a simple comparison:
-```
+
+```csharp
 public static partial class IOExtensions
 {
     internal static string Impure()
@@ -52,7 +54,8 @@ public static partial class IOExtensions
 ```
 
 IO<> monad is just Func<> monad:
-```
+
+```csharp
 public static partial class IOExtensions
 {
     // SelectMany: (IO<TSource>, TSource -> IO<TSelector>, (TSource, TSelector) -> TResult) -> IO<TResult>
@@ -79,7 +82,8 @@ public static partial class IOExtensions
 The (SelectMany, Wrap, Select) operations are defined so that the LINQ functor syntax (single from clause) and monad syntax (multiple from clauses) are enabled. The let clause is also enabled by Select, which provides great convenience.
 
 Some I/O operations, like above Console.ReadLine: () –> string, and File.ReadAllText: string –> string, returns a value T that can be wrapped IO<T>. There are other I/O operations that return void, like Console.WriteLine: string –> void, etc. Since C# compiler does not allow void to be used as type argument of IO<void>, these operations can be viewed as returning a Unit value, which can be wrapped as IO<Uint>. The following methods help wrap IO<T> functions from I/O operations with or without return value:
-```
+
+```csharp
 public static IO<TResult> IO<TResult>(Func<TResult> function) =>
     () => function();
 
@@ -92,7 +96,8 @@ public static IO<Unit> IO(Action action) =>
 ```
 
 Now the I/O workflow can be build as purely function LINQ query:
-```
+
+```csharp
 internal static void Workflow()
 {
     IO<int> query = from unit1 in IO(() => Console.WriteLine("File path:")) // IO<Unit>.
@@ -109,7 +114,8 @@ internal static void Workflow()
 ```
 
 IO<> monad works with both synchronous and asynchronous I/O operations. The async version of IO<T> is just IO<Task<T>>, and the async version of IO<Unit> is just IO<Task>:
-```
+
+```csharp
 internal static async Task WorkflowAsync()
 {
     using (HttpClient httpClient = new HttpClient())
@@ -136,13 +142,15 @@ internal static async Task WorkflowAsync()
 ## State monad
 
 In object-oriented programming, there is the state pattern to handle state changes. In functional programming, state change can be modeled with pure function. For pure function TSource –> TResult, its state-involved version can be represented as a Tuple<TSource, TState> –> Tuple<TResult, TState> function, which accepts some input value along with some input state, and returns some output value and some output state. This function can remains pure, because it can leave the input state unchanged, then either return the same old state, or create a new state and return it. To make this function monadic, break up the input tuple and curry the function to TSource –> (TState –> Tuple<TResult, TState>). Now the returned TState –> Tuple<TResult, TState> function type can be given an alias called State:
-```
+
+```csharp
 // State: TState -> ValueTuple<T, TState>
 public delegate (T Value, TState State) State<TState, T>(TState state);
 ```
 
 Similar to fore mentioned Tuple<,> and Func<,> types, the above open generic type State<,> can be viewed as a type constructor of kind \* –> \* –> \*. After partially applied with a first type argument TState, State<TState,> becomes a \* –> \* type constructor. If it can be a functor and monad, then above stateful function becomes a monadic selector TSource –> State<TState, TResult>. So the following (SelectMany, Wrap, Select) methods can be defined for State<TState,>:
-```
+
+```csharp
 public static partial class StateExtensions
 {
     // SelectMany: (State<TState, TSource>, TSource -> State<TState, TSelector>, (TSource, TSelector) -> TResult) -> State<TState, TResult>
@@ -178,7 +186,8 @@ public static partial class StateExtensions
 ```
 
 SelectMany and Select return a function that accepts an old state and outputs new state, State method returns a function that outputs the old state. Now this State<TState,> delegate type is the state monad, so a State<TState, T> function can be viewed as a wrapper of a T value, and this T value can be unwrapped in the monad workflow, with the from value in source syntax. State<TState, T> function also wraps the state information. To get/set the TState state in the monad workflow, the following GetState/SetState functions can be defined:
-```
+
+```csharp
 // GetState: () -> State<TState, TState>
 public static State<TState, TState> GetState<TState>() =>
     oldState => (oldState, oldState); // Output old state.
@@ -189,7 +198,8 @@ public static State<TState, Unit> SetState<TState>(TState newState) =>
 ```
 
 Here GetState returns a State<TState, TState> function wrapping the state as value, so that the state can be extracted in the monad workflow with the same syntax that unwraps the value. SetState returns a State<TState, Unit> function, which ignores the old state, and wrap no value (represented by Unit) and outputs the the specified new value to the monad workflow. Generally, the state monad workflow can be demonstrated as:
-```
+
+```csharp
 internal static void Workflow()
 {
     string initialState = nameof(initialState);
@@ -286,7 +296,8 @@ public static TAccumulate Aggregate<TSource, TAccumulate>(
 In each recursion step, if the source sequence in the current state in not empty, the source sequence needs to be split. The first value is used to call the accumulation function, and the other values are put into output state, which is passed to the next recursion step. So there are multiple pulling operations for the source sequence: detecting if it is empty detection, pulling first value, and pulling the rest values. To avoid multiple iterations for the same source sequence, here the Share query method from Microsoft Ix (Interactive Extensions) library is called, so that all the pulling operations share the same iterator.
 
 The stack’s Pop and Push operation can be also viewed as state processing. The Pop method of stack requires no input, and out put the stack’s top value T, So Pop can be viewed of type Unit –> T. In contrast, stack’s Push method accepts a value, set the value to the top of the stack, and returns no output, so Push can be viewed of type T –> Unit. The stack’s values are different before and after the Pop and Push operations, so the stack itself can be viewed as the state of the Pop and Push operation. If the values in a stack is represented as a IEnumerable<T> sequence, then Pop can be remodeled as Tuple<Unit, IEnumerable<T>> –> Tuple<Unit, IEnumerable<T>>, which can be curried to Unit –> State<IEnumerable<T>, T>; and Push can be remodeled as Tuple<T, IEnumerable<T>> –> Tuple<Unit, IEnumerable<T>>:
-```
+
+```csharp
 // PopState: Unit -> (IEnumerable<T> -> (T, IEnumerable<T>))
 // PopState: Unit -> State<IEnumerable<T>, T>
 internal static State<IEnumerable<T>, T> PopState<T>(Unit unit = null) =>
@@ -307,7 +318,8 @@ internal static State<IEnumerable<T>, Unit> PushState<T>(T value) =>
 ```
 
 Now the stack operations can be a state monad workflow. Also, GetState can get the current values of the stack, and SetState can reset the values of stack:
-```
+
+```csharp
 internal static void Stack()
 {
     IEnumerable<int> initialStack = Enumerable.Repeat(0, 5);
@@ -370,7 +382,8 @@ public readonly struct Try<T>
 ```
 
 Try<T> represents an operation, which either succeeds with a result, or fail with an exception. Its SelectMany method is also in the same pattern as Optional<>’s SelectMany, so that when an operation (source) succeeds without exception, the next operation (returned by selector) executes:
-```
+
+```csharp
 public static partial class TryExtensions
 {
     // SelectMany: (Try<TSource>, TSource -> Try<TSelector>, (TSource, TSelector) -> TResult) -> Try<TResult>
@@ -403,18 +416,21 @@ public static partial class TryExtensions
 ```
 
 The operation of throwing an exception can be represented with a Try<T> with the specified exception:
-```
+
+```csharp
 public static Try<T> Throw<T>(this Exception exception) => new Try<T>(() => (default, exception));
 ```
 
 For convenience, Try<T> instance can be implicitly wrapped from a T value. And the following method also helps wrap a Func<T> operation:
-```
+
+```csharp
 public static Try<T> Try<T>(Func<T> function) =>
     new Try<T>(() => (function(), (Exception)null));
 ```
 
 Similar to IO<> monad, an function operation (() –> void) without return result can be viewed as a function returning Unit (() –> Unit):
-```
+
+```csharp
 public static Try<Unit> Try(Action action) =>
     new Try<Unit>(() =>
     {
@@ -424,7 +440,8 @@ public static Try<Unit> Try(Action action) =>
 ```
 
 To handle the exception from an operation represented by Try<T>, just check the HasException property, filter the exception, and process it. The following Catch method handles the specified exception type:
-```
+
+```csharp
 public static Try<T> Catch<T, TException>(
     this Try<T> source, Func<TException, Try<T>> handler, Func<TException, bool> when = null)
     where TException : Exception => 
@@ -440,14 +457,16 @@ public static Try<T> Catch<T, TException>(
 ```
 
 The evaluation of the Try<T> source, and the execution of handler, are both deferred. And the following Catch overload handles all exception types:
-```
+
+```csharp
 public static Try<T> Catch<T>(
     this Try<T> source, Func<Exception, Try<T>> handler, Func<Exception, bool> when = null) =>
         Catch<T, Exception>(source, handler, when);
 ```
 
 And the Finally method just call a function to process the Try<T>:
-```
+
+```csharp
 public static TResult Finally<T, TResult>(
     this Try<T> source, Func<Try<T>, TResult> finally) => finally(source);
 
@@ -456,7 +475,8 @@ public static void Finally<T>(
 ```
 
 The operation of throwing an exception can be represented with a Try<T> instance wrapping the specified exception:
-```
+
+```csharp
 public static partial class TryExtensions
 {
     public static Try<T> Throw<T>(this Exception exception) => new Try<T>(() => (default, exception));
@@ -464,7 +484,8 @@ public static partial class TryExtensions
 ```
 
 The following is an example of throwing exception:
-```
+
+```csharp
 internal static Try<int> TryStrictFactorial(int? value)
 {
     if (value == null)
@@ -485,7 +506,8 @@ internal static Try<int> TryStrictFactorial(int? value)
 ```
 
 And the the following is an example of handling exception:
-```
+
+```csharp
 internal static string Factorial(string value)
 {
     Func<string, int?> stringToNullableInt32 = @string =>
@@ -512,13 +534,15 @@ internal static string Factorial(string value)
 ## Reader monad
 
 The Func<T,> functor is also monad. In contrast to Func<> monad, a factory function that only outputs a value, Func<T,> can also read input value from the environment. So Fun<T,> monad is also called reader monad, or environment monad. To be intuitive, rename Func<T,> to Reader<TEnvironment,>:
-```
+
+```csharp
 // Reader: TEnvironment -> T
 public delegate T Reader<in TEnvironment, out T>(TEnvironment environment);
 ```
 
 And its (SelectMany, Wrap, Select) methods are straightforward:
-```
+
+```csharp
 public static partial class ReaderExtensions
 {
     // SelectMany: (Reader<TEnvironment, TSource>, TSource -> Reader<TEnvironment, TSelector>, (TSource, TSelector) -> TResult) -> Reader<TEnvironment, TResult>
@@ -604,7 +628,8 @@ public class Writer<TEntry, T> : WriterBase<IEnumerable<TEntry>, T, EnumerableCo
 ```
 
 Similar to State<TState,> and Reader<TEnvironment,>, here Writer<TEntry,> can be monad with the following (SelectMany, Wrap, Select) methods:
-```
+
+```csharp
 public static partial class WriterExtensions
 {
     // SelectMany: (Writer<TEntry, TSource>, TSource -> Writer<TEntry, TSelector>, (TSource, TSelector) -> TResult) -> Writer<TEntry, TResult>
@@ -631,13 +656,15 @@ public static partial class WriterExtensions
 ```
 
 Most commonly, each operation in the workflow logs string message. So the following method is defined to construct a writer instance from a value and a string log factory:
-```
+
+```csharp
 public static Writer<string, TSource> LogWriter<TSource>(this TSource value, Func<TSource, string> logFactory) =>
     new Writer<string, TSource>(() => (logFactory(value).Enumerable(), value));
 ```
 
 The previous Fun<> monad workflow now can output logs for each operation:
-```
+
+```csharp
 internal static void Workflow()
 {
     Writer<string, string> query = from filePath in Console.ReadLine().LogWriter(value =>
@@ -661,7 +688,8 @@ internal static void Workflow()
 ## Continuation monad
 
 In program, a function can return the result value, so that some other continuation function can use that value; or a function can take a continuation function as parameter, after it computes the result value, it calls back the continuation function with that value:
-```
+
+```csharp
 public static partial class CpsExtensions
 {
     // Sqrt: int -> double
@@ -675,27 +703,31 @@ public static partial class CpsExtensions
 ```
 
 The former is style is called direct style, and the latter is called continuation-passing style (CPS). Generally, for a TSource –> TResult function, its CPS version can accept a TResult –> TContinuation continuation function, so the CPS function is of type (TSource, TResult –> TContinuation) –> TContinuation. Again, just like the state monad, the CPS function can be curried to TSource –> ((TResult –> TContinuation) –> TContinuation)
-```
+
+```csharp
 // SqrtWithCallback: int -> (double -> TContinuation) -> TContinuation
 internal static Func<Func<double, TContinuation>, TContinuation> SqrtWithCallback<TContinuation>(int int32) =>
     continuation => continuation(Math.Sqrt(int32));
 ```
 
 Now the returned (TResult –> TContinuation) –> TContinuation function type can be given an alias Cps:
-```
+
+```csharp
 // Cps: (T -> TContinuation>) -> TContinuation
 public delegate TContinuation Cps<TContinuation, out T>(Func<T, TContinuation> continuation);
 ```
 
 So that the above function can be renamed as:
-```
+
+```csharp
 // SqrtCps: int -> Cps<TContinuation, double>
 internal static Cps<TContinuation, double> SqrtCps<TContinuation>(int int32) =>
     continuation => continuation(Math.Sqrt(int32));
 ```
 
 The CPS function becomes TSource –> Cps<TContinuation, TResult>, which is a monadic selector function. Just like State<TState,>, here Cps<TContinuation,> is the continuation monad. Its (SelectMany, Wrap, Select) methods can be implemented as:
-```
+
+```csharp
 public static partial class CpsExtensions
 {
     // SelectMany: (Cps<TContinuation, TSource>, TSource -> Cps<TContinuation, TSelector>, (TSource, TSelector) -> TResult) -> Cps<TContinuation, TResult>
@@ -723,7 +755,8 @@ public static partial class CpsExtensions
 ```
 
 A more complex example is sum of squares. The CPS version of sum and square are straightforward. If direct style of square operation of type int –> int, and the direct style of sum operation is (int, int) –> int, then their CPS versions are just of type int –> Cps<TContinuation, int>, and (int, int) –> Cps<TContinuation, int>:
-```
+
+```csharp
 // SquareCps: int -> Cps<TContinuation, int>
 internal static Cps<TContinuation, int> SquareCps<TContinuation>(int x) =>
     continuation => continuation(x * x);
@@ -734,7 +767,8 @@ internal static Cps<TContinuation, int> SumCps<TContinuation>(int x, int y) =>
 ```
 
 Then CPS version of sum of square can be implemented with them:
-```
+
+```csharp
 // SumOfSquaresCps: (int, int) -> Cps<TContinuation, int>
 internal static Cps<TContinuation, int> SumOfSquaresCps<TContinuation>(int a, int b) =>
     continuation =>
@@ -744,7 +778,8 @@ internal static Cps<TContinuation, int> SumOfSquaresCps<TContinuation>(int a, in
 ```
 
 This is not intuitive. But the continuation monad can help. A Cps<TContinuation, T> function can be viewed as a monad wrapper of T value. So T value can be unwrapped from Cps<TContinuation, T> with the LINQ from clause:
-```
+
+```csharp
 internal static Cps<TContinuation, int> SumOfSquaresCpsLinq<TContinuation>(int a, int b) =>
     from squareOfA in SquareCps<TContinuation>(a) // Cps<TContinuation, int>.
     from squareOfB in SquareCps<TContinuation>(b) // Cps<TContinuation, int>.
@@ -753,7 +788,8 @@ internal static Cps<TContinuation, int> SumOfSquaresCpsLinq<TContinuation>(int a
 ```
 
 And the following is a similar example of fibonacci:
-```
+
+```csharp
 internal static Cps<TContinuation, uint> FibonacciCps<TContinuation>(uint uInt32) =>
     uInt32 > 1
         ? (from a in FibonacciCps<TContinuation>(uInt32 - 1U)
@@ -767,13 +803,15 @@ internal static Cps<TContinuation, uint> FibonacciCps<TContinuation>(uint uInt32
 ```
 
 Generally, a direct style function can be easily converted to CPS function – just pass the direct style function’s return value to a continuation function:
-```
+
+```csharp
 public static Cps<TContinuation, T> Cps<TContinuation, T>(Func<T> function) =>
     continuation => continuation(function());
 ```
 
 Now the previous workflows can be represented in CPS too:
-```
+
+```csharp
 internal static void Workflow<TContinuation>(Func<string, TContinuation> continuation)
 {
     Cps<TContinuation, string> query =

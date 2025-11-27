@@ -10,7 +10,8 @@ lang: ""
 ---
 
 Everyone knows IE 6 does not like PNG images. When a transparent PNG is created as a background image,
-```
+
+```csharp
 .webos
 {
     background: url(Transparent.png);
@@ -19,7 +20,8 @@ Everyone knows IE 6 does not like PNG images. When a transparent PNG is created 
 [](http://11011.net/software/vspaste)
 
 IE 6 renders it in a wrong way, which causes a lot of trouble in web design. Here a filter has to be used.
-```
+
+```csharp
 .webos
 {
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Contents/Transparent.png', sizingMethod='scale');
@@ -30,7 +32,8 @@ IE 6 renders it in a wrong way, which causes a lot of trouble in web design. Her
 Filter is more difficult to use. One of the biggest trouble is, in the filter, the path of the png file is not related to the CSS file, but the page using the CSS. Usually we share one CSS file among a lot of pages, and if the pages are in different paths, the filter does not work well.
 
 For these years, I use the following to display transparent PNG background, which I learnt from Micosoft.com source code:
-```
+
+```csharp
 .webos
 {
     filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Contents/Transparent.png', sizingMethod='scale');

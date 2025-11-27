@@ -3,7 +3,7 @@ title: "Understanding C# Features (7) Higher-Order Function"
 published: 2016-01-18
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ via C#", "C# Features", "Higher-Order"]
+tags: [".NET", "C#", "C# Features", "Functional Programming", "Higher-Order", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -36,7 +36,8 @@ public static void CallFirstOrder()
 ```
 
 To get a higher-order function, just replace above DataType/dataValue with a function type/function value. In C#, delegate type can be viewed as function type, and delegate instance can be viewed as function value (instance). So:
-```
+
+```csharp
 public delegate void FunctionType();
 
 public static FunctionType HigherOrder(FunctionType functionValue)
@@ -54,7 +55,8 @@ public static void CallHigherOrder()
 Above HigherOrder becomes a higher-order function takes function as input and output.
 
 Besides named function, anonymous first-order/higher-order functions can be easily expressed with lambda expression:
-```
+
+```csharp
 public static partial class HigherOrderFunction
 {
     public static void Lambda()
@@ -90,12 +92,14 @@ namespace System
 ```
 
 Most LINQ query methods are higher-order functions, like Where. Its signature is:
-```
+
+```csharp
 public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate);
 ```
 
 Its predicate parameter is a function value of function type Func<TSource, bool>:
-```
+
+```csharp
 public static partial class LinqToObjects
 {
     public static IEnumerable<int> Positive(IEnumerable<int> source)
@@ -137,7 +141,8 @@ public static partial class FirstClass
 ```
 
 They can be stored in data structure:
-```
+
+```csharp
 public static partial class FirstClass
 {
     public static ObjectType objectField = new ObjectType();
@@ -149,7 +154,8 @@ public static partial class FirstClass
 ```
 
 They can be function parameter and return value:
-```
+
+```csharp
 public static partial class FirstClass
 {
     public static ObjectType InputOutputObject(ObjectType objectValue) => objectValue;
@@ -159,7 +165,8 @@ public static partial class FirstClass
 ```
 
 They can be nested:
-```
+
+```csharp
 public static partial class FirstClass
 {
     public static void NestedObject()
@@ -186,7 +193,8 @@ public static partial class FirstClass
 ```
 
 They are reference equality testable:
-```
+
+```csharp
 public static partial class FirstClass
 {
     public static void ObjectEquality()

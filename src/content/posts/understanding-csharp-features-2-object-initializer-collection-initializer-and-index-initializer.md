@@ -3,7 +3,7 @@ title: "Understanding C# Features (2) Object Initializer, Collection Initializer
 published: 2009-11-26
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -25,14 +25,16 @@ public class Person
 ## Object initializer
 
 Before C# 3.0, a Person object can be initialized like this:
-```
+
+```csharp
 Person person = new Person();
 person.Name = "Dixin";
 person.Age = 30;
 ```
 
 With object initializer syntactic sugar in C# 3.0+, above code can be more declarative:
-```
+
+```csharp
 Person person = new Person()
     {
         Name = "Dixin",
@@ -45,14 +47,16 @@ which is will be compiled to above imperative version..
 ## Collection initializer
 
 Similarly, before C# 3.0, a collection can be initialized like this:
-```
+
+```csharp
 Collection<Person> persons = new Collection<Person>();
 persons.Add(anna);
 persons.Add(brian);
 ```
 
 In C# 3.0+, there is syntactic sugar called collection initializer:
-```
+
+```csharp
 Collection<Person> persons = new Collection<Person>()
     {
         anna, 
@@ -84,7 +88,8 @@ public class PersonCollection : IEnumerable
 ```
 
 If the Add() method takes more than one parameters, this syntax should be used:
-```
+
+```csharp
 Dictionary<string, int> persons = new Dictionary<string, int>()
     {
         { "Anna", 18 }, // Compiled to persons.Add("Mark", 18).
@@ -95,7 +100,8 @@ Dictionary<string, int> persons = new Dictionary<string, int>()
 ## Index initializer
 
 Since C# 6.0, index initializer syntactic sugar makes C# indexer declarative too:
-```
+
+```csharp
 PersonDictionary persons = new PersonDictionary()
     {
         [Guid.NewGuid()] = new Person() { Name = "Dixin", Age = 30 }

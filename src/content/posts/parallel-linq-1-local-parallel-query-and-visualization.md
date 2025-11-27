@@ -3,8 +3,8 @@ title: "Parallel LINQ in Depth (1) Local Parallel Query and Visualization"
 published: 2019-09-20
 description: "LINQ to Objects and LINQ to XML queries are designed to work sequentially, and do not involve multi-threading, concurrency, or parallel computing. To scale LINQ query in multi-processor environment, ."
 image: ""
-tags: ["C#", ".NET", "LINQ", "PLINQ", "Parallel LINQ", "Parallel Computing", "Concurrency VIsualizer"]
-category: "C#"
+tags: [".NET", "C#", "Concurrency VIsualizer", "LINQ", "Parallel Computing", "Parallel LINQ", "PLINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -24,43 +24,49 @@ Parallel LINQ (to Objects) APIs are provided as a parity with (sequential) LINQ 
 As the parity with System.Linq.Enumerable, System.Linq.ParallelEnumerable static type provides the parallel version of standard queries. For example, the following is the comparison of the Range/Repeat generation queries’ sequential and parallel versions:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IEnumerable<int> Range(int start, int count);
 ```
-```
+
+```csharp
 public static IEnumerable<TResult> Repeat<TResult>(TResult element, int count);
 ```
-```
+
+```csharp
 // Other members.
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class ParallelEnumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static ParallelQuery<int> Range(int start, int count);
 ```
-```
+
+```csharp
 public static ParallelQuery<TResult> Repeat<TResult>(TResult element, int count);
 ```
-```
+
+```csharp
 // Other members.
 ```
-```
+```csharp
 }
 ```
 
@@ -69,67 +75,75 @@ public static ParallelQuery<TResult> Repeat<TResult>(TResult element, int count)
 And the following are the sequential and parallel Where/Select/Concat/Cast queries side by side:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IEnumerable<TSource> Where<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, bool> predicate);
 ```
-```
+
+```csharp
 public static IEnumerable<TResult> Select<TSource, TResult>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TResult> selector);
 ```
-```
+
+```csharp
 public static IEnumerable<TSource> Concat<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource> first, IEnumerable<TSource> second);
 ```
-```
+
+```csharp
 public static IEnumerable<TResult> Cast<TResult>(this IEnumerable source);
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class ParallelEnumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static ParallelQuery<TSource> Where<TSource>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> source, Func<TSource, bool> predicate);
 ```
-```
+
+```csharp
 public static ParallelQuery<TResult> Select<TSource, TResult>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> source, Func<TSource, TResult> selector);
 ```
-```
+
+```csharp
 public static ParallelQuery<TSource> Concat<TSource>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> first, ParallelQuery<TSource> second);
 ```
-```
+
+```csharp
 public static ParallelQuery<TResult> Cast<TResult>(this ParallelQuery source);
 ```
-```
+```csharp
 }
 ```
 
@@ -138,73 +152,81 @@ public static ParallelQuery<TResult> Cast<TResult>(this ParallelQuery source);
 When defining each standard query in PLINQ, the generic source and generic output are represented by ParallelQuery<T> instead of IEnumerable<T>, and the non-generic source is represented by ParallelQuery instead of IEnumerable. The other parameter types remain the same. Similarly, the following are the ordering queries side by side, where the ordered source and ordered output are represented by OrderedParallelQuery<T> instead of IOrderedEnumerable<T>:
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Enumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class ParallelEnumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static OrderedParallelQuery<TSource> OrderBy<TSource, TKey>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static OrderedParallelQuery<TSource> OrderByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static OrderedParallelQuery<TSource> ThenBy<TSource, TKey>(
 ```
-```
+```csharp
 this OrderedParallelQuery<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+
+```csharp
 public static OrderedParallelQuery<TSource> ThenByDescending<TSource, TKey>(
 ```
-```
+```csharp
 this OrderedParallelQuery<TSource> source, Func<TSource, TKey> keySelector);
 ```
-```
+```csharp
 }
 ```
 
@@ -235,37 +257,39 @@ o Iteration: ForAll
 A ParallelQuery<T> source can be created by calling generation queries provided by ParallelEnumerable, like Range, Repeat, etc., then the other parallel queries can be used subsequently:
 
 internal static void Generation()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 IEnumerable<double>sequentialQuery = Enumerable
 ```
-```
+```csharp
 .Repeat(0, 5) // Output IEnumerable<int>.
 ```
-```
+```csharp
 .Concat(Enumerable.Range(0, 5)) // Call Enumerable.Concat.
 ```
-```
+```csharp
 .Where(int32 => int32 > 0) // Call Enumerable.Where.
 ```
-```
+```csharp
 .Select(int32 => Math.Sqrt(int32)); // Call Enumerable.Select.
 ```
-```
+
+```csharp
 ParallelQuery<double> parallelQuery = ParallelEnumerable
 ```
-```
+```csharp
 .Repeat(0, 5) // Output ParallelQuery<int>.
 ```
-```
+```csharp
 .Concat(ParallelEnumerable.Range(0, 5)) // Call ParallelEnumerable.Concat.
 ```
-```
+```csharp
 .Where(int32 => int32 > 0) // Call ParallelEnumerable.Where.
 ```
-```
+```csharp
 .Select(int32 => Math.Sqrt(int32)); // Call ParallelEnumerable.Select.
 ```
 
@@ -280,22 +304,24 @@ public static ParallelQuery<TSource\> AsParallel<TSource\>(this IEnumerable<TSou
 For example,
 
 internal static void AsParallel(IEnumerable<int\> source1, IEnumerable source2)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 ParallelQuery<int>parallelQuery1 = source1 // IEnumerable<int>.
 ```
-```
+```csharp
 .AsParallel(); // Output ParallelQuery<int>.
 ```
-```
+
+```csharp
 ParallelQuery<int> parallelQuery2 = source2 // IEnumerable.
 ```
-```
+```csharp
 .AsParallel() // Output ParallelQuery.
 ```
-```
+```csharp
 .Cast<int>(); // Call ParallelEnumerable.Cast.
 ```
 
@@ -306,10 +332,12 @@ AsParallel also has an overload accepting a partitioner. Partitioner is discusse
 To use sequential queries for a ParallelQuery<T> source, just call ParallelEnumerable.AsSequential or ParallelEnumerable.AsEnumerable to convert ParallelQuery<T> to IEnumerable<T>, then the sequential queries can be used subsequently:
 
 public static IEnumerable<TSource> AsSequential<TSource>(
-```
+
+```csharp
 this ParallelQuery<TSource> source);
 ```
-```
+
+```csharp
 public static IEnumerable<TSource> AsEnumerable<TSource>(
 ```
 
@@ -318,40 +346,42 @@ this ParallelQuery<TSource> source);
 ParallelEnumerable.AsEnumerable simply calls AsSequential internally, so they are identical. For example:
 
 internal static partial class QueryMethods
-```
+
+```csharp
 {
 ```
 ```csharp
 private static readonly Assembly CoreLibrary = typeof(object).Assembly;
 ```
-```
+
+```csharp
 internal static void SequentialParallel()
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 IEnumerable<string> obsoleteTypes = CoreLibrary.GetExportedTypes() // Output IEnumerable<Type>.
 ```
-```
+```csharp
 .AsParallel() // Output ParallelQuery<Type>.
 ```
-```
+```csharp
 .Where(type => type.GetCustomAttribute<ObsoleteAttribute>() != null) // Call ParallelEnumerable.Where.
 ```
-```
+```csharp
 .Select(type => type.FullName) // Call ParallelEnumerable.Select.
 ```
-```
+```csharp
 .AsSequential() // Output IEnumerable<Type>.
 ```
-```
+```csharp
 .OrderBy(name => name); // Call Enumerable.OrderBy.
 ```
-```
+```csharp
 obsoleteTypes.WriteLines();
 ```
-```
+```csharp
 }
 ```
 
@@ -360,31 +390,32 @@ obsoleteTypes.WriteLines();
 The above query can be written in query expression syntax:
 
 internal static void QueryExpression()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 IEnumerable<string>obsoleteTypes =
 ```
-```
+```csharp
 from name in
 ```
-```
+```csharp
 (from type in CoreLibrary.GetExportedTypes().AsParallel()
 ```
-```
+```csharp
 where type.GetCustomAttribute<ObsoleteAttribute>() != null
 ```
-```
+```csharp
 select type.FullName).AsSequential()
 ```
-```
+```csharp
 orderby name
 ```
-```
+```csharp
 select name;
 ```
-```
+```csharp
 obsoleteTypes.WriteLines();
 ```
 
@@ -395,37 +426,39 @@ obsoleteTypes.WriteLines();
 The foreach statement or the EnumerableEx.ForEach query provided by Ix can be used to sequentially pull the results and start LINQ to Objects query execution. Their parallel version is the ParallelEnumerable.ForAll query.
 
 namespace System.Linq
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class EnumerableEx
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static void ForEach<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource>source, Action<TSource>onNext);
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public static class ParallelEnumerable
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static void ForAll<TSource>(
 ```
-```
+```csharp
 this ParallelQuery<TSource>source, Action<TSource>action);
 ```
-```
+```csharp
 }
 ```
 
@@ -434,25 +467,27 @@ this ParallelQuery<TSource>source, Action<TSource>action);
 ForAll can simultaneously pull results from ParallelQuery<T> source with multiple threads, and simultaneously call the specified function on those threads:
 
 internal static void ForEachForAll()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Enumerable
 ```
-```
+```csharp
 .Range(0, Environment.ProcessorCount * 2)
 ```
-```
+```csharp
 .ForEach(value => value.WriteLine()); // 0 1 2 3 4 5 6 7
 ```
-```
+
+```csharp
 ParallelEnumerable
 ```
-```
+```csharp
 .Range(0, Environment.ProcessorCount * 2)
 ```
-```
+```csharp
 .ForAll(value => value.WriteLine()); // 2 6 4 0 5 3 7 1
 ```
 
@@ -463,34 +498,35 @@ Above is the output after executing the code in a quad core CPU, Unlike ForEach,
 Earlier a WriteLines extension method is defined for IEnumerable<T> as a shortcut to call EnumerableEx.ForEach to pull all values and trace them. The following WriteLines overload can be defined for ParallelQuery<T> to call ParallelEnumerable.ForAll to simply execute parallel query without calling a function for each query result:
 
 public static void WriteLines<TSource>(
-```
+
+```csharp
 this ParallelQuery<TSource> source, Func<TSource, string> messageFactory = null)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 if (messageFactory == null)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 source.ForAll(value => Trace.WriteLine(value));
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 else
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 source.ForAll(value => Trace.WriteLine(messageFactory(value)));
 ```
-```
+```csharp
 }
 ```
 
@@ -517,35 +553,37 @@ In Files tab, specified a proper directory for trace files. Notice the trace fil
 Next, a reference to Concurrency Visualizer library need to be added to project. Microsoft provides this library as a binary on its web page. For convenience, I have created a NuGet package ConcurrencyVisualizer for .NET Framework and .NET Standard. The library provides the following APIs to render timespans on the time line:
 
 namespace Microsoft.ConcurrencyVisualizer.Instrumentation
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static class Markers
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static Span EnterSpan(int category, string text);
 ```
-```
+
+```csharp
 public static MarkerSeries CreateMarkerSeries(string markSeriesName);
 ```
-```
+```csharp
 }
 ```
 
 ```csharp
 public class MarkerSeries
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 public static Span EnterSpan(int category, string text);
 ```
-```
+```csharp
 }
 ```
 
@@ -556,29 +594,31 @@ The category parameter is used to determine the color of the rendered timespan, 
 For Linux and macOS, where Visual Studio is not available, the above Marker, MarkerSeries, and Span types can be manually defined to trace text information:
 
 public class Markers
-```
+
+```csharp
 {
 ```
-```
+```csharp
 public static Span EnterSpan(int category, string spanName) =>
 ```
-```
+```csharp
 new Span(category, spanName);
 ```
-```
+
+```csharp
 public static MarkerSeries CreateMarkerSeries(string markSeriesName) =>
 ```
-```
+```csharp
 new MarkerSeries(markSeriesName);
 ```
-```
+```csharp
 }
 ```
 
 ```csharp
 public class Span : IDisposable
 ```
-```
+```csharp
 {
 ```
 ```csharp
@@ -592,65 +632,69 @@ private readonly string spanName;
 ```csharp
 private readonly DateTime start;
 ```
-```
+
+```csharp
 public Span(int category, string spanName, string markSeriesName = null)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 this.category = category;
 ```
-```
+```csharp
 this.spanName = string.IsNullOrEmpty(markSeriesName)
 ```
-```
+```csharp
 ? spanName : $"{markSeriesName}/{spanName}";
 ```
-```
+```csharp
 this.start = DateTime.Now;
 ```
-```
+```csharp
 $"{this.start.ToString("o")}: thread id: {Thread.CurrentThread.ManagedThreadId}, category: {this.category}, span: {this.spanName}".WriteLine();
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 public void Dispose()
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 DateTime end = DateTime.Now;
 ```
-```
+```csharp
 $"{end.ToString("o")}: thread id: {Thread.CurrentThread.ManagedThreadId}, category: {this.category}, span: {this.spanName}, duration: {end – this.start}".WriteLine();
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
 ```csharp
 public class MarkerSeries
 ```
-```
+```csharp
 {
 ```
 ```csharp
 private readonly string markSeriesName;
 ```
-```
+
+```csharp
 public MarkerSeries(string markSeriesName) => this.markSeriesName = markSeriesName;
 ```
-```
+
+```csharp
 public Span EnterSpan(int category, string spanName) =>
 ```
-```
+```csharp
 new Span(category, spanName, this.markSeriesName);
 ```
 
@@ -659,28 +703,29 @@ new Span(category, spanName, this.markSeriesName);
 If a lot of information is traced, more trace listeners can be optionally added to save the information to file or print to console:
 
 public partial class Markers
-```
+
+```csharp
 {
 ```
-```
+```csharp
 static Markers()
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Trace to file:
 ```
-```
+```csharp
 Trace.Listeners.Add(new TextWriterTraceListener(@"D:\Temp\Trace.txt"));
 ```
-```
+```csharp
 // Trace to console:
 ```
-```
+```csharp
 Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 ```
-```
+```csharp
 }
 ```
 
@@ -691,103 +736,105 @@ Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 Now, the Marker, MarkerSeries, and Span types can be used with LINQ queries and ForEach/ForAll to visualize the sequence/parallel execution on Windows, or trace the execution on Linux and macOS:
 
 internal static void RenderForEachForAllSpans()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 const string SequentialSpan = nameof(EnumerableEx.ForEach);
 ```
-```
+```csharp
 // Render a timespan for the entire sequential LINQ query execution, with text label "ForEach".
 ```
-```
+```csharp
 using (Markers.EnterSpan(-1, SequentialSpan))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 MarkerSeries markerSeries = Markers.CreateMarkerSeries(SequentialSpan);
 ```
-```
+```csharp
 Enumerable.Range(0, Environment.ProcessorCount * 2).ForEach(value =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Render a sub timespan for each iteratee execution, with each value as text label.
 ```
-```
+```csharp
 using (markerSeries.EnterSpan(Thread.CurrentThread.ManagedThreadId, value.ToString()))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Add workload to extend the iteratee execution to a more visible timespan.
 ```
-```
+```csharp
 for (int i = 0; i < 10_000_000; i++) { }
 ```
-```
+```csharp
 value.WriteLine(); // 0 1 2 3 4 5 6 7
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 });
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 const string ParallelSpan = nameof(ParallelEnumerable.ForAll);
 ```
-```
+```csharp
 // Render a timespan for the entire parallel LINQ query execution, with text label "ForAll".
 ```
-```
+```csharp
 using (Markers.EnterSpan(-2, ParallelSpan))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 MarkerSeries markerSeries = Markers.CreateMarkerSeries(ParallelSpan);
 ```
-```
+```csharp
 ParallelEnumerable.Range(0, Environment.ProcessorCount * 2).ForAll(value =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Render a sub timespan for each iteratee execution, with each value as text label.
 ```
-```
+```csharp
 using (markerSeries.EnterSpan(Thread.CurrentThread.ManagedThreadId, value.ToString()))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Add workload to extends the iteratee execution to a more visible timespan.
 ```
-```
+```csharp
 for (int i = 0; i < 10_000_000; i++) { }
 ```
-```
+```csharp
 value.WriteLine(); // 2 6 4 0 5 3 7 1
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 });
 ```
-```
+```csharp
 }
 ```
 
@@ -816,118 +863,121 @@ In the last tab Cores, select the LINQ query threads (main thread and other 3 wo
 Above LINQ visualization code looks noisy, because it mixes the LINQ query code and the visualization code. Following the Single Responsibility Principle, the visualization can be encapsulated for IEnumerable<T> and ParallelQuery<T>:
 
 internal const string ParallelSpan = "Parallel";
-```
+
+```csharp
 internal const string SequentialSpan = "Sequential";
 ```
-```
+
+```csharp
 internal static void Visualize<TSource>(
 ```
-```
+```csharp
 this IEnumerable<TSource> source,
 ```
-```
+```csharp
 Action<IEnumerable<TSource>, Action<TSource>> query,
 ```
-```
+```csharp
 Action<TSource> iteratee, string span = SequentialSpan, int category = -1)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (Markers.EnterSpan(category, span))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 MarkerSeries markerSeries = Markers.CreateMarkerSeries(span);
 ```
-```
+```csharp
 query(
 ```
-```
+```csharp
 source,
 ```
-```
+```csharp
 value =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (markerSeries.EnterSpan(Thread.CurrentThread.ManagedThreadId, value.ToString()))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 iteratee(value);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 });
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal static void Visualize<TSource>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> source,
 ```
-```
+```csharp
 Action<ParallelQuery<TSource>, Action<TSource>> query,
 ```
-```
+```csharp
 Action<TSource> iteratee, string span = ParallelSpan, int category = -2)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (Markers.EnterSpan(category, span))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 MarkerSeries markerSeries = Markers.CreateMarkerSeries(span);
 ```
-```
+```csharp
 query(
 ```
-```
+```csharp
 source,
 ```
-```
+```csharp
 value =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (markerSeries.EnterSpan(Thread.CurrentThread.ManagedThreadId, value.ToString()))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 iteratee(value);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 });
 ```
-```
+```csharp
 }
 ```
 
@@ -936,13 +986,14 @@ iteratee(value);
 And the additional CPU computing workload can also be defined as a function:
 
 internal static int ComputingWorkload(int value = 0, int baseIteration = 10\_000\_000)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 for (int i = 0; i < baseIteration * (value + 1); i++) { }
 ```
-```
+```csharp
 return value;
 ```
 
@@ -953,37 +1004,39 @@ When it is called as ComputingWorkload() or ComputingWorkload(0), it runs 10 mil
 Now the LINQ queries can be visualized in a much cleaner way:
 
 internal static void VisualizeForEachForAll()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Enumerable
 ```
-```
+```csharp
 .Range(0, Environment.ProcessorCount * 2)
 ```
-```
+```csharp
 .Visualize(
 ```
-```
+```csharp
 EnumerableEx.ForEach,
 ```
-```
+```csharp
 value => (value + ComputingWorkload()).WriteLine());
 ```
-```
+
+```csharp
 ParallelEnumerable
 ```
-```
+```csharp
 .Range(0, Environment.ProcessorCount * 2)
 ```
-```
+```csharp
 .Visualize(
 ```
-```
+```csharp
 ParallelEnumerable.ForAll,
 ```
-```
+```csharp
 value => (value + ComputingWorkload()).WriteLine());
 ```
 
@@ -994,118 +1047,120 @@ value => (value + ComputingWorkload()).WriteLine());
 Besides visualizing query execution with ForEach and ForAll, the following Visualize overloads can be defined to visualize sequential and parallel queries and render their iteratee function execution as timespans, like Select’s selector, Where’s predicate, etc.:
 
 internal static TResult Visualize<TSource, TMiddle, TResult>(
-```
+
+```csharp
 this IEnumerable<TSource> source,
 ```
-```
+```csharp
 Func<IEnumerable<TSource>, Func<TSource, TMiddle>, TResult> query,
 ```
-```
+```csharp
 Func<TSource, TMiddle> iteratee,
 ```
-```
+```csharp
 Func<TSource, string> spanFactory = null,
 ```
-```
+```csharp
 string span = SequentialSpan)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 spanFactory = spanFactory ?? (value => value.ToString());
 ```
-```
+```csharp
 MarkerSeries markerSeries = Markers.CreateMarkerSeries(span);
 ```
-```
+```csharp
 return query(
 ```
-```
+```csharp
 source,
 ```
-```
+```csharp
 value =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (markerSeries.EnterSpan(
 ```
-```
+```csharp
 Thread.CurrentThread.ManagedThreadId, spanFactory(value)))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 return iteratee(value);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 });
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal static TResult Visualize<TSource, TMiddle, TResult>(
 ```
-```
+```csharp
 this ParallelQuery<TSource> source,
 ```
-```
+```csharp
 Func<ParallelQuery<TSource>, Func<TSource, TMiddle>, TResult> query,
 ```
-```
+```csharp
 Func<TSource, TMiddle> iteratee,
 ```
-```
+```csharp
 Func<TSource, string> spanFactory = null,
 ```
-```
+```csharp
 string span = ParallelSpan)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 spanFactory = spanFactory ?? (value => value.ToString());
 ```
-```
+```csharp
 MarkerSeries markerSeries = Markers.CreateMarkerSeries(span);
 ```
-```
+```csharp
 return query(
 ```
-```
+```csharp
 source,
 ```
-```
+```csharp
 value =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 using (markerSeries.EnterSpan(
 ```
-```
+```csharp
 Thread.CurrentThread.ManagedThreadId, spanFactory(value)))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 return iteratee(value);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 });
 ```
 
@@ -1114,73 +1169,75 @@ return iteratee(value);
 Take a simple Where and Select query chaining as example,
 
 internal static void VisualizeWhereSelect()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Enumerable
 ```
-```
+```csharp
 .Range(0, 2)
 ```
-```
+```csharp
 .Visualize(
 ```
-```
+```csharp
 Enumerable.Where,
 ```
-```
+```csharp
 value => ComputingWorkload() >= 0, // Where's predicate.
 ```
-```
+```csharp
 value => $"{nameof(Enumerable.Where)} {value}")
 ```
-```
+```csharp
 .Visualize(
 ```
-```
+```csharp
 Enumerable.Select,
 ```
-```
+```csharp
 value => ComputingWorkload(), // Select's selector.
 ```
-```
+```csharp
 value => $"{nameof(Enumerable.Select)} {value}")
 ```
-```
+```csharp
 .WriteLines();
 ```
-```
+
+```csharp
 ParallelEnumerable
 ```
-```
+```csharp
 .Range(0, Environment.ProcessorCount * 2)
 ```
-```
+```csharp
 .Visualize(
 ```
-```
+```csharp
 ParallelEnumerable.Where,
 ```
-```
+```csharp
 value => ComputingWorkload() >= 0, // Where's predicate.
 ```
-```
+```csharp
 value => $"{nameof(ParallelEnumerable.Where)} {value}")
 ```
-```
+```csharp
 .Visualize(
 ```
-```
+```csharp
 ParallelEnumerable.Select,
 ```
-```
+```csharp
 value => ComputingWorkload(), // Select's selector.
 ```
-```
+```csharp
 value => $"{nameof(ParallelEnumerable.Select)} {value}")
 ```
-```
+```csharp
 .WriteLines();
 ```
 

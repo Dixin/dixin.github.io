@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (9) Optimistic Concurrency"
 published: 2016-02-10
 description: "Conflicts can occur if the same piece of data is read and changed concurrently. Generally, there are 2  approaches:"
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -50,7 +50,8 @@ internal partial class DbReaderWriter : IDisposable
 ```
 
 Multiple DbReaderWriter objects can be be used to read and write data concurrently.
-```
+
+```csharp
 internal static partial class Concurrency
 {
     internal static void NoCheck() // Check no column, last client wins.
@@ -102,7 +103,8 @@ As discussed before, by default, when DbContext translates changes to UPDATE sta
 ## Detect Concurrency conflicts
 
 Concurrency conflicts can be detected by checking entities’ property values besides primary keys. To required Entity Framework to check a certain property, just add a System.ComponentModel.DataAnnotations.ConcurrencyCheckAttribute to it. Remember when defining ProductPhoto entity class, its ModifiedDate has a \[ConcurrencyCheck\] attribute:
-```
+
+```csharp
 public partial class ProductPhoto
 {
     [ConcurrencyCheck]
@@ -111,7 +113,8 @@ public partial class ProductPhoto
 ```
 
 When Entity Framework translate changes of a photo, the ModifiedDate property will be checked too:
-```
+
+```csharp
 internal static void ConcurrencyCheck()
 {
     using (DbReaderWriter readerWriter1 = new DbReaderWriter(new AdventureWorks()))
@@ -164,13 +167,15 @@ This time readerWriter2 fails. Between readerWriter2 reads and writers a photo, 
 Another API for concurrency check is System.ComponentModel.DataAnnotations.TimestampAttribute. It can only be used for a byte\[\] property, which maps to a [rowversion](https://technet.microsoft.com/en-us/library/ms182776.aspx) (timestamp) column. For SQL database, these 2 terms rowversion and timestamp are the same thing. Timestamp is just a [synonym](https://technet.microsoft.com/en-us/library/ms177566.aspx) of rowversion data type. A row’s non nullable rowversion column is a 8 bytes (binary(8)) counter maintained by database, its value increases for each change of the row.
 
 Microsoft’s AdventureWorks sample database does not have such a rowversion column, so create one for the \[Production\].\[Product\] table:
-```
+
+```csharp
 ALTER TABLE [Production].[Product] ADD [RowVersion] rowversion NOT NULL
 GO
 ```
 
 Then add the mapping property to Product entity:
-```
+
+```csharp
 public partial class Product
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
@@ -180,7 +185,8 @@ public partial class Product
 ```
 
 The following example update and and delete the same entity concurrently:
-```
+
+```csharp
 internal static void RowVersion()
 {
     using (DbReaderWriter readerWriter1 = new DbReaderWriter(new AdventureWorks()))
@@ -202,7 +208,8 @@ internal static void RowVersion()
 ```
 
 Above ToRowVersionString is an extension method to get a readable string representation from a rowversion, which is an array of 8 System.Byte values in .NET:
-```
+
+```csharp
 public static string ToRowVersionString(this byte[] rowVersion) =>
     $"0x{BitConverter.ToString(rowVersion).Replace("-", string.Empty)}";
 ```
@@ -254,7 +261,8 @@ namespace System.Data.Entity.Infrastructure
 DbUpdateConcurrencyException has an Entries property, inherited from DbUpdateException. Entries returns a sequence of DbEntityEntry objects, representing the conflicting entities’ tracking information.
 
 So the basic idea of resolving concurrency conflicts, is to handle DbUpdateConcurrencyException and retry SaveChanges:
-```
+
+```csharp
 internal partial class DbReaderWriter
 {
     internal int Write(Action change, Action<IEnumerable<DbEntityEntry>> handleDbUpdateConcurrencyException, int retryCount = 3)
@@ -281,7 +289,8 @@ In the above Write overload, if SaveChanges throws DbUpdateConcurrencyException,
 ### Retain database values (database wins)
 
 Similar to previous examples, the following example constructs 2 DbReaderWriter objects to update a product concurrently:
-```
+
+```csharp
 internal static void UpdateProduct(Action<DbEntityEntry> resolveProductConflict)
 {
     const int id = 950;
@@ -366,7 +375,8 @@ Then it calls resolveProductConflict function to actually resolve the conflict.
 After these are done, DbReaderWriter.Write’s retry logic calls SaveChanges again. This time, SaveChanges should succeed, becuase there is no conflict anymore (In this example, there are only 2 database clients reading/writing data concurrently. In reality, the concurrency can be higher, an appropriate retry count or retry strategy should be specified.). Eventually, readerWriter3 reads the product from database, verify its property values after 2 concurrent updates.
 
 So the question is, how should resolveProductConflict function resolve the conflict? One simple option, called “database wins”, is to give up the client update, and let database retain whatever values it has for that entity. This seems to be easy – just catch DbUpdateConcurrencyException and do nothing, then database naturally wins, and retains its values:
-```
+
+```csharp
 internal partial class DbReaderWriter
 {
     internal int WriteDatabaseWins(Action change)
@@ -386,7 +396,8 @@ internal partial class DbReaderWriter
 ```
 
 However, handling conflict with this approach can leave the DbContext, the entity to update, and the entity’s tracking information in a corrupted state. For the caller, since the change saving is done, the entity’s property values should be in sync with database values, but the values can be out of sync and still conflicting. Also, an entity to update has a tracking state Modified, after change saving is done, its tracking state can be still Modified. A much safer approach is to reload and refresh the entity:
-```
+
+```csharp
 internal static void DatabaseWins() =>
     UpdateProduct(resolveProductConflict: tracking =>
         {
@@ -517,7 +528,8 @@ Later, when readerWriter3 reads the product, product has Name and ListPrice valu
 ## SaveChanges with concurrency conflict handling
 
 Similar to above DbReaderWriter.Write method, a general SaveChanges method extension method for DbContext can be defined to handle concurrency conflict and apply simple retry logic:
-```
+
+```csharp
 public static partial class DbContextExtensions
 {
     public static int SaveChanges(
@@ -544,7 +556,8 @@ public static partial class DbContextExtensions
 ```
 
 To apply custom retry logic, Microsoft [Exception Handling Application Block](https://msdn.microsoft.com/en-us/library/dn440728.aspx) can be used. It is a library providing contracts and implementations for retry logic, and it can be installed from [Nuget](https://www.nuget.org/packages/EnterpriseLibrary.TransientFaultHandling/):
-```
+
+```csharp
 Install-Package EnterpriseLibrary.TransientFaultHandling
 ```
 
@@ -578,7 +591,8 @@ public static partial class DbContextExtensions
 Here Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.ITransientErrorDetectionStrategy is the contract to detect each exception, and determine whether the action should be retried. Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryStrategy is the contract of retry logic. Then Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.RetryPolicy executes the action with the specified exception detection, exception handling, and retry logic together.
 
 As discussed above, to resolve a concurrency conflict, the entity and its tracking information need to be refreshed. So the more specific SaveChanges overloads can be implemented by applying refresh for each conflict:
-```
+
+```csharp
 public enum RefreshConflict
 {
     StoreWins,
@@ -682,7 +696,8 @@ This Refresh extension method covers the update conflict discussed above, as wel
 -   If refresh mode is ClientWins or Merge, DbEntityEntry.GetDatabaseValues is called. It executes SELECT query. Since no entity is read, it returns null. In this case, there is nothing for the client to win against or merge with. So entity’s tracking state is manually refreshed to Detached. And when SaveChanges is retried, it ignores this entity too.
 
 Now the these SaveChanges extension methods can be used to manage concurrent conflict easily. For example:
-```
+
+```csharp
 internal static void SaveChanges()
 {
     using (AdventureWorks adventureWorks1 = new AdventureWorks())

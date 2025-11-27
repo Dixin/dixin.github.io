@@ -10,7 +10,8 @@ lang: ""
 ---
 
 This following hack works for IE6 / IE7 / Firefox:
-```
+
+```csharp
 .some-class
 {
     color: #FF0000 !important; /* For firefox, safari and opera */

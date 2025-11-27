@@ -3,8 +3,8 @@ title: "Category Theory via C# (17) Monad-like Tuple<>, Task<>, IQueryable<> And
 published: 2018-12-18
 description: "Theoretically, Tuple<> should be counted as the Id<> monad. However, it is lack of laziness. In the context of C# and LINQ, it is only monad-like."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ lang: ""
 Theoretically, Tuple<> should be counted as the Id<> monad. However, it is lack of laziness. In the context of C# and LINQ, it is only monad-like.
 
 This is its SelectMany:
-```
+
+```csharp
 // [Pure]
 public static partial class TupleExtensions
 {
@@ -39,7 +40,8 @@ public static partial class TupleExtensions
 ```
 
 which can implement μ, η, φ, ι, Select:
-```
+
+```csharp
 // [Pure]
 public static partial class TupleExtensions
 {
@@ -70,7 +72,8 @@ Tuple<> is most close to the [Haskell Id Monad](https://hackage.haskell.org/pack
 ## Task<>: lack of purity
 
 Task<> also seems monadic, but is lack of purity. This is the SelectMany for Task<>:
-```
+
+```csharp
 // Impure.
 public static partial class TaskExtensions
 {
@@ -89,7 +92,8 @@ public static partial class TaskExtensions
 ```
 
 which can implement μ, η, φ, ι, Select:
-```
+
+```csharp
 // Impure.
 public static partial class TaskExtensions
 {
@@ -118,7 +122,8 @@ public static partial class TaskExtensions
 ### Task<> and LINQ
 
 With above SelectMany, Task<> can be used in LINQ syntax:
-```
+
+```csharp
 Func<string, Task<string>> query = url =>
     from httpResponseMessage in new HttpClient().GetAsync(url) // Returns Task<HttpResponseMessage>
     from html in httpResponseMessage.Content.ReadAsStringAsync() // Returns Task<string>
@@ -129,7 +134,8 @@ string result = await query("https://weblogs.asp.net/dixin");
 ### Non-generic Task
 
 Task<T> is a wrapper of Func<T> and Task is a wrapper of Action. Actually Action can be viewed as Func<Void>, so that Task can be viewed as Task<Void>. Since C# compiler does not allow Void to be used in this way, Task can be just viewed as Task<Unit>. In this way, Task become like monad too.
-```
+
+```csharp
 // Impure.
 public static partial class TaskExtensions
 {
@@ -150,7 +156,8 @@ public static partial class TaskExtensions
 ```
 
 so that
-```
+
+```csharp
 // Impure.
 public static partial class TaskExtensions
 {
@@ -168,7 +175,8 @@ public static partial class TaskExtensions
 ## IQueryable<> is like a monad
 
 [IQueryable<>](/posts/understanding-linq-to-sql-2-iqueryable-lt-t-gt) has been discussed a lot in [previous posts](/archive/?tag=LINQ%20to%20SQL). It looks like monad, with laziness and purity:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     var query = from category in database.Categories
@@ -180,7 +188,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 Or equivalently:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     var query = database.Categories.SelectMany(
@@ -192,7 +201,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 However, this is its SelectMany implementation:
-```
+
+```csharp
 // [Pure]
 public static partial class QueryableExtensions
 {
@@ -244,7 +254,8 @@ Here are 2 samples of Qbservable providers:
 ## Unit tests
 
 Following unit tests demonstrate the usage of monadic Tuple<> and Task<>. Notice Tuple is lack of laziness, and Task<>’s SelectMany extension method work for both cold tasks and hot tasks.
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]

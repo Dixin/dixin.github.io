@@ -84,7 +84,8 @@ Conflict will be explained in the next post.
 ## Default transaction
 
 If the DataContext.Transaction has never been set, it is null. In such scenarios LINQ to SQL will create a DbTransaction object to implement the TRANSACTION:
-```
+
+```csharp
 try
 {
     using (NorthwindDataContext database = new NorthwindDataContext())
@@ -143,7 +144,8 @@ Because the second UPDATE fails, Submit() catches a SqlException, then it invoke
 ## Custom transactions
 
 If DataContext.Transaction is set with a custom DbTransaction:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     database.Transaction = database.Connection.BeginTransaction();
@@ -152,7 +154,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 or current submitting code is bracketed inside a TransactionScope:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     using (TransactionScope transactionScope = new TransactionScope())

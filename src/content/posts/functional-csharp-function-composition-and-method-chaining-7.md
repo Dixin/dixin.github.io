@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (9) Function Composition and Chaining
 published: 2018-06-09
 description: "In object-oriented programming, objects can be composed to build more complex object. Similarly, in functional programming. functions can be composed to build more complex function."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ In object-oriented programming, objects can be composed to build more complex ob
 ## Forward and backward composition
 
 It is very common to pass a function’s output to another function as input:
-```
+
+```csharp
 internal static void OutputAsInput()
 {
     string input = "-2.0";
@@ -32,14 +33,16 @@ internal static void OutputAsInput()
 ```
 
 So above Abs function and Sqrt function can be combined:
-```
+
+```csharp
 // string -> double
 internal static double Composition(string input) => 
     Math.Sqrt(Convert.ToDouble(Math.Abs(int.Parse(input))));
 ```
 
 The above function is the composition of int.Parse, Math.Abs Convert.ToDouble, and Math.Sqrt. Its return value is the last function Math.Sqrt’s return value. Generally, a forward composition operator and a backward composition operator can be defined as extension method:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     public static Func<T, TResult2> After<T, TResult1, TResult2>(
@@ -53,7 +56,8 @@ public static partial class FuncExtensions
 ```
 
 The above functions can be composed by calling either After or Then:
-```
+
+```csharp
 internal static void Compose()
 {
     Func<string, int> parse = int.Parse; // string -> int
@@ -96,7 +100,8 @@ namespace System.Linq
 ```
 
 They all return IEnumerable<T>, but they are all 2-arity, so one function cannot be called directly with another function’s output. To compose these functions, they need to be partially applied (called) with the parameter other than IEnumerable<T>, so that they become 1-arity functions, which can be composed. To do this, create the following helper functions:
-```
+
+```csharp
 // Func<TSource, bool> -> IEnumerable<TSource> -> IEnumerable<TSource>
 internal static Func<IEnumerable<TSource>, IEnumerable<TSource>> Where<TSource>(
     Func<TSource, bool> predicate) => source => Enumerable.Where(source, predicate);
@@ -111,7 +116,8 @@ internal static Func<IEnumerable<TSource>, IEnumerable<TSource>> Take<TSource>(
 ```
 
 They are curried from the original query methods, with the first parameter and second parameter swapped. After being called with a argument, they return IEnumerable<TSource> –> IEnumerable<TSource> functions:
-```
+
+```csharp
 internal static void LinqWithPartialApplication()
 {
     // IEnumerable<TSource> -> IEnumerable<TSource>
@@ -128,7 +134,8 @@ internal static void LinqWithPartialApplication()
 ```
 
 So these LINQ query methods can be composed through the curried helper functions:
-```
+
+```csharp
 internal static void ComposeLinqWithPartialApplication()
 {
     Func<IEnumerable<int>, IEnumerable<int>> composition =
@@ -147,7 +154,8 @@ internal static void ComposeLinqWithPartialApplication()
 ## Forward pipeline
 
 The forward pipe operator, which forwards argument to call function, can also help function composition. It can also be defined as extension method:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     public static TResult Forward<T, TResult>(this T value, Func<T, TResult> function) =>
@@ -162,7 +170,8 @@ public static partial class ActionExtensions
 ```
 
 The following example demonstrates how to use it:
-```
+
+```csharp
 internal static void Forward()
 {
     "-2"
@@ -178,7 +187,8 @@ internal static void Forward()
 ```
 
 The Forward extension method can be useful with the null conditional operator to simplify the code, for example:
-```
+
+```csharp
 internal static void ForwardAndNullConditional(IDictionary<string, object> dictionary, string key)
 {
     object value = dictionary[key];
@@ -198,7 +208,8 @@ internal static void ForwardAndNullConditional(IDictionary<string, object> dicti
 ```
 
 This operator can alkso help composing LINQ query methods:
-```
+
+```csharp
 internal static void ForwardLinqWithPartialApplication()
 {
     IEnumerable<int> source = new int[] { 4, 3, 2, 1, 0, -1 };
@@ -216,7 +227,8 @@ internal static void ForwardLinqWithPartialApplication()
 ## Fluent method chaining
 
 In contrast of static method, instance methods can be easily composed by just chaining the calls, for example:
-```
+
+```csharp
 internal static void InstanceMethodChaining(string @string)
 {
     string result = @string.TrimStart().Substring(1, 10).Replace("a", "b").ToUpperInvariant();
@@ -248,7 +260,8 @@ namespace System.Collections.Generic
 ```
 
 These methods return void, so they cannot be composed by chaining. These existing APIs cannot be changed, but the extension method syntactic sugar enables virtually adding new methods to an existing type. So fluent methods can be “added” to List<T> by defining extension methods:
-```
+
+```csharp
 public static class ListExtensions
 {
     public static List<T> FluentAdd<T>(this List<T> list, T item)
@@ -290,7 +303,8 @@ public static class ListExtensions
 ```
 
 By always returning the first parameter, these extension methods can be composed by fluent chaining, as if they are instance methods:
-```
+
+```csharp
 internal static void ListFluentExtensions()
 {
     List<int> list = new List<int>() { 1, 2, 3, 4, 5 }
@@ -304,7 +318,8 @@ internal static void ListFluentExtensions()
 ```
 
 As fore mentioned, these extension method calls are compiled to normal static method calls:
-```
+
+```csharp
 public static void CompiledListExtensions()
 {
     List<int> list = 
@@ -378,7 +393,8 @@ namespace System.Linq
 IOrderedEnumerable<T>is derived from IEnumerable<T>, so ThenBy and ThenByDescending can only be composed after OrderBy and OrderByDescending, which logically makes sense.
 
 There are also a few methods returning a single value instead of IEnumerable<T>, like First, Last, etc.:
-```
+
+```csharp
 public static class Enumerable
 {
     public static TSource First<TSource>(this IEnumerable<TSource> source);

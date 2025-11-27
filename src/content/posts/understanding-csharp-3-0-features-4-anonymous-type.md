@@ -12,7 +12,8 @@ lang: ""
 \[[LINQ via C# series](/posts/linq-via-csharp)\]
 
 This feature provides a way to create an instance without declare the type:
-```
+
+```csharp
 var mark = new 
                 { 
                     Name = "Mark", 
@@ -131,14 +132,16 @@ internal sealed class AnonymousType0<TName, TAge>
 ```
 
 And the code at the beginning of this post is actually compiled into:
-```
+
+```csharp
 <>f__AnonymousType0<string, int> mark = new <>f__AnonymousType0<string, int>("Mark", 18);
 ```
 
 You can notice that the anonymous type is atomic, all the properties are read only.
 
 If running this code:
-```
+
+```csharp
 Console.WriteLine(person.GetType().Name);
 ```
 
@@ -156,7 +159,8 @@ Anonymous types reuse the same one type definition if their:
 -   types of properties are the same
 
 For example:
-```
+
+```csharp
 var mark = new { Name = "Mark", Age = 18 };
 var dixin = new { Name = "Dixin", Age = 18 };
 Console.WriteLine(dixin.GetType() == mark.GetType()); // Prints "True".
@@ -165,7 +169,8 @@ Console.WriteLine(dixin.GetType() == mark.GetType()); // Prints "True".
 ## Equality
 
 Since the compiler also generate the code overriding the object.Equals() (see the code snippet above), two instances of the same anonymous type are considered equal if their each property’s value are equal:
-```
+
+```csharp
 var mark1 = new { Name = "Mark", Age = 18 };
 var mark2 = new { Name = "Mark", Age = 18 };
 Console.WriteLine(mark1.Equals(mark2)); // Prints "True".

@@ -149,7 +149,7 @@ function detectLanguageFromContent(text) {
 	if (text.includes("def ") && text.includes(":") && !text.includes(";"))
 		return "python";
 
-	return "";
+	return "csharp"; // Default to C#
 }
 
 function getFilenameFromUrl(url) {
@@ -403,7 +403,7 @@ async function fetchPostData(url) {
 	}
 
 	// Extract categories/tags
-	const categories = [];
+	let categories = [];
 	const tagsContainer = doc.querySelector("article.blog-post header .tags");
 	if (tagsContainer) {
 		const tagLinks = tagsContainer.querySelectorAll("a");
@@ -414,6 +414,9 @@ async function fetchPostData(url) {
 			}
 		});
 	}
+
+	// Sort categories alphabetically
+	categories = categories.sort((a, b) => a.localeCompare(b));
 
 	// Remove header before getting content
 	const header = doc.querySelector("article.blog-post header");

@@ -3,8 +3,8 @@ title: "Category Theory via C# (16) More Monads: Lazy<>, Func<>, Nullable<>, Par
 published: 2018-12-17
 description: "Again, Lazy<> is the simplest monad, it is just the lazy version of Tuple<>, and should be considered as the Id<> monad. This is the implementation of its SelectMany:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Lazy<> monad
 
 Again, Lazy<> is the simplest monad, it is just the lazy version of Tuple<>, and should be considered as the Id<> monad. This is the implementation of its SelectMany:
-```
+
+```csharp
 // [Pure]
 public static partial class LazyExtensions
 {
@@ -37,7 +38,8 @@ public static partial class LazyExtensions
 ```
 
 So that Lazy<> is a monad, a monoidal functor, and a functor:
-```
+
+```csharp
 // [Pure]
 public static partial class LazyExtensions
 {
@@ -68,7 +70,8 @@ Lazy<> is similar to the [Haskell Id Monad](https://hackage.haskell.org/package/
 ## Func<> monad
 
 SelectMany can be implemented for Func<> too:
-```
+
+```csharp
 // [Pure]
 public static partial class FuncExtensions
 {
@@ -91,7 +94,8 @@ public static partial class FuncExtensions
 ```
 
 So that Func<> is a monad, a monoidal functor, and a functor:
-```
+
+```csharp
 // [Pure]
 public static partial class FuncExtensions
 {
@@ -120,7 +124,8 @@ public static partial class FuncExtensions
 ## Nullable<> monad
 
 And this is the SelectMany for Nullable<>:
-```
+
+```csharp
 // [Pure]
 public static partial class NullableExtensions
 {
@@ -151,7 +156,8 @@ public static partial class NullableExtensions
 ```
 
 So that Nullable<> is a monad, a monoidal functor, and a functor:
-```
+
+```csharp
 // [Pure]
 public static partial class NullableExtensions
 {
@@ -180,7 +186,8 @@ public static partial class NullableExtensions
 ## ParallelQuery<> monad
 
 Parallel LINQ provides ParallelQuery<> monad. This is its SelectMany:
-```
+
+```csharp
 [Pure]
 public static class ParallelEnumerable
 {
@@ -196,7 +203,8 @@ public static class ParallelEnumerable
 The implementation of System.Linq.Parallel.SelectManyQueryOperator<TLeftInput, TRightInput, TOutput> class is a big parallel computing topic and will be skipped in these category theory posts.
 
 ParallelQuery<> can be used with laziness and purity:
-```
+
+```csharp
 ParallelQuery<int> query = from value in Enumerable.Range(0, 1000).AsParallel()
                            from repeat in Enumerable.Repeat(value, 2)
                            select repeat; // Laziness.
@@ -209,7 +217,8 @@ Above code is just an example of using ParallelQuery<> monad with LINQ syntax. I
 ## IObservable<> monad
 
 [IObservable<>](https://msdn.microsoft.com/en-us/library/dd990377.aspx) is built-in in mscorlib. Then [Rx (Reactive Extensions)](https://msdn.microsoft.com/en-us/data/gg577609.aspx) makes IObservable<> a monad. In [System.Reactive.Linq.dll](http://www.nuget.org/packages/Rx-Linq/), [SelectMany](https://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.selectmany.aspx) is implemented for IObservable<>:
-```
+
+```csharp
 public static class Observable
 {
     public static IObservable<TResult> SelectMany<TSource, TCollection, TResult>
@@ -224,7 +233,8 @@ public static class Observable
 System.Reactive.Linq.ObservableImpl.SelectMany<TSource, TCollection, TResult> class’s source code can be viewed [on github here](https://github.com/Reactive-Extensions/Rx.NET/blob/master/Rx.NET/Source/System.Reactive.Linq/Reactive/Linq/Observable/SelectMany.cs).
 
 So IObservable becomes a monad andcan be used in LINQ with laziness and purity:
-```
+
+```csharp
 IObservable<int> query = from value in Observable.Range(0, 1000)
                          from repeat in Observable.Repeat(value, 2)
                          select repeat; // Laziness.
@@ -234,7 +244,8 @@ query.Subscribe(Console.WriteLine); // Execution.
 ```
 
 Another example is the MouseDrag event implementation in WPF:
-```
+
+```csharp
 [Pure]
 public static class UIElementExtensions
 {
@@ -248,13 +259,15 @@ public static class UIElementExtensions
 ```
 
 The observing starts from MouseDown event, then keep taking MouseMove event, until MouseUp event is observed. So that:
-```
+
+```csharp
 element.MouseDrag()
     .Subscribe(@event => OnMouseDrag(@event.EventArgs));
 ```
 
 ## Unit tests
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]

@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (4) Encoding Church Booleans"
 published: 2018-11-04
 description: "After clarifying the concepts and terms, a lot of implementation coding starts from this part."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -38,7 +38,8 @@ if (Boolean)
 -   else (this branch is executed when Boolean is false)
 
 So True and False can be presented in similar way, but in form of functions:
-```
+
+```csharp
 True := λtf.t
 False := λtf.f
 ```
@@ -51,13 +52,15 @@ So when a Boolean function is applied with 2 arguments, t and f:
 -   the second parameter f is returned, when this function represents the Boolean value of false
 
 Straightforward. But remember, in lambda calculus, functions are curried, so True and False become:
-```
+
+```csharp
 True := λt.λf.t
 False := λt.λf.f
 ```
 
 The C# implementation is easy:
-```
+
+```csharp
 // Curried from: object Boolean(object @true, object @false)
 public delegate Func<object, object> Boolean(object @true);
 // Boolean is just an alias for Func<object, Func<object, object>>
@@ -83,7 +86,8 @@ Several things need to be noticed here:
     -   It was also emphasized lambda expression is anonymous function. Above lambda expressions are named as True and False also for shortcut and reuse, so that later when they are used, new Func<object, Func<object, object>>(@true => @false => @true) won’t be repeating everywhere.
 
 Also in C#, function/lambda expressions cannot be created globally. So here they have to stay as a member of a class. In F#, this is allowed:
-```
+
+```csharp
 let True t f = t
 let False t f = f
 ```
@@ -91,7 +95,8 @@ let False t f = f
 No noise and automatically curried. Then this will compile to IL code similar to above C# structure (static member of a class).
 
 And finally, to highlight True and False are functions, here and following parts will stick with the tradition C# function declaration:
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     public static Func<object, object> True

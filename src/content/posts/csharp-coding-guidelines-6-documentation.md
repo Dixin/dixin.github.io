@@ -102,7 +102,8 @@ You can see the list of [recommended xml tags for documentation comments](http:/
 This rule is specially mentioned because I saw a lot people incorrectly using <c>.
 
 Here is a sample of referring to property:
-```
+
+```csharp
 /// <exception cref="T:System.Runtime.Serialization.SerializationException">
 /// The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0).
 /// </exception>
@@ -110,7 +111,8 @@ Here is a sample of referring to property:
 [](http://11011.net/software/vspaste)
 
 and a sample of referring to a generic interface:
-```
+
+```csharp
 /// <returns>
 /// An <see cref="T:System.Linq.IQueryable`1"/> that contains elements in the specified page of the input sequence.
 /// </returns>

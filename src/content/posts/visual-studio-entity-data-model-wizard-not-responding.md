@@ -3,8 +3,8 @@ title: "Visual Studio Entity Data Model Wizard Not Responding"
 published: 2016-02-13
 description: "This post is for the issue that Entity Data Model Wizard becomes not responding. In Visual Studio 2015, when clicking the Finish button to create the entity data model from SQL Server 2014 SP! databas"
 image: ""
-tags: ["TSQL", "SQL Server", "Entity Framework"]
-category: "TSQL"
+tags: ["Entity Framework", "SQL Server", "TSQL"]
+category: "Entity Framework"
 draft: false
 lang: ""
 ---

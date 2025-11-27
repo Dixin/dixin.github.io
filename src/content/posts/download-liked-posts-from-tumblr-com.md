@@ -3,7 +3,7 @@ title: "Download Liked Posts from Tumblr.com"
 published: 2016-04-12
 description: "After using tumblr.com for years, a lot of posts have been liked. It would be easier to look up if the contents of these posts are stored to local. Fortunately, tumblr has provided [a set of APIs](htt"
 image: ""
-tags: ["JavaScript", "Visual Studio", "Node.js", "Tumblr"]
+tags: ["JavaScript", "Node.js", "Tumblr", "Visual Studio"]
 category: "JavaScript"
 draft: false
 lang: ""
@@ -35,7 +35,8 @@ Also, [Q](https://github.com/kriskowal/q) can be installed for promise-based asy
 ## Create utility functions
 
 The plan is to download the pictures/video in each post, so a download utility function is needed. Node.js does not have such a built-in API, but it is easy to create one in a common module (common.js):
-```
+
+```csharp
 var http = require("http"),
     fs = require("fs"),
     Q = require("q"),
@@ -60,7 +61,8 @@ var http = require("http"),
 It simply downloads the specified URL to the specified file system path. And Q is used to convert the callback style asynchronous programming model into promise style. This is very useful to stay away from [callback hell](https://strongloop.com/strongblog/node-js-callback-hell-promises-generators/).
 
 To save the downloaded file to local, a file name is needed. The easiest way is to directly use the file name from the URL. But it would be nice if the file name can have more semantics, which will be very helpful for search. So the post id and the post summary text can be used as the local file name. Notice not all the characters in the text can be used in file names. So another utility function is needed to remove those [reversed and disallowed characters](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx#file_and_directory_names) from text:
-```
+
+```csharp
 removeReservedCharactersFromFileName = function (fileName) {
         // https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
         // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247.aspx#file_and_directory_names
@@ -69,7 +71,8 @@ removeReservedCharactersFromFileName = function (fileName) {
 ```
 
 Then export these 2 functions:
-```
+
+```csharp
 module.exports = {
     download: download,
     removeReservedCharactersFromFileName: removeReservedCharactersFromFileName,
@@ -80,7 +83,8 @@ module.exports = {
 ## Download post’s pictures/video files then unlike post
 
 Now a tumblr module (tumblr.js) can be created. The first step is to create a tumblr client, with tumblr-auto-auth, this is extremely simple:
-```
+
+```csharp
 var path = require("path"),
     util = require("util"),
     Q = require("q"),
@@ -110,7 +114,8 @@ var path = require("path"),
 Q is consistently used for asynchrony.
 
 Then the created client can be used to pull the liked posts of the specified user from tumblr. Just call client.likes:
-```
+
+```csharp
 getLikes = function (options) {
         var deferred = Q.defer();
         options.client.likes(options, function (error, data) {
@@ -135,7 +140,8 @@ Now it is time to download the contents of each post. A post can have:
 -   one video file.
 
 All files will be downloaded by calling common.download, which was defined a moment ago:
-```
+
+```csharp
 downloadPost = function (post, directory, getFileName) {
         var downloads = [];
         console.log("Processing " + post.post_url);
@@ -168,7 +174,8 @@ downloadPost = function (post, directory, getFileName) {
 Since common.download returns a promise object, all these promise objects can be pushed to a promise array, then Q.all can be called to composite them to a single promise object. Q.all is similar to [Task.WaitAll](https://msdn.microsoft.com/en-us/library/dd270695.aspx) in .NET.
 
 Also a getFileName function is used to generate file name with post id and file URL (either URL of a picture, or URL of a video):
-```
+
+```csharp
 getFileName = function (post, url, index) {
         var summary = post.summary ? common.removeReservedCharactersFromFileName(post.summary).trim() : "",
             extension = url.split(".").pop();
@@ -182,7 +189,8 @@ getFileName = function (post, url, index) {
 Unfortunately, Node.js Tools for Visual Studio does not support [ECMAScript 2015/ES 6](http://www.ecma-international.org/ecma-262/6.0/), even though [Node.js already support it](https://nodejs.org/en/docs/es6/). So here the old string concatenation syntax is applied instead of the new [template string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings) syntax.
 
 After finishing downloading all files in a post, this post can be removed from liked posts list. Tumblr client has a unlike API for this:
-```
+
+```csharp
 unlikePost = function (options) {
         var deferred = Q.defer();
         console.log("Unliking post " + options.post.post_url);
@@ -198,7 +206,8 @@ unlikePost = function (options) {
 ```
 
 Now it is time to composite these steps together. They all return a promise, so it is quite easy and straightforword:
-```
+
+```csharp
 downloadAllAndUnlike = function (options) {
         getClient(options) // Get tumblr client.
             .then(getLikes) // Get tumblr liked post.
@@ -239,7 +248,8 @@ When calling tumblr API to get liked posts, the API returns 50 posts even when t
 -   When there is nothing to download, the recursion terminates.
 
 And finally, export downloadAllAndUnlike function:
-```
+
+```csharp
 module.exports = {
     downloadAllAndUnlike: downloadAllAndUnlike
 };
@@ -252,7 +262,8 @@ To start downloading, specify a startup file for this Node.js application:
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Download_12B7F/image_thumb_2.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Download_12B7F/image_6.png)
 
 In the startup file (main.js), just call downloadAllAndUnlike function of the tumblr module:
-```
+
+```csharp
 var tumblr = require("./tumblr");
 
 tumblr.downloadAllAndUnlike({

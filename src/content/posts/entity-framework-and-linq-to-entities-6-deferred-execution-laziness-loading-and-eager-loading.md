@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (6) Deferred Execution, Laziness L
 published: 2016-02-26
 description: "In LINQ to Objects, query methods returning IEnumerable<T> implements deferred execution. Similarly, in LINQ to Entities, query methods returning IQueryable<T> implements deferred execution too."
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -26,7 +26,8 @@ As previous part discussed, when creating a LINQ to Entities query, if Queryable
 ### Iterator pattern
 
 IQueryable<T> implements IEnumerable<T>. So values can be pulled from IQueryable<T> with the standard iterator pattern. When trying to pull the first value, Entity Framework translates LINQ to Entities query to SQL, and execute SQL in the database. This process can be demonstrated by the following GetIterator method, implemented with the Iterator<T> class from the LINQ to Objects chapter:
-```
+
+```csharp
 public static class QueryableExtensions
 {
     public static IEnumerator<TSource> GetIterator<TSource>(
@@ -67,7 +68,8 @@ public static class QueryableExtensions
 ```
 
 Take the previous simple Where and Select query as example, this is how the values are pulled from IQueryable<T>:
-```
+
+```csharp
 internal static partial class Laziness
 {
     internal static void WhereAndSelect()
@@ -119,7 +121,8 @@ An entity can have navigation properties, referencing associated entities. By de
 ### Implicit and explicit lazy loading
 
 In the entity definition, the navigation properties are defined as virtual. By default, the derived proxy classes override these properties and implement lazy loading:
-```
+
+```csharp
 internal static void ImplicitLazyLoading()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -219,7 +222,8 @@ namespace System.Data.Entity.Infrastructure
 ```
 
 DbContext.Entry method accepts an entity and returns a DbEntityEntry<TEntity> object, which represents the entity’s information tracked by the source DbContext. DbEntityEntry<TEntity> provides a Reference method to get a DbReferenceEntry<TEntity, TProperty> object, which represents a navigation property to another associated single entity. DbEntityEntry<TEntity> also provides a Collection method to get a DbCollectionEntry<TEntity, TElement> object, which represents a navigation property to a collection of other associated entities. So the associated entities can be manually loaded by calling DbReferenceEntry<TEntity, TProperty>.Load and DbCollectionEntry<TEntity, TElement>.Load:
-```
+
+```csharp
 internal static void ExplicitLazyLoading()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -241,7 +245,8 @@ internal static void ExplicitLazyLoading()
 ```
 
 When the Load method is called, the associated entities are queried, and the navigation properties becomes ready. Here the SQL queries are the same as above implicit lazy loading. Explicit lazy loading can be useful, because the associated data to load can be specified by a query. For example, if only the associated category’s Name and the associated products’ Count is needed, then call DbReferenceEntry<TEntity, TProperty>.Query and DbCollectionEntry<TEntity, TElement>.Query to start a query:
-```
+
+```csharp
 internal static void ExplicitLazyLoadingWithQuery()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -287,7 +292,8 @@ exec sp_executesql N'SELECT
 ```
 
 Lazy loading can be a little tricky when used with deferred execution. The following example throws EntityCommandExecutionException:
-```
+
+```csharp
 internal static void LazyLoadingAndDeferredExecution()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -302,7 +308,8 @@ internal static void LazyLoadingAndDeferredExecution()
 ```
 
 When the ForEach’s action starts executing for the first ForEach iteration, it pulls 1 subcategory entity from the database query. Entity Framework translates and executes the query, and eventually builds a System.Data.Common.DbDataReader object to read 1 row from the query result. This reader is not closed during the action execution, so that it can be called again in the next iteration to read another row. DbDataReader uses the DbContext’s database connection [exclusively](https://msdn.microsoft.com/en-us/library/haa3afyz.aspx). As a result, when the action pulls associated product entity from the navigation property, Entity Framework tries to build another reader, and it fails with an exception. The above exception can be fixed by finishing reading subcategories before reading from lazy loading, so that the the readers’ lifecycle do not overlap:
-```
+
+```csharp
 internal static void LazyLoadingAndImmediateExecution()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -321,7 +328,8 @@ Here ToArray() is translated to database query; For each iteration, pulling cate
 ### Eager loading
 
 Entity Framework provides an Include extension method for IQueryable<T>, to query entities and their associated entities eagerly:
-```
+
+```csharp
 internal static void EagerLoadingWithInclude()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -393,7 +401,8 @@ SELECT
 ```
 
 Include can be used with Select to load multiple levels of associated entities. The following example queries all categories, and eagerly load all associated subcategories and products:
-```
+
+```csharp
 internal static void EagerLoadingWithIncludeAndSelect()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -484,7 +493,8 @@ SELECT
 ```
 
 As discussed in the query methods part, eager loading can also be easily with Select:
-```
+
+```csharp
 internal static void EagerLoadingWithSelect()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -519,7 +529,8 @@ SELECT
 ### The N + 1 problem
 
 Sometimes lazy loading can cause the “N + 1 queries” problem. The following example queries some subcategories, and print each subcategory’s information:
-```
+
+```csharp
 internal static void PrintSubcategoriesWithLazyLoading()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -580,7 +591,8 @@ exec sp_executesql N'SELECT
 ```
 
 This “N + 1 queries” problem can be resolved by eager loading:
-```
+
+```csharp
 internal static void PrintSubcategoriesWithEagerLoading()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -624,7 +636,7 @@ There are some scenarios lazy loading needs to be disabled, like entity serializ
 
 -   To disable lazy loading for specific navigation properties, just do not mark it as virtual, so that the derived proxy class cannot override it with the lazy load implementation.
 -   To disable lazy loading for specific DbContext, set DbContextConfiguration object’s LazyLoadingEnabled property to false:
-    ```
+    ```csharp
     internal static void DisableLazyLoading()
     {
         using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -641,7 +653,7 @@ There are some scenarios lazy loading needs to be disabled, like entity serializ
     ```
     
 -   To disable lazy loading by default, set LazyLoadingEnabled when constructing DbContext:
-    ```
+    ```csharp
     public partial class AdventureWorks
     {
         public AdventureWorks()

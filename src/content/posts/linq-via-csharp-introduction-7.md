@@ -3,8 +3,8 @@ title: "Functional Programming and LINQ Paradigm (1) Getting Started with .NET/C
 published: 2018-05-28
 description: "This is a tutorial of functional programming and LINQ in C# language. The contents was initially based on my . Hope it helps."
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---

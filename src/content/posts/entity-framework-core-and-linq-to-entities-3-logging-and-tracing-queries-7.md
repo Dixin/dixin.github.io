@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (3) Logging and Tracing Queri
 published: 2019-03-13
 description: "EF version of this i"
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -236,7 +236,8 @@ The logs uncovers that a SELECT statement is executed in database to query all c
 ## Database side tracing with Extended Events
 
 SQL database provides variant mechanisms to collect the information of executed operations. Extended Events is such a feature available in all cloud and on-premise SQL database editions. For Windows, SQL Server Management Studio is a rich tools to setup and views the event tracing. And this can also be done from other platform. In any SQL tool (like [mssql extension](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql) for Visual Studio Code, which works on Linux, Mac, and Windows), connect to the Azure SQL database (or SQL Server on-premise database), and execute the following SQL to create an Extended Events session called Queries:
-```
+
+```csharp
 CREATE EVENT SESSION [Queries] ON DATABASE -- ON SERVER for SQL Server on-premise database.
 ADD EVENT sqlserver.begin_tran_completed(
     ACTION(sqlserver.client_app_name, sqlserver.client_connection_id, sqlserver.client_hostname, sqlserver.client_pid, sqlserver.database_name, sqlserver.request_id, sqlserver.session_id, sqlserver.sql_text)), 
@@ -260,7 +261,8 @@ GO
 ```
 
 It traces the transactions, SQL executions, and errors, etc. To start the session and collect events, execute the following SQL:
-```
+
+```csharp
 ALTER EVENT SESSION [Queries] ON DATABASE -- ON SERVER for SQL Server on-premise database.
     STATE = START;
 GO

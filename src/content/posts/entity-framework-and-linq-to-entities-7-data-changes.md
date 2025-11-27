@@ -3,8 +3,8 @@ title: "Entity Framework and LINQ to Entities (7) Data Changes"
 published: 2016-01-10
 description: "Besides LINQ to Entities queries, Entity Framework also provides rich APIs for data changes."
 image: ""
-tags: ["C#", ".NET", "LINQ", "Entity Framework", "LINQ to Entities", "SQL Server", "SQL"]
-category: "C#"
+tags: [".NET", "C#", "Entity Framework", "LINQ", "LINQ to Entities", "SQL", "SQL Server"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -165,7 +165,8 @@ As fore mentioned in lazy load part, for a known entity, its tracking informatio
 ### Track entities
 
 By default, DbContext tracks all entities read from its repositories. For example:
-```
+
+```csharp
 internal static partial class Tracking
 {
     internal static void EntitiesFromSameDbContext()
@@ -188,7 +189,8 @@ internal static partial class Tracking
 The single productById entity from first LINQ to Entities query is tracked by DbContext. Later, the second query results a single productByName entity too. Entity Framework figures out productById and productByName both map to the same data row of the same table, so productById and productByName reference to the same entity in memory.
 
 If data from repositories are not entities mapping to table rows, they cannot be tracked:
-```
+
+```csharp
 internal static void ObjectsFromSameDbContext()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -208,7 +210,8 @@ internal static void ObjectsFromSameDbContext()
 Here data is queries from repositories, and anonymous type objects are constructed on the fly. Entity Framework cannot decide if 2 arbitrary objects semantically represent the same piece of data. This time productById and productByName are independent from each other.
 
 The tracking is at DbContext level. Entities from different DbContext objects belong to different units of work, and do not interfere each other:
-```
+
+```csharp
 internal static void EntitiesFromDbContexts()
 {
     Product productById;
@@ -228,7 +231,8 @@ internal static void EntitiesFromDbContexts()
 ### Track entity changes and property changes
 
 The following example CRUDs some data in the product repository, and examine all the tracking:
-```
+
+```csharp
 internal static void EntityChanges()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -272,7 +276,8 @@ internal static void EntityChanges()
 ```
 
 If an entity is not read from a DbContext object’s repositories, then it has nothing to do with that unit of work, and apparently is not tracked by that DbContext object. DbSet<T> provides an Attach method to place an entity to the repository, and the DbContext tracks the entity as the Unchanged state:
-```
+
+```csharp
 internal static void Attach()
 {
     Product onTheFly = new Product() { ProductID = 950, Name = "ML Crankset", ListPrice = 539.99M };
@@ -295,7 +300,8 @@ internal static void Attach()
 ### Track association changes
 
 The association of entities is also tracked. Remember Product’s foreign key ProductSubcategoryID is nullable. The following example reads a subcategory and its products, then delete the association. As a result, each navigation property is cleared to empty collection or null. And essentially, each product’s ProductSubcategoryID is changed to null, which is tracked:
-```
+
+```csharp
 internal static void AssociationChanges()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -327,7 +333,8 @@ internal static void AssociationChanges()
 ### Disable tracking
 
 DbContext’s default behavior is to track all changes automatically. This can be turned off. To disable tracking for specific entities read from repository, Entity Framework provides a AsNoTracking extension method for IQueryable<T>:
-```
+
+```csharp
 internal static void AsNoTracking()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -339,7 +346,8 @@ internal static void AsNoTracking()
 ```
 
 Tracking can also be disabled at the DbContext scope. If needed, changes and be manually tracked by calling DbChangeTracker.DetectChanges method:
-```
+
+```csharp
 internal static void DetectChanges()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -361,7 +369,8 @@ To change the data in the database, just create a DbContext object, change the d
 ### Create
 
 To create new entities to the repository, call DbSet<T>.Add or DbSet<T>.AddRange. The following example creates 2 new associated entities, and add to repositories:
-```
+
+```csharp
 internal static partial class Changes
 {
     internal static ProductCategory Create()
@@ -416,7 +425,8 @@ DbSet<T>.AddRange can be called with multiple entities. AddRange only triggers c
 ### Update
 
 To update entities in the repositories, just modify the entities’ properties. The following example updates a subcategory entity’s Name property, and ProductCategory navigation property:
-```
+
+```csharp
 internal static void Update()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -467,7 +477,8 @@ COMMIT TRANSACTION
 ```
 
 The above example first read the entities, then update. Since the row to update is located by primary key, if the primary key is known, then it can be used directly:
-```
+
+```csharp
 internal static void UpdateWithoutRead(int categoryId)
 {
     ProductCategory category = new ProductCategory()
@@ -499,7 +510,8 @@ BEGIN TRANSACTION
 ```
 
 When there is no change to save, SaveChanges returns 0:
-```
+
+```csharp
 internal static void SaveNoChanges()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -529,7 +541,8 @@ The category’s Name is updated, then updated back to original value. When call
 ### Delete
 
 To delete entities from the repositories, call DbSet<T>.Remove or DbSet<T>.RemoveRange. The following example read an entity then delete it:
-```
+
+```csharp
 internal static void Delete()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -563,7 +576,8 @@ COMMIT TRANSACTION
 ```
 
 The row to delete is also located with primary key. So again, when primary key is known, reading entity can be skipped:
-```
+
+```csharp
 internal static void DeleteWithoutRead(int categoryId)
 {
     ProductCategory category = new ProductCategory() { ProductCategoryID = categoryId };
@@ -590,7 +604,8 @@ COMMIT TRANSACTION
 ```
 
 The following example delete an category entity which is associated with subcategory entities:
-```
+
+```csharp
 internal static void DeleteWithAssociation()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -625,7 +640,8 @@ ROLLBACK TRANSACTION
 ```
 
 So a category can be deleted along with its subcategories:
-```
+
+```csharp
 internal static void DeleteAllAssociated()
 {
     Create(); // Create category "ProductCategory" and its subcategory "ProductSubcategory".
@@ -673,7 +689,8 @@ COMMIT TRANSACTION
 Notice Entity Framework also translates and executes the deletion in the right order. The sub entity is deleted before the entity.
 
 Untracked changes cannot to be translated or executed. The following example tries to delete a untracked entity from the repository:
-```
+
+```csharp
 internal static void UntrackedChanges()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())

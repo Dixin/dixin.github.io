@@ -3,7 +3,7 @@ title: "Debugging Classic ASP with Modern Visual Studio"
 published: 2016-05-23
 description: "Recently I tried to show my Mom some websites I built when I was a kid. Those , some in  wh"
 image: ""
-tags: ["ASP", "Visual Studio", "Debug", "IIS"]
+tags: ["ASP", "Debug", "IIS", "Visual Studio"]
 category: "ASP"
 draft: false
 lang: ""
@@ -20,14 +20,14 @@ I have [Windows 8.1](http://en.wikipedia.org/wiki/Windows_8.1) and [Visual Studi
 After searching and trying things around, using Visual Studio and [IIS Express](http://en.wikipedia.org/wiki/Internet_Information_Services#IIS_Express) seems to be the easiest way to run and debug ASP websites:
 
 1.  Modify IIS Express configuration. Open %USERPROFILE%\\Documents\\IISExpress\\config\\applicationhost.config. Under [<system.webServer>](http://www.iis.net/configreference/system.webserver), find [<asp>](http://www.iis.net/configreference/system.webserver/asp):
-    ```
+    ```csharp
     <asp scriptErrorSentToBrowser="true">
         <cache diskTemplateCacheDirectory="%TEMP%\iisexpress\ASP Compiled Templates" />
         <limits />
     </asp>
     ```
     and change it to:
-    ```
+    ```csharp
     <asp scriptErrorSentToBrowser="true" enableParentPaths="true" bufferingOn="true" errorsToNTLog="true" appAllowDebugging="true" appAllowClientDebug="true">
         <cache diskTemplateCacheDirectory="%TEMP%\iisexpress\ASP Compiled Templates" />
         <session allowSessionState="true" />

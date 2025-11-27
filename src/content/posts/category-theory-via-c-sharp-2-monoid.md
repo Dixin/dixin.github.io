@@ -3,8 +3,8 @@ title: "Category Theory via C# (2) Monoid"
 published: 2018-12-03
 description: "A ), denoted a 3-tuple (M, ⊙, I), is a set M with"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -45,7 +45,8 @@ This is quite general and abstract. A intuitive example is the set of all intege
 where x, y, z are elements of the set of integers. Therefore (integer, +, 0) is a monoid.
 
 A monoid can be represented in C# as:
-```
+
+```csharp
 public partial interface IMonoid<T>
 {
     T Unit { [Pure] get; }
@@ -55,7 +56,8 @@ public partial interface IMonoid<T>
 ```
 
 A default implementation is straight forward:
-```
+
+```csharp
 public partial class Monoid<T> : IMonoid<T>
 {
     public Monoid(T unit, [Pure] Func<T, T, T> binary)
@@ -73,7 +75,8 @@ public partial class Monoid<T> : IMonoid<T>
 ## C#/.NET monoids
 
 First of all, an extension method is created for convenience:
-```
+
+```csharp
 [Pure]
 public static class MonoidExtensions
 {
@@ -87,19 +90,22 @@ public static class MonoidExtensions
 ### Void and Unit monoids
 
 Theoretically [System.Void](https://msdn.microsoft.com/en-us/library/system.void.aspx) can be a monoid. Its source code is:
-```
+
+```csharp
 public struct Void
 {
 }
 ```
 
 which leads to only one way to get the Void value:
-```
+
+```csharp
 Void value = new Void();
 ```
 
 So a monoid can be constructed as:
-```
+
+```csharp
 IMonoid<Void> voidMonoid = new Void().Monoid((a, b) => new Void());
 ```
 
@@ -109,7 +115,8 @@ However, C# compiler does not allow System.Void to be used like this. There are 
 -   Use [Microsoft.FSharp.Core.Unit](https://msdn.microsoft.com/en-us/library/ee370443.aspx) to replace System.Void
 
 [F#’s unit](https://msdn.microsoft.com/en-us/library/dd483472.aspx) is equivalent to [C#’s void](https://msdn.microsoft.com/en-us/library/yah0tteb.aspx), and Microsoft.FSharp.Core.Unit is semantically close to System.Void. Unit’s [source code](https://github.com/fsharp/fsharp/blob/master/src/fsharp/FSharp.Core/prim-types.fs) is:
-```
+
+```csharp
 type Unit() =
     override x.GetHashCode() = 0
     override x.Equals(obj:obj) = 
@@ -121,19 +128,22 @@ and unit = Unit
 ```
 
 The difference is, Unit is a class, and its only possible value is null.
-```
+
+```csharp
 Unit unit = null;
 ```
 
 So a monoid can be constructed by Unit too:
-```
+
+```csharp
 IMonoid<Unit> unitMonoid = ((Unit)null).Monoid((a, b) => null);
 ```
 
 ### More examples
 
 As fore mentioned, (int, +, 0) is a monoid:
-```
+
+```csharp
 IMonoid<int> addInt32 = 0.Monoid((a, b) => a + b);
 Assert.AreEqual(0, addInt32.Unit);
 Assert.AreEqual(1 + 2, addInt32.Binary(1, 2));
@@ -151,7 +161,8 @@ Assert.AreEqual(addInt32.Binary(addInt32.Binary(1, 2), 3), addInt32.Binary(1, ad
 [![](http://www.ikea.com/PIAimages/0175112_PE332983_S5.JPG)](http://www.ikea.com/PIAimages/0175112_PE332983_S5.JPG)
 
 If a ⊙ b is defined as a => b => (a + b) % 12, then 12 becomes the unit. So:
-```
+
+```csharp
 IMonoid<int> clock = 12.Monoid((a, b) => (a + b) % 12);
 ```
 
@@ -210,7 +221,8 @@ This Nullable<T>’s constructor takes a factory function which returns a tuple 
     -   When the bool is true and the other T value is not null, Nullable<T> has a value.
 
 Below is one way to define the binary operator ⊙, taking new Nullable<T>() - a Nullable<T> has no value - as the unit:
-```
+
+```csharp
 [Pure]
 public static partial class MonoidExtensions
 {

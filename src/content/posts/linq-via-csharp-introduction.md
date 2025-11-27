@@ -3,7 +3,7 @@ title: "Functional Programming and LINQ Paradigm (1) Cross Platform C# and .NET"
 published: 2019-05-07
 description: "C# is a functional and object-oriented programming language built by Microsoft. C# works with a family of programming frameworks crossing many platforms and devices. C# has been used by millions of pe"
 image: ""
-tags: [".NET", "C#", "Functional Programming", "LINQ", "SQL Server", "XML", "Introducing LINQ", "LINQ via C#"]
+tags: [".NET", "C#", "Functional Programming", "Introducing LINQ", "LINQ", "LINQ via C#", "SQL Server", "XML"]
 category: ".NET"
 draft: false
 lang: ""
@@ -234,28 +234,28 @@ using System;
 ```csharp
 namespace ConsoleApp
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 class Program
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 static void Main(string[] args)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Console.WriteLine("Hello World!");
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -364,19 +364,20 @@ The free Visual Studio Code can be downloaded and installed from Microsoft offic
 The .NET Core SDK needs toshould be installed separately, by following the steps from Microsoft official website: https://dot.net. TheWhen the installation is done, it can be verified by the dotnet –version command, which outputs the version of .NET Core SDK. To start coding, create a directory for a new console application, then go to this directory, run dotnet new console. 2 files are created, Program.cs and ConsoleApp.csproj. Program.cs is the C# code file, which is the same as above Program.cs created by Visual Studio. ConsoleApp.csproj is the project file containing the metadata and build information for this console application. Open ConsoleApp.csproj, and manually add the <LangVersion>latest</LangVersion> element to use the latest C# version:
 
 <Project Sdk="Microsoft.NET.Sdk">
-```
+
+```csharp
 <PropertyGroup>
 ```
-```
+```csharp
 <OutputType>Exe</OutputType>
 ```
-```
+```csharp
 <TargetFramework>netcoreapp2.0</TargetFramework>
 ```
-```
+```csharp
 <LangVersion>latest</LangVersion>
 ```
-```
+```csharp
 </PropertyGroup>
 ```
 

@@ -14,7 +14,8 @@ lang: ""
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_72F9F951.png "image")](http://msdn.microsoft.com/en-us/library/dd233250\(VS.100\).aspx)
 
 The latest code font definition of MSDN is:
-```
+
+```csharp
 font-family: Consolas, Courier, monospace;
 font-size: 0.83em;
 ```

@@ -20,7 +20,8 @@ C# Coding Guidelines:
 -   [C# Coding Guidelines (7) Tools](/posts/csharp-coding-guidelines-7-tools)
 
 Here is a true story. Once a developer wrote a bunch of code, which crashed frequently:
-```
+
+```csharp
 Action1();
 Action2();
 // ...
@@ -29,7 +30,8 @@ ActionN();
 [](http://11011.net/software/vspaste)
 
 So he was asked to fix the code, and his solution is:
-```
+
+```csharp
 try
 {
     Action1();
@@ -60,7 +62,8 @@ A typical usage of the exception is the parameter checking. Just as [part 3](/po
 -   System.ArgumentOutOfRangeException
 
 etc.
-```
+
+```csharp
 public void GetTaxonomy(Uri uri)
 {
     if (uri == null)
@@ -157,7 +160,8 @@ etc.
 **✘** Avoid catching a nonspecific exception, and swallowing it.
 
 These code are unprofessional:
-```
+
+```csharp
 try
 {
     Action1();
@@ -172,7 +176,8 @@ catch
 ```
 
 Or:
-```
+
+```csharp
 try
 {
     Action1();
@@ -185,7 +190,7 @@ catch (Exception)
 }
 ```
 [](http://11011.net/software/vspaste)Or:
-```
+```csharp
 try
 {
     Action1();
@@ -203,7 +208,8 @@ But it is Ok if catching a nonspecific exception, then do something (like loggin
 **✔** Catch exception for specific execution.
 
 Do not lazily put a big bunch of code into a try block. It is necessary to figure out where exactly the exceptions are throw, and how to exactly recover from those exceptions:
-```
+
+```csharp
 Action1();
 
 try
@@ -290,7 +296,8 @@ The above code demonstrates writing code to catch CLR exceptions like StackOverf
 In 80%+ of the scenarios, creating a customized exception type is not needed.
 
 **✔** Consider using exception helper for uniformed exception handling in the application.
-```
+
+```csharp
 internal static class ExceptionHelper
 {
     internal static void ThrowInvalidOperationException(parameters)
@@ -303,7 +310,8 @@ internal static class ExceptionHelper
 ```
 
 [](http://11011.net/software/vspaste)This is very useful for [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself) and standardization consideration. Another example is the [Exception Handling Application Block](http://msdn.microsoft.com/en-us/library/dd203116.aspx) of Microsoft [Enterprise Library](http://msdn.microsoft.com/en-us/library/cc467894.aspx):
-```
+
+```csharp
 try
 {
     // ...

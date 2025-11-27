@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (6) If Logic, And Reduction Strategies"
 published: 2018-11-06
 description: "The if logic is already built in ."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ The if logic is already built in [Church Booleans](/posts/lambda-calculus-via-c-
 ## The first If
 
 So naturedly, This is the first implementation of if based on Church Boolean:
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     // If1 = condition => then => @else => condition(then, @else)
@@ -38,7 +39,8 @@ Straightforward:
 -   When condition is False, If returns @else.
 
 It can be applied like this:
-```
+
+```csharp
 ChurchBoolean
     .If1<Boolean>(True)
         (True.And(True))
@@ -52,7 +54,8 @@ Running this code will show a problem - And and Or are both triggered. However, 
 How does If work? There are 3 arguments to be applied: If(arg1)(arg2)(arg3).
 
 The first application will be a beta-reduction:
-```
+
+```csharp
 If (arg1) (arg2) (arg3)
 ≡ (condition => then => @else => condition (then) (@else)) (True) (arg2) (arg3)
 ≡ (then => @else => True (then) (@else)) (arg2) (arg3)
@@ -63,7 +66,8 @@ Since the second reduction, [it becomes tricky](http://en.wikipedia.org/wiki/Lam
 ### Normal order
 
 If the lambda expression is reduced before the arguments:
-```
+
+```csharp
 (then => @else => True (then) (@else)) (arg2) (arg3)
 ≡ (then => @else => then) (arg2) (arg3).
 ≡ (@else => arg2) (arg3)
@@ -77,7 +81,8 @@ Eventually only arg2 need to be reduced. This is called normal order. The unredu
 ### Applicative order
 
 However, C# has a different reduction strategy called applicative order. C# always first reduces a function's arguments, then use those reduced arguments to reduces the function itself:
-```
+
+```csharp
 (then => @else => True (then) (@else)) (arg2) (arg3)
 ≡ (then => @else => True (then) (@else)) (True.And(False)) (arg3)
 ≡ (then => @else => True (then) (@else)) (False) (arg3)
@@ -93,7 +98,8 @@ This is why both And and Or are triggered. This is an example that reduction ord
 ## Make If lazy
 
 Under the C# reduction order, can If function be lazy, and works just like the first reduction order above? In the above version of If, both then and @else are of type T. In C# the easiest to think about is, changing both parameters from T into a function - the simplest will be Func<T>, so that after the condition returns one of those 2 functions, then the returned Func<T> function can be applied to return a T value.
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     // If2 = condition => then => @else => condition(then, @else)()
@@ -106,7 +112,8 @@ public static partial class ChurchBoolean
 ```
 
 The application becomes:
-```
+
+```csharp
 ChurchBoolean
     .If2<Boolean>(False)
         (() => True.And(True))
@@ -114,7 +121,8 @@ ChurchBoolean
 ```
 
 Now in If, only 1 “branch” will be applied. However, in lambda calculus, a lambda expression without variable - λ.E (corresponding to Func<T>) - does not exist. This is easy to resolve - just make up a variable for lambda expression/a parameter for C# function. So If can be refactored to:
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     public static Func<Func<Func<T, T>, T>, Func<Func<Func<T, T>, T>, T>> If<T>
@@ -126,7 +134,8 @@ public static partial class ChurchBoolean
 ```
 
 And the application is almost the same:
-```
+
+```csharp
 ChurchBoolean
     .If<Boolean>(True)
         (_ => True.And(True))
@@ -134,14 +143,16 @@ ChurchBoolean
 ```
 
 In lambda calculus, If is much cleaner without type information:
-```
+
+```csharp
 If := λc.λt.λf.c t f (λx.x)
 ```
 
 ## Unit tests
 
 The following unit test verifies If’s correctness and laziness:
-```
+
+```csharp
 [TestMethod()]
 public void IfTest()
 {

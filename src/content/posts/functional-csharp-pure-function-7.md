@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (13) Pure Function"
 published: 2018-06-13
 description: "Functional programming encourages modeling operations with pure functions."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -79,7 +79,8 @@ As fore mentioned, there is also a specialized functional programming paradigm, 
 ## PureAttribute and Code Contracts
 
 .NET provides [System.Diagnostics.Contracts.PureAttribute](https://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.pureattribute.aspx) to specify a named function member is pure:
-```
+
+```csharp
 internal static partial class Purity
 {
     [Pure]
@@ -94,7 +95,8 @@ internal static partial class Purity
 ```
 
 It can also be used for a type, to specify all its function members are pure:
-```
+
+```csharp
 [Pure]
 internal static class Pure
 {
@@ -120,7 +122,8 @@ Notice there is a new tab Code Contract. Go to the tab and enable Perform Runtim
 [![image_thumb1](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/C-Functional-Programming-In-Depth-13-Pur_865A/image_thumb1_thumb.png "image_thumb1")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/C-Functional-Programming-In-Depth-13-Pur_865A/image_thumb1_2.png)
 
 Code Contracts can be specified with System.Diagnostics.Contracts.Contract type’s static methods. Only pure function calls are allowed to be used with Contract methods:
-```
+
+```csharp
 internal static int PureContracts(int int32)
 {
     Contract.Requires<ArgumentOutOfRangeException>(IsPositive(int32)); // Function precondition.
@@ -131,7 +134,8 @@ internal static int PureContracts(int int32)
 ```
 
 For the caller of above function, Code Contract tool can check the specified precondition and post condition at compile time and runtime, if the check is enabled. And logically, the precondition and post condition check should be referential transparent and side effect free. In contrast, the following example calls impure function in precondition and post condition:
-```
+
+```csharp
 internal static int ImpureContracts(int int32)
 {
     Contract.Requires<ArgumentOutOfRangeException>(IsNegative(int32)); // Function precondition.
@@ -144,7 +148,8 @@ internal static int ImpureContracts(int int32)
 At compile time, Code Contract gives a warning: Detected call to method IsNegative(System.Int32)' without \[Pure\] in contracts of method ‘ImpureContracts(System.Int32)'.
 
 \[Pure\] cannot be used for anonymous function. And for any named function member, \[Pure\] must be used with caution. The following method is declared to be pure:
-```
+
+```csharp
 [Pure] // Incorrect.
 internal static ProcessStartInfo Initialize(ProcessStartInfo processStart)
 {

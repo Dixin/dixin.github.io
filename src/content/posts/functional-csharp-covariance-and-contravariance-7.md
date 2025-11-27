@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (11) Covariance and Contravariance"
 published: 2018-06-11
 description: "In ), variance means the capability to substitute a type with a more derived type or les"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -16,14 +16,16 @@ lang: ""
 ## **Latest version: [https://weblogs.asp.net/dixin/functional-csharp-covariance-and-contravariance](/posts/functional-csharp-covariance-and-contravariance "https://weblogs.asp.net/dixin/functional-csharp-covariance-and-contravariance")**[](/posts/functional-csharp-fundamentals "https://weblogs.asp.net/dixin/functional-csharp-fundamentals")
 
 In [covariance and contravariance](https://en.wikipedia.org/wiki/Covariance_and_contravariance_\(computer_science\)), variance means the capability to substitute a type with a more derived type or less derived type in a context. The following is a simple [inheritance hierarchy](https://msdn.microsoft.com/en-us/library/27db6csx.aspx):
-```
+
+```csharp
 internal class Base { }
 
 internal class Derived : Base { }
 ```
 
 Base is a less derived type, and Derived is a more derived type. So a Derived instance “[is a](https://en.wikipedia.org/wiki/Is-a)” Base instance, or in another words, a Derived instance can substitute a Base instance:
-```
+
+```csharp
 internal static partial class Variances
 {
     internal static void Substitute()
@@ -39,7 +41,8 @@ Here covariance and contravariance discusses the “is a” or substitution rela
 ## Variances of non-generic function type
 
 By using above Base and Derived as input and output type of function, there are 4 combinations:
-```
+
+```csharp
 // Derived -> Base
 internal static Base DerivedToBase(Derived input) => new Base();
 
@@ -54,7 +57,8 @@ internal static Derived BaseToDerived(Base input) => new Derived();
 ```
 
 They are of 4 different function types:
-```
+
+```csharp
 internal delegate Base DerivedToBase(Derived input); // Derived -> Base
 
 internal delegate Derived DerivedToDerived(Derived input); // Derived -> Derived
@@ -65,7 +69,8 @@ internal delegate Derived BaseToDerived(Base input); // Base -> Derived
 ```
 
 Take the second function DerivedToDerived as example, naturally, it is of the second function type DerivedToDerived:
-```
+
+```csharp
 internal static void NonGeneric()
 {
     DerivedToDerived derivedToDerived = DerivedToDerived;
@@ -74,7 +79,8 @@ internal static void NonGeneric()
 ```
 
 Since C# 2.0, it seems of the first function type DerivedToBase too:
-```
+
+```csharp
 internal static void NonGenericCovariance()
 {
     DerivedToBase derivedToBase = DerivedToBase; // Derived -> Base
@@ -90,7 +96,8 @@ internal static void NonGenericCovariance()
 ```
 
 So function instance’s actual output can be more derived than function type’s required output. Therefore, function with more derived output “is a” function with less derived output, or in another word, function with more derived output can substitute function with less derived output. This is called covariance. Similarly, function instance’s input can be less derived than function type input:
-```
+
+```csharp
 internal static void NonGenericContravariance()
 {
     DerivedToBase derivedToBase = DerivedToBase; // Derived -> Base
@@ -106,7 +113,8 @@ internal static void NonGenericContravariance()
 ```
 
 Therefore, function with less derived input “is a” function with more derived input, or in another word, function with less derived input can substitute function with more derived input. This is called contravariance. Covariance and contravariance can happen at the same time:
-```
+
+```csharp
 internal static void NonGenericeCovarianceAndContravariance()
 {
     DerivedToBase derivedToBase = DerivedToBase; // Derived -> Base
@@ -124,7 +132,8 @@ internal static void NonGenericeCovarianceAndContravariance()
 ```
 
 Apparently, function instance output cannot be less derived than function type output, and function input cannot be more derived than function type input. The following code cannot be compiled:
-```
+
+```csharp
 internal static void NonGenericInvalidVariance()
 {
     // baseToDerived should output Derived, while BaseToBase outputs Base. 
@@ -146,12 +155,14 @@ internal static void NonGenericInvalidVariance()
 ## Variances of generic function type
 
 With generic delegate type, all the above function types can be represented by:
-```
+
+```csharp
 internal delegate TOutput GenericFunc<TInput, TOutput>(TInput input);
 ```
 
 Then the above variances can be represented as:
-```
+
+```csharp
 internal static void Generic()
 {
     GenericFunc<Derived, Base> derivedToBase = DerivedToBase; // GenericFunc<Derived, Base>: no variances.
@@ -162,12 +173,14 @@ internal static void Generic()
 ```
 
 For functions of GenericFunc<TInput, TOutput> type, covariance can happen when TOutput is substituted by more derived type, and contravariance can happen when TInput is substituted by less derived type. So TOutput is called covariant type parameter for this generic delegate type, and TInput is called contravariant type parameter. C# 4.0 introduces the out/in modifiers for the covariant/contravariant type parameter:
-```
+
+```csharp
 internal delegate TOutput GenericFuncWithVariances<in TInput, out TOutput>(TInput input);
 ```
 
 These modifiers enable the implicit conversion/substitution between functions:
-```
+
+```csharp
 internal static void FunctionImplicitConversion()
 {
     GenericFuncWithVariances<Derived, Base> derivedToBase = DerivedToBase; // Derived -> Base
@@ -206,7 +219,8 @@ namespace System
 ```
 
 Variant type parameter is not syntactic sugar. The out/in modifiers are compiled to CIL +/– flags in CIL:
-```
+
+```csharp
 .class public auto ansi sealed Func<-T, +TResult> extends System.MulticastDelegate
 {
     .method public hidebysig newslot virtual instance !TResult Invoke(!T arg) runtime managed
@@ -233,7 +247,8 @@ internal interface IOutput<out TOutput> // TOutput is covariant for all members 
 ```
 
 In the above generic interface, there are 2 function members using the type parameter, and the type parameter is covariant for these 2 functions’ function types. Therefore, the type parameter is covariant for the interface, and the out modifier can be used to enable the implicit conversion:
-```
+
+```csharp
 internal static void GenericInterfaceCovariance(IOutput<Base> outputBase, IOutput<Derived> outputDerived)
 {
     // Covariance: Derived is Base, so that IOutput<Derived> is IOutput<Base>.
@@ -262,7 +277,8 @@ internal interface IInput<in TInput> // TInput is contravariant for all members 
 ```
 
 IInput<Base> interface does not inherit IInput<Derived> interface, but it seems a IInput<Base> interface “is an” IInput<Derived> interface, or in another word, IInput<TInput> interface with more derived type argument can substitute IInput<TInput> with less derived type argument. This is the contravariance of generic interface:
-```
+
+```csharp
 internal static void GenericInterfaceContravariance(IInput<Derived> inputDerived, IInput<Base> inputBase)
 {
     // Contravariance: Derived is Base, so that IInput<Base> is IInput<Derived>.
@@ -295,7 +311,8 @@ internal interface IInputOutput<in TInput, out TOutput> // TInput/TOutput is con
 ```
 
 The following example demonstrates the covariance and contravariance:
-```
+
+```csharp
 internal static void GenericInterfaceCovarianceAndContravariance(
     IInputOutput<Derived, Base> inputDerivedOutputBase, IInputOutput<Base, Derived> inputBaseOutputDerived)
 {
@@ -325,12 +342,14 @@ The type parameter T is neither covariant for all function members using T, nor 
 ## Variances of generic higher-order function
 
 So far covariance and the out modifier are all about output, and contravariance and the in modifier are all about input. The variances are interesting for generic higher-order function types. For example, the following function type is higher-order, because it returns a function:
-```
+
+```csharp
 internal delegate Func<TOutput> ToFunc<out TOutput>(); // Covariant output type.
 ```
 
 The type parameter is used by output function type, where it is still covariant. The following example demonstrate how this works:
-```
+
+```csharp
 internal static void OutputVariance()
 {
     // First order functions.
@@ -352,7 +371,8 @@ internal static void OutputVariance()
 ```
 
 For higher-order function types, when type parameter is used in output function type, it always covariant:
-```
+
+```csharp
 // () -> T:
 internal delegate TOutput Func<out TOutput>(); // Covariant output type.
 
@@ -369,7 +389,8 @@ internal delegate ToToFunc<TOutput> ToToToFunc<out TOutput>(); // Covariant outp
 ```
 
 Similarly, higher-order function type can be defined by accepting function as input:
-```
+
+```csharp
 internal delegate void ActionToVoid<in TTInput>(Action<TTInput> action); // Cannot be compiled.
 
 internal static void InputVariance()
@@ -381,12 +402,14 @@ internal static void InputVariance()
 ```
 
 However, the above code cannot be compiled. The reason is, when type parameter is used by input function type, it can be covariant or contravariant. In this case, it becomes contravariant:
-```
+
+```csharp
 internal delegate void ActionToVoid<out TInput>(Action<TInput> action);
 ```
 
 And this is how it works:
-```
+
+```csharp
 internal static void InputVariance()
 {
     // Higher-order functions.
@@ -404,7 +427,8 @@ internal static void InputVariance()
 ```
 
 For higher-order function types, when type parameter is used in input function type, here are its variances:
-```
+
+```csharp
 // () -> void:
 internal delegate void Action<in TInput>(TInput input); // Contravariant input type.
 
@@ -439,7 +463,8 @@ namespace System.Collections.Generic
 ```
 
 For IList<T>, T is not covariant for its indexer setter, and T is not contravariant for its indexer getter. So T should be invariant for IList<T> and array T\[\]. However, C# compiler and CLR/CoreCLR unexpectedly supports covariance for array. The following example can be compiled but throws ArrayTypeMismatchException at runtime, which can be a source of bugs:
-```
+
+```csharp
 internal static void ArrayCovariance()
 {
     Base[] baseArray = new Base[3];
@@ -480,7 +505,8 @@ This is a C# language feature that should never be used.
 ## Variances in .NET and LINQ
 
 The following LINQ query finds the generic delegate types and interfaces with variant type parameters in .NET core library:
-```
+
+```csharp
 internal static void TypesWithVariance()
 {
     Assembly coreLibrary = typeof(object).Assembly;
@@ -572,7 +598,8 @@ namespace System.Linq
 ```
 
 The following code demonstrates the implicit conversion enabled by the out modifier in the IEnumerable<T> definition:
-```
+
+```csharp
 internal static void LinqToObjects(IEnumerable<Base> enumerableOfBase, IEnumerable<Derived> enumerableOfDerived)
 {
     enumerableOfBase = enumerableOfBase.Concat(enumerableOfDerived);

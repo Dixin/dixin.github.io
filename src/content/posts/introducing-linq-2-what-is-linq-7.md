@@ -3,8 +3,8 @@ title: "Functional Programming and LINQ Paradigm (2) LINQ Overview"
 published: 2018-05-29
 description: "As fore mentioned, LINQ consists of syntax in languages and APIs in libraries:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -56,7 +56,8 @@ When using any LINQ technology to work with data, there are usually 3 steps:
 3.  Execute the LINQ query
 
 LINQ to Objects queries .NET objects in memory. The following example queries positive integers from the integer array in memory, and get the integers’ square roots in ascending order:
-```
+
+```csharp
 internal static partial class Linq
 {
     internal static void LinqToObjectsQueryExpression()
@@ -85,7 +86,8 @@ Here the data source is a sequence of integers in memory. The query is created d
 Creating the query is only building the filter-sort-map query flow without executing it. Later, when pulling the results from the query with a foreach loop, the query is executed.
 
 Besides above query expression syntax. There is another query method call syntax to create LINQ query:
-```
+
+```csharp
 internal static void LinqToObjectsQueryMethods()
 {
     IEnumerable<int> source = new int[] { 4, 3, 2, 1, 0, -1 }; // Get source.
@@ -105,7 +107,8 @@ This time, the query is built by calling **Where**, **OrderBy**, **Select** meth
 ### Parallel LINQ
 
 The above LINQ to Object queries execute sequentially. The filter-sort-map computation are executed for all integers with a single thread, and the query results are produced one by one in a deterministic order. Parallel LINQ (to Objects) is the parallel version of the LINQ to Objects APIs. It also work with objects in memory, but can execute the query in parallel with multiple threads, in order to utilize all processor cores and improve the LINQ query performance. The following are the parallel version of the above queries:
-```
+
+```csharp
 internal static void ParallelLinq()
 {
     int[] values = { 4, 3, 2, 1, 0, -1 };
@@ -155,7 +158,8 @@ LINQ to XML queries XML data. Take an ASP.NET blog RSS feed [https://weblogs.asp
 ```
 
 It is a XML document, and can be the source of LINQ to XML. This following example queries the items with permalink from the feed, and get the items’ titles. in ascending order of the items’ publish dates:
-```
+
+```csharp
 internal static void LinqToXml()
 {
     XDocument feed = XDocument.Load("https://weblogs.asp.net/dixin/rss");
@@ -219,7 +223,8 @@ Microsoft EF/Core providesLINQ to Entities enables LINQ queries directly working
 [![image_thumb31_thumb](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Functional-Programming-and-LINQ-Paradigm_150FF/image_thumb31_thumb_thumb.png "image_thumb31_thumb")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Functional-Programming-and-LINQ-Paradigm_150FF/image_thumb31_thumb_2.png)
 
 The following example queries **Production.Product** table for the products under the specified category, and get the products’ names in the order of their list prices:
-```
+
+```csharp
 internal static void LinqToEntities()
 {
     using (AdventureWorks adventureWorks = new AdventureWorks())
@@ -248,7 +253,8 @@ Here the data source is the relational data stored in the remote database table,
 ### LINQ to SQL
 
 LINQ to SQL is a lightweight database access technology provided by .NET Framework. As the name suggests, LINQ to SQL only works with Microsoft SQL Server. Its APIs are similar to LINQ to Entities APIs. So if the above queries are implemented by LINQ to SQL, the code can have the same looking:
-```
+
+```csharp
 #if NETFX
 internal static void LinqToSql()
 {
@@ -279,7 +285,8 @@ Here the **AdventureWorks** type is a LINQ to SQL data context, which is differe
 ### LINQ to NoSQL (LINQ to CosmosDB)
 
 LINQ can also work with non relational database (aka NoSQL database). Microsoft Azure CosmosDB is such a NoSQL database service, and it provides client library to enable LINQ queries. To setup a data source for LINQ, [create a free account](https://azure.microsoft.com/en-us/free/), then follow the Microsoft documents to import some JSON documents representing some stores with addresses:
-```
+
+```csharp
 [
     {
         "id": "1424",
@@ -300,7 +307,8 @@ LINQ can also work with non relational database (aka NoSQL database). Microsoft 
 ```
 
 Here the source is the database’s Store collection. The following example queries the stores in the specified city, and get their names in the alphabetic order:
-```
+
+```csharp
 internal static void LinqToNoSql(string key)
 {
     using (DocumentClient client = new DocumentClient(
@@ -330,7 +338,8 @@ The query is created to filter the products in the collection, and only keeps th
 ### LINQ to JSON
 
 LINQ to JSON is a third party set of APIs enabling LINQ for JSON data. Tumblr provides APIs returning JSON data, which can be a data source:
-```
+
+```csharp
 {
   "meta": {
     "status": 200,
@@ -386,7 +395,8 @@ LINQ to JSON is a third party set of APIs enabling LINQ for JSON data. Tumblr pr
 ```
 
 The following example queries the posts with specified tag, and get their summary in the order of items’ publish date:
-```
+
+```csharp
 internal static async Task LinqToJson(string apiKey)
 {
     using (HttpClient httpClient = new HttpClient())
@@ -418,7 +428,8 @@ It queries all posts in the JSON document, filter them and only keep the items w
 ### LINQ to Twitter
 
 LINQ to Twitter is another third party library enabling LINQ queries for Twitter data. To access Twitter as a data source, [registering an app with Twitter](https://apps.twitter.com/) to get the consumer key, consumer secrete, OAuth token, and OAuth token secrete. The following example queries the tweets with specified search keyword:
-```
+
+```csharp
 internal static void LinqToTwitter(
     string consumerKey, string consumerSecret, string oAuthToken, string oAuthTokenSecret)
 {
@@ -467,7 +478,8 @@ When LINQ was first released with .NET Framework 3.5, [MSDN](http://msdn.microso
 > LINQ is one of Microsoft’s most exciting, powerful new development technologies.
 
 Traditionally, to work with a specific data domain, a domain specific language and a set of domain specific APIs are used. For example, the following example is equivalent to above LINQ to XML query logic, implemented in traditional programming model, which calls XML APIs to execute query expression in XPath language:
-```
+
+```csharp
 internal static partial class Imperative
 {
     internal static void Xml()
@@ -523,7 +535,8 @@ internal static void Sql(string connectionString)
 Similarly, for Twitter data, there are network APIs to query Twitter’s REST endpoints, etc. LINQ implements an unified and consistent language syntax and programming model for many different data domains. Above examples demonstrated the same C# syntax builds filter-sort-map query flows for CLR objects, XML data, cached tabular data, SQL database, NoSQL database, JSON, Twitter data. This capability makes LINQ a powerful and productive solution for working with data.
 
 C# is a strongly typed language. In C#, any value has a type, including any value in LINQ query. And any expression is evaluated to a type, including LINQ query expressions. Any method has a type for each parameter and a type for return value, including LINQ query methods. So LINQ queries are checked by compiler and CLR for type safety, which is great help for productivity, unless **dynamic** typing is used to bypass the compiler check:
-```
+
+```csharp
 internal static partial class Linq
 {
     internal static void Dynamic()

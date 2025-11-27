@@ -10,7 +10,8 @@ lang: ""
 ---
 
 For the same HTML:
-```
+
+```csharp
 <input type="file" style="width:160px;" />
 ```
 

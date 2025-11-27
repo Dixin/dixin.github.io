@@ -3,7 +3,7 @@ title: "C# 6.0 String Interpolation, FormattableString, and Code Analysis CA1305
 published: 2016-01-26
 description: "C# 6.0 introduces a syntactic sugar , it is safer and more readable than [composite formatting](https://msdn.microsof"
 image: ""
-tags: ["C#", "C# 6.0", "Coding Guidelines", "String Interpolation", "Code Analysis", "FxCop"]
+tags: ["C#", "C# 6.0", "Code Analysis", "Coding Guidelines", "FxCop", "String Interpolation"]
 category: "C#"
 draft: false
 lang: ""

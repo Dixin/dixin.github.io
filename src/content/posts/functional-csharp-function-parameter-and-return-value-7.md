@@ -3,8 +3,8 @@ title: "C# functional programming in-depth (4) Function input and output"
 published: 2018-06-04
 description: "In C#, by default, arguments are passed to parameters by value. In the following example, the PassByValue function has a Uri parameter and a int type parameter. Uri is class so it is reference type, a"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Pass by value vs. pass by reference (ref parameter)
 
 In C#, by default, arguments are passed to parameters by value. In the following example, the PassByValue function has a Uri parameter and a int type parameter. Uri is class so it is reference type, and int is structure so it is value type:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static void PassByValue(Uri reference, int value)
@@ -41,7 +42,8 @@ internal static partial class Functions
 PassByValue is called with a reference type variable and a value type variable. With the default passing by value behavior, the reference and the value are both copied, then the copied reference and the copied value are passed to PassByValue. Inside PassByValue, it changes the reference and the value, but indeed it changes the copy of the outer variables. So after the execution of PassByValue, the outer variables passed to PassByValue remain unchanged.
 
 Parameter with a ref modifier is passed by reference, which means passed directly without being copied:
-```
+
+```csharp
 internal static void PassByReference(ref Uri reference, ref int value)
 {
     reference = new Uri("https://flickr.com/dixin");
@@ -63,7 +65,8 @@ This time, when PassByReference is called, the reference type variable and value
 ### Pass by read only reference (in parameter)
 
 To prevent called function from modifying the argument passed by reference, in modifier can be used for the parameter since C# 7.2:
-```
+
+```csharp
 internal static void PassByReadOnlyReference(in Uri reference, in int value)
 {
     reference = new Uri("https://flickr.com/dixin"); // Cannot be compiled.
@@ -76,7 +79,8 @@ Trying to modify the parameter passed by read only reference causes error at com
 ## Output parameter (out parameter) and out variable
 
 C# also supports output parameter, which has a out modifier. The output parameter is also passed by reference, just like ref parameter:
-```
+
+```csharp
 internal static bool Output(out Uri reference, out int value)
 {
     reference = new Uri("https://flickr.com/dixin");
@@ -97,7 +101,8 @@ internal static void CallOutput()
 The difference is, the ref parameter can be viewed as input of the function, so a variable must be initialized before passed to the ref parameter. The output parameter can be viewed as output of the function, so a variable is not required to be initialized before it is passed to the output parameter. Instead, output parameter must be initialized inside the function before returning.
 
 C# 7.0 introduces a convenient syntactic sugar called out variable, so that a variable can be declared inline when it is passed to an output parameter:
-```
+
+```csharp
 internal static void OutVariable()
 {
     Output(out Uri reference, out int value);
@@ -111,7 +116,8 @@ The compilation of OutVariable is exactly the same as above CallOutput.
 ### Discard out variable
 
 Since C# 7.0, if a out argument is not needed, it can be simply discarded with special character \_. This syntax works with local variable too.
-```
+
+```csharp
 internal static void Discard()
 {
     bool result = Output(out _, out _);
@@ -122,7 +128,8 @@ internal static void Discard()
 ## Parameter array
 
 Array parameter with params modifier is called parameter array:
-```
+
+```csharp
 internal static int Sum(params int[] values)
 {
     int sum = 0;
@@ -135,7 +142,8 @@ internal static int Sum(params int[] values)
 ```
 
 When calling above function, any number of arguments can be passed to its parameter array, and, of course, array can be passed to parameter array too:
-```
+
+```csharp
 internal static void CallSum(int[] array)
 {
     int sum1 = Sum();
@@ -146,7 +154,8 @@ internal static void CallSum(int[] array)
 ```
 
 The params modifier is compiled to System.ParamArrayAttribute:
-```
+
+```csharp
 internal static int CompiledSum([ParamArray] int[] values)
 {
     int sum = 0;
@@ -159,7 +168,8 @@ internal static int CompiledSum([ParamArray] int[] values)
 ```
 
 When passing argument list to parameter array, the argument list is compiled to array:
-```
+
+```csharp
 internal static void CompiledCallSum(int[] array)
 {
     int sum1 = Sum(Array.Empty<int>());
@@ -170,14 +180,16 @@ internal static void CompiledCallSum(int[] array)
 ```
 
 When function has multiple parameters, the parameter array must be the last:
-```
+
+```csharp
 internal static void ParameterArray(bool required1, int required2, params string[] optional) { }
 ```
 
 ## Positional argument vs. named argument
 
 By default, when calling a function, each argument must align with the parameter’s position. C# 4.0 introduces named argument, which enables specifying parameter name when passing an argument. Both positional argument and named argument can be used to call function:
-```
+
+```csharp
 internal static void PositionalAndNamed()
 {
     PassByValue(null, 0); // Positional arguments.
@@ -189,7 +201,8 @@ internal static void PositionalAndNamed()
 ```
 
 When a function is called with positional arguments, the arguments must align with the parameters. When a function is called with named arguments, the named arguments can be in arbitrary order. And when using positional and named arguments together, before C# 7.2, positional arguments must be followed by named arguments. Since C# 7.2, when all arguments are in correct position, then named argument can precede positional argument. At compile time, all named arguments are compiled to positional arguments. The above PassByValue calls are compiled to:
-```
+
+```csharp
 internal static void CompiledPositionalAndNamed()
 {
     PassByValue(null, 1);
@@ -201,7 +214,8 @@ internal static void CompiledPositionalAndNamed()
 ```
 
 If the named arguments are evaluated inline with the function call, the order of evaluation is the same as their appearance:
-```
+
+```csharp
 internal static void NamedEvaluation()
 {
     PassByValue(reference: GetUri(), value: GetInt32()); // Call GetUri then GetInt32.
@@ -214,7 +228,8 @@ internal static int GetInt32() { return default; }
 ```
 
 When the above PassByValue calls are compiled, local variable is generated to ensure the arguments are evaluated in the specified order:
-```
+
+```csharp
 internal static void CompiledNamedArgument()
 {
     PassByValue(GetUri(), GetInt32()); // Call GetUri then GetInt32.
@@ -224,7 +239,8 @@ internal static void CompiledNamedArgument()
 ```
 
 In practice, this syntax should be used with cautious because it can generate local variable, which can be slight performance hit. This tutorial uses named argument syntax frequently for readability:
-```
+
+```csharp
 internal static void Named()
 {
     UnicodeEncoding unicodeEncoding1 = new UnicodeEncoding(true, true, true);
@@ -236,7 +252,8 @@ internal static void Named()
 ## Required parameter vs. optional parameter
 
 By default, function parameters requires arguments. C# 4.0 also introduces optional parameter, with a default value specified:
-```
+
+```csharp
 internal static void Optional(
     bool required1, char required2,
     int optional1 = int.MaxValue, string optional2 = "Default value.",
@@ -245,7 +262,8 @@ internal static void Optional(
 ```
 
 The default value for optional parameter must be compile time constant, or default value of the type (null for reference type, or default constructor call for value type, or default expression). If a function has both required parameters and optional parameters, the required parameters must be followed by optional parameters. Optional parameter is not a syntactic sugar. The above function is compiled as the following CIL:
-```
+
+```csharp
 .method assembly hidebysig static 
     void Optional (
         bool required1,
@@ -288,7 +306,8 @@ internal static void CallOptional()
 ```
 
 When calling function with optional parameter, if the argument is not provided, the specified default value is used. Also, local variables can be generated to ensure the argument evaluation order. The above Optional calls are compiled to:
-```
+
+```csharp
 internal static void CompiledCallOptional()
 {
     Optional(true, '@', 1, "Default value.", null, new Guid(), null, new Guid());
@@ -305,7 +324,8 @@ internal static void CompiledCallOptional()
 ## Caller information parameter
 
 C# 5.0 introduces caller information parameters. System.Runtime.CompilerServices.CallerMemberNameAttribute, System.Runtime.CompilerServices.CallerFilePathAttribute, System.Runtime.CompilerServices.CallerLineNumberAttribute can be used for optional parameters to obtain the caller function name, caller function file name, and line number:
-```
+
+```csharp
 internal static void TraceWithCaller(
     string message,
     [CallerMemberName] string callerMemberName = null,
@@ -317,7 +337,8 @@ internal static void TraceWithCaller(
 ```
 
 When calling function with caller information parameters, just omit those arguments:
-```
+
+```csharp
 internal static void CallTraceWithCaller()
 {
     TraceWithCaller("Message.");
@@ -326,7 +347,8 @@ internal static void CallTraceWithCaller()
 ```
 
 At compile time, the caller information arguments are generated. The above TraceWithCaller call is compiled to:
-```
+
+```csharp
 internal static void CompiledCallTraceWithCaller()
 {
     TraceWithCaller("Message.", "CompiledCallTraceWithCaller", @"/home/dixin/CodeSnippets/Tutorial.Shared/Functional/Parameters.cs", 242);
@@ -336,7 +358,8 @@ internal static void CompiledCallTraceWithCaller()
 ## Return by value vs. return by reference
 
 By default, function return result by value. Similar to passing argument by value, returning by value means the returned reference or value is copied. The following functions retrieve the last item from the specified array:
-```
+
+```csharp
 internal static int LastValue(int[] values)
 {
     int length = values.Length;
@@ -359,7 +382,8 @@ internal static Uri LastReference(Uri[] references)
 ```
 
 When they returns the last item to the caller, they return a copied of the reference or value. When the returned item is changed, the item in the array remain unchanged:
-```
+
+```csharp
 internal static void ReturnByValue()
 {
     int[] values = new int[] { 0, 1, 2, 3, 4 };
@@ -375,7 +399,8 @@ internal static void ReturnByValue()
 ```
 
 C# 7.0 introduces returning by reference. Return result with a ref modifier is not copied:
-```
+
+```csharp
 internal static ref int RefLastValue(int[] values)
 {
     int length = values.Length;
@@ -398,7 +423,8 @@ internal static ref Uri RefLastReference(Uri[] references)
 ```
 
 Function returning ref result can be called with the ref modifier. This time, when the returned item is changed, the item in the array is changed too:
-```
+
+```csharp
 internal static void ReturnByReference()
 {
     int[] values = new int[] { 0, 1, 2, 3, 4 };
@@ -416,7 +442,8 @@ internal static void ReturnByReference()
 ### Return by read only reference
 
 To prevent caller from modifying the returned result by reference, ref can be used with the readonly modifier since C# 7.2:
-```
+
+```csharp
 internal static ref readonly int RefReadOnlyLastValue(int[] values)
 {
     int length = values.Length;
@@ -439,7 +466,8 @@ internal static ref readonly Uri RefReadOnlyLastReference(Uri[] references)
 ```
 
 Now the returned result by reference becomes read only. Trying to modify it causes error at compile time:
-```
+
+```csharp
 internal static void ReturnByRedOnlyReference()
 {
     int[] values = new int[] { 0, 1, 2, 3, 4 };

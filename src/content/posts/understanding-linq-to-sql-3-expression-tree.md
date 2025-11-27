@@ -12,13 +12,15 @@ lang: ""
 \[[LINQ via C# series](/posts/linq-via-csharp)\]
 
 In LINQ to Objects, lamda expressions are used everywhere as anonymous method, like Where():
-```
+
+```csharp
 public static IEnumerable<TSource> Where<TSource>(
     this IEnumerable<TSource> source, Func<TSource, bool> predicate)
 ```
 
 while in LINQ to SQL, mostly lambda expressions are used as expression tree:
-```
+
+```csharp
 public static IQueryable<TSource> Where<TSource>(
     this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
 ```
@@ -26,7 +28,8 @@ public static IQueryable<TSource> Where<TSource>(
 ## Anonymous method vs. expression tree
 
 A [previous post](/posts/understanding-csharp-3-0-features-6-lambda-expression) explained that the same lambda expression (like “number => number > 0") can be compiled into anonymous method, or expression tree. When invoking the second Where() above, if a lambda expression is passed:
-```
+
+```csharp
 IQueryable<Product> source = database.Products; // Products table of Northwind database.
 // Queryable.Where() is choosed by compiler.
 IQueryable<Product> products = source.Where(
@@ -38,7 +41,8 @@ obviously it is compiled into an expression tree.
 ## Expression tree for LINQ to SQL
 
 Why expression tree is needed in LINQ to SQL? To understand this, check LINQ to Objects first. LINQ to Objects query methods always require anonymous method. For example:
-```
+
+```csharp
 public static IEnumerable<TSource> Where<TSource>(
     this IEnumerable<TSource> source, Func<TSource, bool> predicate)
 {
@@ -74,7 +78,8 @@ This is why expression tree is required in LINQ to SQL, and all the other scenar
 ## Translate expression tree to T-SQL code
 
 How to write LINQ to SQL queries? How does LINQ to SQL queries implemented? [This post](/posts/understanding-csharp-3-0-features-6-lambda-expression) has explained how to traverse and translate the following simple expression trees with basic arithmetical calculations:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> infixExpression =
     (a, b, c, d, e) => a + b - c * d / 2 + e * 3;
 ```
@@ -219,7 +224,8 @@ public class SqlTranslator<TDelegate> : SimpleExpressionTranslator<TDelegate, ch
 ```
 
 Now it is ready to rock:
-```
+
+```csharp
 Expression<Func<double, double, double, double, double, double>> infixExpression =
     (a, b, c, d, e) => a + b - c * d / 2 + e * 3;
 
@@ -244,7 +250,8 @@ Again, please notice what happened is: some program written by C# is easily tran
 ## Expression tree types
 
 The following extension method DerivedIn() for System.Type uses LINQ to Objects to query derived types in specified assemblies:
-```
+
+```csharp
 public static class TypeExtensions
 {
     public static IEnumerable<Type> DerivedIn(this Type type, params string[] assemblyStrings)
@@ -335,7 +342,8 @@ public static class TypeExtensions
 ```
 
 The following code invokes this DerivedIn() method to print derived types of System.Linq.Expresions.Expression types:
-```
+
+```csharp
 foreach (Type item in typeof(System.Linq.Expressions.Expression)
     .DerivedIn("System.Core"))
 {
@@ -387,7 +395,8 @@ Currently, DLR involves only 2 dynamic language:
 The other languages are dropped / removed, like [Managed JSCript](http://dlr.codeplex.com/Thread/View.aspx?ThreadId=58121), [IronScheme](http://en.wikipedia.org/wiki/IronScheme), [VBx](http://en.wikipedia.org/wiki/Visual_Basic_.NET#Visual_Basic_.27VBx.27_.28VB_10.0.29), etc.
 
 Very typically, in IronRuby (Click [here](http://ironruby.codeplex.com/releases/view/41854) to download IronRuby.dll, or click [here](http://dlr.codeplex.com/releases/view/34834) to download the source code and build IronRuby.dll 0.9.1.0):
-```
+
+```csharp
 int count = typeof(IronRuby.Compiler.Ast.Expression).DerivedIn("IronRuby").Count();
 Console.WriteLine(count); // 64.
 ```

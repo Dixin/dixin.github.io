@@ -12,7 +12,8 @@ lang: ""
 \[[LINQ via C# series](/posts/linq-via-csharp)\]
 
 Similar with LINQ to Objects, LINQ to SQL supports deferred execution when possible. For example:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Category> source = database.Categories;
@@ -37,7 +38,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 The execution can be traced in SQL Server Profiler.
 
 When a query is impossible to be deferred, the eager execution is applied, like aggregation, etc.:
-```
+
+```csharp
 IQueryable<Category> source = database.Categories;
 
 // It is impossible to defer the execution.
@@ -51,7 +53,8 @@ The above code results a single item from the source, which cannot be deferred.
 Since LINQ to SQL queries work against Table<T>s on DataContext, DataContext affects the execution of queries a lot.
 
 While designing applications, the data access and UI code are usually separated:
-```
+
+```csharp
 internal static class DataAccess
 {
     internal static IEnumerable<string> GetCategoryNames(params int[] ids)
@@ -90,7 +93,8 @@ Logically there are 2 ways to avoid this kind of problem:
 -   or always the DataContext object is disposed after the query execution.
 
 Here the first way is the simplest:
-```
+
+```csharp
 internal static IEnumerable<string> GetCategoryNames(params int[] ids)
 {
     using (NorthwindDataContext database = new NorthwindDataContext())
@@ -110,7 +114,8 @@ The other solutions will be explained in later posts.
 ## Deferred execution and eager loading
 
 I saw the following kind of design from some production code:
-```
+
+```csharp
 internal static class DataAccess
 {
     internal static IQueryable<Category> GetCategories()
@@ -191,7 +196,8 @@ So improper usage of deferred execution also causes performance issues:
 -   Each inner foreach causes one query executed for current category’s products.
 
 One possible solution is, make up a LEFT JOIN query to retrieve all the data, and use LINQ to Objects to project the items to a Category collection:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     return database.Products
@@ -245,7 +251,8 @@ But this kind of code is horribly noisy. For example, in the above LEFT JOIN que
 ### DataLoadOptions.LoadWith()
 
 The easiest solution for this kind of eager loading is using DataLoadOptions and its LoadWith() method:
-```
+
+```csharp
 internal static IEnumerable<Category> GetCategories()
 {
     using (NorthwindDataContext database = new NorthwindDataContext())
@@ -274,7 +281,8 @@ ORDER BY [t0].[CategoryID], [t1].[ProductID]
 ### DataLoadOptions.AssociateWith()
 
 There is another useful method on DataLoadOptions, AssociateWith(). It specifies further query conditions on the eager-loaded associated objects, like restriction, ordering, etc.:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     DataLoadOptions options = new DataLoadOptions();
@@ -304,7 +312,8 @@ As fore mentioned, deferred loading is enabled by default:
 
 -   When accessing one entity, its associated entities are not loaded.
 -   When accessing its associated entities, they are loaded.
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     database.DeferredLoadingEnabled = true; // By default and not needed.
@@ -314,7 +323,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 It can be turned off by setting DataContext.DeferredLoadingEnabled to false:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     database.DeferredLoadingEnabled = false;

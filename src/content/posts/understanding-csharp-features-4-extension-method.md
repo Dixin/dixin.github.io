@@ -3,7 +3,7 @@ title: "Understanding C# Features (4) Extension Method"
 published: 2009-11-28
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "Functional Programming", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# Features", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -22,7 +22,8 @@ When an extension method is defined for a type, this extension method must:
 -   have the first parameter to be that type, and add a this keyword preceded
 
 For example, here are some useful extension methods for string:
-```
+
+```csharp
 public static class StringExtensions
 {
     public static bool ContainsIgnoreCase(this string value, string substring)
@@ -45,14 +46,16 @@ public static class StringExtensions
 ```
 
 So that
-```
+
+```csharp
 bool contains = text.ToUpperInvariant().Contains(value.ToUpperInvariant());
 bool areEqual = string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 string fullName = string.Format(CultureInfo.InvariantCulture, "Full name: {0} {1}.", firstName, lastName);
 ```
 
 can be simplified to:
-```
+
+```csharp
 bool contains = text.ContainsIgnoreCase(value);
 bool areEqual = a.EqualsIgnoreCase(b);
 string fullName = "Full name: {0} {1}.".With(firstName, lastName);
@@ -63,7 +66,8 @@ It looks like some instance methods are extended to a string object.
 ## Compilation
 
 Extension method is just a syntactic sugar. It will be compiled to normal static method. Take above With as an example, it is compiled to:
-```
+
+```csharp
 [Extension]
 public static string With(string format, params object[] args)
 {
@@ -72,7 +76,8 @@ public static string With(string format, params object[] args)
 ```
 
 Then, when compiler compiles With() method invocation on the string object:
-```
+
+```csharp
 string fullName = "Full name: {0} {1}.".With(firstName, lastName);
 ```
 
@@ -84,7 +89,8 @@ it looks up for an available With() in the context. The order to look up is:
 -   extension method in the other namespaces imported by “using”
 
 Once compiler finds a first match - in this case it is the extension method StringExtensions.With(), it compiles extension method call to normal static method call:
-```
+
+```csharp
 string fullName = StringExtensions.With("Full name: {0} {1}.", firstName, lastName);
 ```
 
@@ -108,7 +114,8 @@ public class Methods
 ```
 
 After compilation, the IL is:
-```
+
+```csharp
 .class public auto ansi beforefieldinit Dixin.Linq.LinqToObjects.Methods
     extends [mscorlib]System.Object
 {
@@ -216,7 +223,8 @@ namespace System.Linq
 ```
 
 With this extension method,
-```
+
+```csharp
 foreach (string message in messages)
 {
     Console.WriteLine(message);
@@ -224,7 +232,8 @@ foreach (string message in messages)
 ```
 
 can be simplified to:
-```
+
+```csharp
 messages.ForEach(Console.WriteLine);
 ```
 

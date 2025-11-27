@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (8) Higher-order Function, Currying a
 published: 2018-06-08
 description: "is a function accepting one or more function parameters as input, or returning a function as output. The other functions are"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -23,7 +23,8 @@ lang: ""
 -   Special types, like fore mentioned System.Void.
 
 A first-order function can take normal data value as input and output:
-```
+
+```csharp
 internal partial class Data { }
 
 internal static partial class Functions
@@ -42,7 +43,8 @@ internal static partial class Functions
 ```
 
 A higher-order function can be defined by replacing above data type with a function type:
-```
+
+```csharp
 internal delegate void Function();
 
 internal static partial class Functions
@@ -61,7 +63,8 @@ internal static partial class Functions
 ```
 
 Above HigherOrder is a named higher-order function. Anonymous higher-order functions can also be easily represented with lambda expression:
-```
+
+```csharp
 internal static void LambdaHigherOrder()
 {
     Action firstOrder1 = () => nameof(LambdaHigherOrder).WriteLine();
@@ -104,7 +107,8 @@ internal static void LambdaHigherOrder()
 ```
 
 These higher-order functions can be defined and called with IIFE syntax, without any function name involved:
-```
+
+```csharp
 internal static void AnonymousHigherOrder()
 {
     // (() -> void) -> void
@@ -142,7 +146,8 @@ namespace System
 ```
 
 It iterates all values in the input array, and call the match function for each value. If match function returns true, the value is added to the result array:
-```
+
+```csharp
 internal static void FilterArray(Uri[] array)
 {
     Uri[] notNull = Array.FindAll(array, uri => uri != null);
@@ -173,7 +178,8 @@ Again, LINQ query methods will be discussed in detail in the LINQ to Objects cha
 ## Curry function
 
 In the following example, first order function add2 simply adds 2 int values. Compare this function with the other higher-order function higherOrderAdd2:
-```
+
+```csharp
 internal static void FirstOrderHigherOrder()
 {
     // (int, int) -> int
@@ -189,7 +195,8 @@ internal static void FirstOrderHigherOrder()
 The first order function of type (int, int) –> int is straightforward. It accepts the first and the second int values, and returns their sum. The higher-order function of type int –> (int –> int) accepts only the first int value, and returns another function of type int –> int, which accepts the second int value and return the sum. Calling these functions are different too. Calling the first order function requires providing the first and second int values, and the result is directly returned. Calling the higher-order function requires only the first int value, it returns function which is a closure of the that int value. Then, calling the returned function requires providing the second int value, and the result is returned.
 
 Actually, for the higher-order function, its returned function type can be the inferred from the higher-order function type. So it can be simplified as:
-```
+
+```csharp
 internal static void TypeInference()
 {
     // (int, int) -> int
@@ -204,7 +211,8 @@ internal static void TypeInference()
 These 2 functions represents the same algorithm but in different form. This kind of transformation from a 2-arity first order function of type (T1, T2) –> TResult) to a 1-arity higher-order function of type T1 –> (T2 –> TResult), is called [currying](http://en.wikipedia.org/wiki/Currying). The term "currying" is introduced by [Christopher Strachey](http://en.wikipedia.org/wiki/Christopher_Strachey) in 1967, which is the last name of mathematician and logician [Haskell Curry](http://en.wikipedia.org/wiki/Haskell_Curry).
 
 Similarly, the following function with 3 parameters can be curried into a sequence of 3 1-arity functions:
-```
+
+```csharp
 internal static void CurryFunc()
 {
     // (int, int, int) -> int
@@ -217,7 +225,8 @@ internal static void CurryFunc()
 ```
 
 Generally, any N-arity function returning a value can be curried into a sequence of N 1-arity functions:
-```
+
+```csharp
 internal static void CurryFunc<T1, T2, T3, TN, TResult>()
 {
     // (T1, T2, T3, ... TN) -> TResult
@@ -230,7 +239,8 @@ internal static void CurryFunc<T1, T2, T3, TN, TResult>()
 ```
 
 The above transformation can be wrapped as the following Curry extension methods for all Func delegate types:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     // Transform (T1, T2) -> TResult
@@ -256,7 +266,8 @@ public static partial class FuncExtensions
 ```
 
 Now any function can be curried by just calling the Curry method:
-```
+
+```csharp
 internal static void CallCurry()
 {
     // (int, int) -> int
@@ -276,7 +287,8 @@ internal static void CallCurry()
 ```
 
 Function returning void can be curried too:
-```
+
+```csharp
 internal static void CurryAction()
 {
     // (int, int) -> void
@@ -296,7 +308,8 @@ internal static void CurryAction()
 ```
 
 Generally, any N-arity function returning void can be curried into a sequence of N 1-arity functions:
-```
+
+```csharp
 internal static void CurryAction<T1, T2, T3, TN>()
 {
     // (T1, T2, T3, ... TN) -> void
@@ -309,7 +322,8 @@ internal static void CurryAction<T1, T2, T3, TN>()
 ```
 
 Similarly, the above transformation can be wrapped as the following Curry extension methods for all Action delegate types:
-```
+
+```csharp
 public static partial class ActionExtensions
 {
     // Transform (T1, T2) -> void
@@ -336,7 +350,8 @@ public static partial class ActionExtensions
 ## Lambda operator associativity
 
 As demonstrated above, in a lambda expression, if on the right side of the => operator there is another lambda expression, the parenthesis for the right side lambda expression can be omitted. For example:
-```
+
+```csharp
 internal static void OperatorAssociativity()
 {
     // int -> (int -> int)
@@ -347,7 +362,8 @@ internal static void OperatorAssociativity()
 ```
 
 The above functions are identical to the following functions without parenthesis:
-```
+
+```csharp
 internal static void OperatorAssociativity()
 {
     // int -> int -> int
@@ -360,26 +376,30 @@ internal static void OperatorAssociativity()
 So that the => operator can be viewed as right associative.
 
 In some other functional languages, functions are curried by default. For example, in F#, it is unnecessary to explicitly define a function as curried:
-```
+
+```csharp
 let curriedAdd2: int -> (int -> int) = fun a -> (fun b -> a + b)
 let add1: int -> int = curriedAdd2 1
 let curriedAdd2esult: int = add1 2
 ```
 
 The function is curried by default. The above code is equivalent to:
-```
+
+```csharp
 let add2: int -> int -> int = fun a b -> a + b
 let add2Result: int = add2 1 2
 ```
 
 To explicitly define a uncurried function, tuple can be used to pass multiple values at one time:
-```
+
+```csharp
 let add2Tuple: int * int -> int = fun (a, b) -> a + b
 let add2TupleResult = add2Tuple (1, 2) // add2Tuple(Tuple.Create(1, 2)
 ```
 
 [Haskell](http://en.wikipedia.org/wiki/Haskell_\(programming_language\)) (that is the first name of [Haskell Curry](http://en.wikipedia.org/wiki/Haskell_Curry)) works similarly as F#:
-```
+
+```csharp
 -- curriedAdd2 :: Num a => a –> (a –> a)
 curriedAdd2 = \a –> (\b -> a + b)
 add1 = curriedAdd2 1
@@ -397,7 +417,8 @@ add2TupleResult = add2Tuple (1, 2)
 ## Partial apply function
 
 Calling (or applying) a curried function with one argument, is called [partial application](http://en.wikipedia.org/wiki/Partial_application). Since any N-arity function can be curried, any N-arity function can also be partial applied:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     public static Func<T2, TResult> Partial<T1, T2, TResult>(
@@ -434,7 +455,8 @@ public static partial class ActionExtensions
 ```
 
 For example:
-```
+
+```csharp
 internal static void PartialApplication()
 {
     Func<int, int, int> add2 = (a, b) => a + b;
@@ -452,7 +474,8 @@ In some other functional languages where functions are curried by default, funct
 ## Uncurry function
 
 A sequence of N 1-arity functions can also be transformed back to a N-arity function. This is called uncurrying, which can be generally implemented For Func and Action delegate types as:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     // Transform T1 -> T2 -> TResult
@@ -501,7 +524,8 @@ public static partial class ActionExtensions
 ```
 
 For example:
-```
+
+```csharp
 internal static void CallUncurry()
 {
     // int -> int -> int -> int
@@ -521,7 +545,8 @@ internal static void CallUncurry()
 ## First-class function
 
 As demonstrated, C# treats function as first class citizen. This can be compared with C# object side by side. First of all, object and function both have type and instance, and instance can be assigned/bound to variable:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static void Object()
@@ -551,7 +576,8 @@ internal static partial class Functions
 ```
 
 Object and function can both be input and output of function:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static Data Function(Data value) => value;
@@ -561,7 +587,8 @@ internal static partial class Functions
 ```
 
 Object and function can both access data out of the scope:
-```
+
+```csharp
 internal class OuterClass
 {
     const int Outer = 1;
@@ -592,7 +619,8 @@ internal static void OuterFunction()
 ```
 
 Object and function can both be nested:
-```
+
+```csharp
 internal partial class Data
 {
     internal Data Inner { get; set; }
@@ -624,7 +652,8 @@ internal static partial class Functions
 ```
 
 Object and function can both be equality testable:
-```
+
+```csharp
 internal static void ObjectEquality()
 {
     Data value1;

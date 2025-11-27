@@ -71,7 +71,8 @@ Here Method() is a long running method doing some IO. Then MethodTask() wraps it
 ## Await something in async method
 
 Since MethodTask() returns Task, let’s try to await it:
-```
+
+```csharp
 internal class AsyncMethods
 {
     internal static async Task<int> MethodAsync(int arg0, int arg1)
@@ -83,7 +84,8 @@ internal class AsyncMethods
 ```
 
 Because the await keyword is used in the body, the async keyword must be put on the method. Now the first async method is here. According to the [naming convenience](http://msdn.microsoft.com/en-us/library/vstudio/hh191443.aspx#BKMK_NamingConvention), it has postfix Async. Of course as an async method, itself can be awaited. So here comes a CallMethodAsync() to call MethodAsync():
-```
+
+```csharp
 internal class AsyncMethods
 {
     internal static async Task<int> CallMethodAsync(int arg0, int arg1)
@@ -95,7 +97,8 @@ internal class AsyncMethods
 ```
 
 After compilation, MethodAsync() and CallMethodAsync() will have the same logic. This is the code of MethodAsyc():
-```
+
+```csharp
 internal class CompiledAsyncMethods
 {
     [DebuggerStepThrough]
@@ -177,7 +180,8 @@ The generated code has been cleaned up so it is readable and can be compiled. Se
 -   The real code (await HelperMethods.MethodTask(arg0, arg1)) is compiled into MoveNext() as: HelperMethods.MethodTask(this.Arg0, this.Arg1).GetAwaiter().
 
 CallMethodAsync() will create and start its own state machine CallMethodAsyncStateMachine:
-```
+
+```csharp
 internal class CompiledAsyncMethods
 {
     [DebuggerStepThrough]
@@ -205,7 +209,8 @@ CallMethodAsyncStateMachine has the same logic as MethodAsyncStateMachine above.
 ## State machine and continuation
 
 To demonstrate more details in the state machine, a more complex method can be created:
-```
+
+```csharp
 internal class AsyncMethods
 {
     internal static async Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int arg3)
@@ -227,7 +232,8 @@ In this method:
 -   There are code before the awaits, and continuation code after each await
 
 After compilation, this multi-await method becomes the same as above single-await methods:
-```
+
+```csharp
 internal class CompiledAsyncMethods
 {
     [DebuggerStepThrough]
@@ -408,7 +414,8 @@ internal struct MultiCallMethodAsyncStateMachine : IAsyncStateMachine
 ```
 
 Only Task and TaskCompletionSource are involved in this revised version. And MultiCallMethodAsync() can be also simplified to:
-```
+
+```csharp
 [DebuggerStepThrough]
 [AsyncStateMachine(typeof(MultiCallMethodAsyncStateMachine))] // async
 internal static /*async*/ Task<int> MultiCallMethodAsync_(int arg0, int arg1, int arg2, int arg3)
@@ -442,7 +449,8 @@ Now the entire state machine becomes very clear - it is about callback:
 ## It is like callbacks
 
 Since it is like callbacks, the simplification can go even further – the entire state machine can be completely replaced by Task.ContinueWith(). Now MultiCallMethodAsync() becomes:
-```
+
+```csharp
 internal static Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int arg3)
 {
     TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>();
@@ -485,7 +493,8 @@ internal static Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int
 ```
 
 In order to compare with the original async / await code:
-```
+
+```csharp
 internal static async Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int arg3)
 {
     HelperMethods.Before();
@@ -499,7 +508,8 @@ internal static async Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg
 ```
 
 the above code can be reformatted for easier reading:
-```
+
+```csharp
 internal static Task<int> MultiCallMethodAsync(int arg0, int arg1, int arg2, int arg3)
 {
     TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>(); try {
@@ -538,7 +548,8 @@ However, the above callback code has a context handling issue at runtime, which 
 > You can use await Task.Yield(); in an asynchronous method to force the method to complete asynchronously.
 
 For example:
-```
+
+```csharp
 internal static void NoYeild()
 {
     HelperMethods.Before();
@@ -555,7 +566,8 @@ internal static async Task YeildAsync()
 ```
 
 Here await Task.Yield(); indicates to compile the following HelperMethods.Continuation(0); like a callback. So, similarly, it can be rewritten as:
-```
+
+```csharp
 internal static Task YeildAsync()
 {
     TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
@@ -589,7 +601,8 @@ internal static Task YeildAsync()
 Here TaskCompletionSource<object> is used, since [.NET does not provided a non-generic TaskCompletionSource class](https://social.msdn.microsoft.com/Forums/vstudio/en-US/f6ee1462-d3ef-40ed-801a-76bdfaf01e1e/feedback-taskcompletionsourcet-used-with-task?forum=parallelextensions).
 
 Similarly, this can be reformatted to:
-```
+
+```csharp
 internal static Task YeildAsync()
 {
     TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>(); try {
@@ -609,7 +622,8 @@ internal static Task YeildAsync()
 ```
 
 In another word, [Task.Yeild()](http://msdn.microsoft.com/en-us/library/system.threading.tasks.task.yield.aspx) makes the method returns right there immediately, and schedule its continuation code to CPU asynchromously, which creates a chance for other tasks to be scheduled to CPU first. This is similar concept to the setTimeout() approach in [JavaScript](http://en.wikipedia.org/wiki/JavaScript):
-```
+
+```csharp
 var sync = function () {
     before();
     continuation();

@@ -18,7 +18,8 @@ The reason is, only the previous 2 version is supported to a SQL Server. For SQL
 ## Use SQL Server 2008
 
 Since SQL Server 2000/2005 database is supported in SQL Server 2008. The Northwind database can be [attached](https://msdn.microsoft.com/en-us/library/ms176061.aspx) to a SQL Server 2008:
-```
+
+```csharp
 USE master;
 GO
 CREATE DATABASE [Northwind] ON PRIMARY 
@@ -30,7 +31,8 @@ GO
 ```
 
 or just:
-```
+
+```csharp
 USE master;
 GO
 CREATE DATABASE [Northwind] ON 
@@ -45,7 +47,8 @@ The database version will be upgraded from 539 to 655:
 > Converting database 'Northwind' from version 539 to the current version 655. Database 'Northwind' running the upgrade step from version 539 to version 551. Database 'Northwind' running the upgrade step from version 551 to version 552. Database 'Northwind' running the upgrade step from version 552 to version 611. Database 'Northwind' running the upgrade step from version 611 to version 621. Database 'Northwind' running the upgrade step from version 621 to version 622. Database 'Northwind' running the upgrade step from version 622 to version 625. Database 'Northwind' running the upgrade step from version 625 to version 626. Database 'Northwind' running the upgrade step from version 626 to version 627. Database 'Northwind' running the upgrade step from version 627 to version 628. Database 'Northwind' running the upgrade step from version 628 to version 629. Database 'Northwind' running the upgrade step from version 629 to version 630. Database 'Northwind' running the upgrade step from version 630 to version 631. Database 'Northwind' running the upgrade step from version 631 to version 632. Database 'Northwind' running the upgrade step from version 632 to version 633. Database 'Northwind' running the upgrade step from version 633 to version 634. Database 'Northwind' running the upgrade step from version 634 to version 635. Database 'Northwind' running the upgrade step from version 635 to version 636. Database 'Northwind' running the upgrade step from version 636 to version 637. Database 'Northwind' running the upgrade step from version 637 to version 638. Database 'Northwind' running the upgrade step from version 638 to version 639. Database 'Northwind' running the upgrade step from version 639 to version 640. Database 'Northwind' running the upgrade step from version 640 to version 641. Database 'Northwind' running the upgrade step from version 641 to version 642. Database 'Northwind' running the upgrade step from version 642 to version 643. Database 'Northwind' running the upgrade step from version 643 to version 644. Database 'Northwind' running the upgrade step from version 644 to version 645. Database 'Northwind' running the upgrade step from version 645 to version 646. Database 'Northwind' running the upgrade step from version 646 to version 647. Database 'Northwind' running the upgrade step from version 647 to version 648. Database 'Northwind' running the upgrade step from version 648 to version 649. Database 'Northwind' running the upgrade step from version 649 to version 650. Database 'Northwind' running the upgrade step from version 650 to version 651. Database 'Northwind' running the upgrade step from version 651 to version 652. Database 'Northwind' running the upgrade step from version 652 to version 653. Database 'Northwind' running the upgrade step from version 653 to version 654. Database 'Northwind' running the upgrade step from version 654 to version 655.
 
 Then call [sp\_detach\_db](https://msdn.microsoft.com/en-us/library/ms188031.aspx) to detach from SQL Server 2008:
-```
+
+```csharp
 USE master;
 GO
 EXEC sp_detach_db @dbname = N'Northwind', @skipchecks = N'true';
@@ -65,14 +68,16 @@ The downloaded sample database files also includes an instnwnd.sql installation 
 > Could not find stored procedure 'sp\_dboption'.
 
 [sp\_dboption](https://msdn.microsoft.com/en-us/library/ms187310.aspx) is used at line 24 and 25:
-```
+
+```csharp
 exec sp_dboption 'Northwind','trunc. log on chkpt.','true'
 exec sp_dboption 'Northwind','select into/bulkcopy','true'
 GO
 ```
 
 It is deprecated since SQL Server 2012. In SQL Server 2012/2014, [ALTER DATABASE](https://msdn.microsoft.com/en-us/library/bb522682.aspx) should be used. These 2 lines are equivalent to:
-```
+
+```csharp
 -- exec sp_dboption 'Northwind','trunc. log on chkpt.','true'
 ALTER DATABASE Northwind SET RECOVERY SIMPLE
 -- exec sp_dboption 'Northwind','select into/bulkcopy','true'

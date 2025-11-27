@@ -27,7 +27,8 @@ The models working in LINQ to SQL are mappings of SQL Server database stuff, lik
 This default behavior ensures the consistency of mapping: one unique record in database table <-> one unique entity object in application memory.
 
 For example:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -57,7 +58,8 @@ prints:
 > queryResults1\[0\]: ProductID = 1, ProductName = Chai, ... queryResults2\[7\]: ProductID = 1, ProductName = Chai, ... queryResults1\[0\] == queryResults2\[7\]: True
 
 So once queryResults1\[0\] is changed later, queryResults2\[7\] will also be changed!
-```
+
+```csharp
 Console.WriteLine(queryResults2[7].ProductName); // Chai.
 queryResults1[0].ProductName = "Test";
 Console.WriteLine(queryResults2[7].ProductName); // Test.
@@ -70,7 +72,8 @@ Because this feature relies on the uniqueness of record in SQL Server, LINQ to S
 ### Identity and DataContext
 
 Since query relies on DataContext, identity works within the scope of DataContext:
-```
+
+```csharp
 Product[] queryResults1;
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
@@ -95,7 +98,8 @@ In this sample, entity objects in queryResults1 have nothing to do with entity o
 ### Identity of projected objects (non-entity objects)
 
 The above feature is designed only for the entity objects mapped to SQL data items, and does not work on projected objects:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryable<Product> source = database.Products;
@@ -135,7 +139,8 @@ prints:
 > queryResults1\[0\]: ProductID = 1, ProductName = Chai queryResults2\[7\]: ProductID = 1, ProductName = Chai queryResults1\[0\] == queryResults2\[7\]: False
 
 And changing a projected object of one query has nothing to do with a projected object of another query:
-```
+
+```csharp
 Console.WriteLine(queryResults2[7].ProductName); // Chai.
 queryResults1[0] = new
     {
@@ -154,7 +159,8 @@ By default, when state change happens to entity, it is not reflected to the data
 ### State changes
 
 The following example shows the state change is tracked:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Table<Product> source = database.Products;
@@ -170,7 +176,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 Please notice it is tracking the object state change, not object change:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Table<Product> source = database.Products;
@@ -188,7 +195,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 To track the change of an entity object not created by current DataContext (also called offline entity), this entity object is required to be explicitly attached to the current DataConetxt:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Table<Product> source = database.Products;
@@ -211,7 +219,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ### Association change
 
 The association is not tracked:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Category category = database.Categories.Single(item => item.CategoryID == 1);
@@ -226,7 +235,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 but synchronized:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Category category = database.Categories.Single(item => item.CategoryID == 1);
@@ -249,7 +259,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 Sine there is an association (foreign key) between Product and Category, when one side of the association is changed, the other side is also changed to ensure the consistency:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Category category = new Category(); // category.Products is empty.
@@ -274,7 +285,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ### Change set
 
 The tracked changes can be retrieved by DataContext.GetChangeSet():
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Product product = database.Products.First();
@@ -300,7 +312,8 @@ Here it looks two entities are updated, but actually one, because of the associa
 ## Submit changes
 
 After changes (create / update / delete) on entities / entity states / associations are made with the caution of object identity and change tracking, and association synchronization, these changed need to be submitted to the database to take effect by invoking the SubmitChanges() method on DataContext:
-```
+
+```csharp
 database.SubmitChanges();
 ```
 
@@ -317,7 +330,8 @@ The most common scenarios for table primary key is IDENTITY and GUID.
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_041BD433.png "image")
 
 If the table has a IDENTITY primary key, SQL Server just ignores this field when inserting.
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Category category = new Category() // CategoryID is default(int)
@@ -376,7 +390,8 @@ There are several interesting things to notice:
 -   Similar with CategoryID, LINQ to SQL gets ProductID for product after INSERT executed;
 
 This feature of synchronizing value back to entity is very useful. It is specified in the \[Column\] attribute of property:
-```
+
+```csharp
 [Column(Storage = "_CategoryID", AutoSync = AutoSync.OnInsert, 
     DbType = "Int NOT NULL IDENTITY", IsPrimaryKey = true, IsDbGenerated = true)]
 public int CategoryID
@@ -406,7 +421,8 @@ And it can be changed in the O/R designer:
 ### UPDATE
 
 Updating is straight foreword:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Product product = database.Products.First();
@@ -431,7 +447,8 @@ COMMIT TRANSACTION
 ```
 
 Take a look at the following code:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Product product = database.Products.First();
@@ -461,7 +478,8 @@ COMMIT TRANSACTION
 Similar with INSERT, DELETE can be implemented by DataContext.DeleteOnsubmit() and DataContext.DeleteAllOnsubmit().
 
 Just like fore mentioned, since all data change are deferred and tracked, when submitting all these change, order of performing these changes need to be figured out. Again, foreign key is very important for this order.
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     database.Categories.DeleteAllOnSubmit(database.Categories.Where(
@@ -511,7 +529,8 @@ It is clear LINQ to SQL uses TRANSACTION to implement data changing. This is wil
 ## Read-only DataContext
 
 DataContext becomes read-only if tracking is disabled:
-```
+
+```csharp
 database.ObjectTrackingEnabled = false;
 ```
 
@@ -523,7 +542,8 @@ After this:
 -   Invoking SubmitChanges() throws an InvalidOperationException, because it becomes impossible.
 
 Internally, ObjectTrackingEnabled is checked at the beginning of SubmitChanges():
-```
+
+```csharp
 if (!this.ObjectTrackingEnabled)
 {
     throw new InvalidOperationException(

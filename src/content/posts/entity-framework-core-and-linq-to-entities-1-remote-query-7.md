@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (1) Remote Query"
 published: 2019-03-11
 description: "The previous chapters discussed LINQ to Objects, LINQ to XML (objects), and Parallel LINQ (to Objects). All of these LINQ technologies query local in-memory objects managed by .NET. This chapter discu"
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -30,7 +30,8 @@ EF Core APIs are under Microsoft.EntityFrameworkCore namespace, and EF APIs are 
 <table border="0" cellpadding="2" cellspacing="0" width="866"><tbody><tr><td valign="top" width="426">EF Core</td><td valign="top" width="438">EF</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.DbContext</td><td valign="top" width="438">System.Data.Entity.DbContext</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;</td><td valign="top" width="438">System.Data.Entity.DbSet&lt;TEntity&gt;</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.ModelBuilder</td><td valign="top" width="438">System.Data.Entity.DbModelBuilder</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade</td><td valign="top" width="438">System.Data.Entity.Database</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker</td><td valign="top" width="438">System.Data.Entity.Infrastructure.DbChangeTracker*</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry</td><td valign="top" width="438">System.Data.Entity.Infrastructure.DbEntityEntry*</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.ChangeTracking.PropertyEntry</td><td valign="top" width="438">System.Data.Entity.Infrastructure.DbPropertyEntry*</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction</td><td valign="top" width="438">System.Data.Entity.DbContextTransaction*</td></tr><tr><td valign="top" width="426">Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException</td><td valign="top" width="438">System.Data.Entity.Infrastructure.DbUpdateConcurrencyException</td></tr></tbody></table>
 
 This tutorial follows the EF Core API names, and assumes the following aliases are defined for EF types marked with \*:
-```
+
+```csharp
 #if EF
 using ModelBuilder = System.Data.Entity.DbModelBuilder;
 using DatabaseFacade = System.Data.Entity.Database;
@@ -88,7 +89,8 @@ Microsoft SQL database is available in the cloud, and on premise (Windows and Li
 4.  Use the tool to attach AdventureWorks\_Data.mdf and AdventureWorks\_Log.ldf to SQL Server.
 
 When the sample database is ready, save the database connection string. For .NET Core, the connection string can be saved for the application as a JSON file, for example, App.json:
-```
+
+```csharp
 {
   "ConnectionStrings": {
     "AdventureWorks": "Server=tcp:dixin.database.windows.net,1433;Initial Catalog=AdventureWorks;Persist Security Info=False;User ID=***;Password=***;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
@@ -108,7 +110,8 @@ For .NET Framework, the connection string can be saved in the application’s Ap
 ```
 
 Now the connection string can be read by C# code:
-```
+
+```csharp
 internal static class ConnectionStrings
 {
     internal static string AdventureWorks { get; } =
@@ -298,7 +301,8 @@ internal static partial class ExpressionTree
 Here @ is prepended to each parameter name, which is the SQL syntax.
 
 The following ExecuteScalar method is defined to execute the compiled SQL statement with SQL parameters and SQL database connection string provided, and return a single result value:
-```
+
+```csharp
 public static partial class BinaryArithmeticTranslator
 {
     internal static double ExecuteScalar(
@@ -375,7 +379,8 @@ public static partial class BinaryArithmeticTranslator
 ```
 
 As fore mentioned, .NET built-in Expression<TDelegate>.Compile method compiles expression tree to CIL, and emits a function to execute the CIL locally with current .NET application process. In contrast, here BinaryArithmeticTranslator.Sql compiles the arithmetic expression tree to SQL, and emits a function to execute the SQL in a specified remote SQL database:
-```
+
+```csharp
 internal static void ExecuteSql()
 {
     Expression<Func<double, double, double>> expression1 = (a, b) => a * a + b * b;

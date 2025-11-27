@@ -3,8 +3,8 @@ title: "Category Theory via C# (6) Monoidal Functor and Applicative Functor"
 published: 2024-12-25
 description: "Given monoidal categories (C, ⊗, IC) and (D, ⊛, ID), a strong lax monoidal functor is a functor F: C → D equipped with:"
 image: ""
-tags: ["C#", ".NET", "Functional Programming", "LINQ", "Category Theory", "LINQ via C#", "Applicative Functors", "Monadal Functors"]
-category: "C#"
+tags: [".NET", "Applicative Functors", "C#", "Category Theory", "Functional Programming", "LINQ", "LINQ via C#", "Monadal Functors"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -64,7 +64,8 @@ public interface IMonoidalFunctor<TMonoidalFunctor<>> : IFunctor<TMonoidalFuncto
 ### IEnumerable<> monoidal functor
 
 IEnumerable<> functor is a monoidal functor. Its Multiply method can be implemented as its extension method:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IMonoidalFunctor<IEnumerable<>>
 {
     // Multiply: IEnumerable<T1> x IEnumerable<T2> -> IEnumerable<T1 x T2>
@@ -91,7 +92,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IMonoidalFu
 ```
 
 Now extension method Multiply can be used as a infix operator. It can be verified that the above Multiply and Unit implementations preserve the monoid laws by working with associator, left unitor and right unitor of DotNet monoidal category:
-```
+
+```csharp
 // using static Dixin.Linq.CategoryTheory.DotNetCategory;
 internal static void MonoidalFunctorLaws()
 {
@@ -116,7 +118,8 @@ internal static void MonoidalFunctorLaws()
 ```
 
 How could these methods be useful? Remember functor’s Select method enables selector working with value(s) wrapped by functor:
-```
+
+```csharp
 internal static void Selector1Arity(IEnumerable<int> xs)
 {
     Func<int, bool> selector = x => x > 0;
@@ -126,7 +129,8 @@ internal static void Selector1Arity(IEnumerable<int> xs)
 ```
 
 So Select can be viewed as applying 1 arity selector (a TSource –> TResult function) with TFunctor<TSource>. For a N arity selector, to have it work with value(s) wrapped by functor, first curry it, so that it can be viewed as 1 arity function. In the following example, the (T1, T2, T3) –> TResult selector is curried to T1 –> (T2 –> T3 –> TResult) function, so that it can be viewed as only have 1 parameter, and can work with TFunctor<T1>:
-```
+
+```csharp
 internal static void SelectorNArity(IEnumerable<int> xs, IEnumerable<long> ys, IEnumerable<double> zs)
 {
     Func<int, long, double, bool> selector = (x, y, z) => x + y + z > 0;
@@ -139,7 +143,8 @@ internal static void SelectorNArity(IEnumerable<int> xs, IEnumerable<long> ys, I
 ```
 
 So partially applying the T1 –> (T2 –> T3 –> TResult) selector with TFunctor<T1> returns TFunctor<T2 –> T3 –> TResult>, where the T2 –> T3 –> TResult function is wrapped by the TFunctor<> functor. To further apply TFunctor<T2 –> T3 –> TResult> with TFunctor<T2>, Multiply can be called:
-```
+
+```csharp
 // Partially apply selector with ys.
     IEnumerable<(Func<long, Func<double, bool>>, long)> multiplyWithYs = applyWithXs.Multiply(ys);
     IEnumerable<Func<double, bool>> applyWithYs = multiplyWithYs.Select(product =>
@@ -151,7 +156,8 @@ So partially applying the T1 –> (T2 –> T3 –> TResult) selector with TFunct
 ```
 
 The result of Multiply is TFunctor<(T2 –> T3 –> TResult, T2)>, where each T2 –> T3 –> TResult function is paired with each T2 value, so that each function can be applied with each value, And TFunctor<(T2 –> T3 –> TResult, T2)> is mapped to TFunctor<(T3 –> TResult)>, which can be applied with TFunctor<T3> in the same way:
-```
+
+```csharp
 // Partially apply selector with zs.
     IEnumerable<(Func<double, bool>, double)> multiplyWithZs = applyWithYs.Multiply(zs);
     IEnumerable<bool> applyWithZs = multiplyWithZs.Select(product =>
@@ -164,7 +170,8 @@ The result of Multiply is TFunctor<(T2 –> T3 –> TResult, T2)>, where each T2
 ```
 
 So Multiply enables applying functor-wrapped functions (TFunctor<T –> TResult>) with functor-wrapped values (TFunctor<TSource>), which returns functor-wrapped results (TFunctor<TResult>). Generally, the Multiply and Select calls can be encapsulated as the following Apply method:
-```
+
+```csharp
 // Apply: (IEnumerable<TSource -> TResult>, IEnumerable<TSource>) -> IEnumerable<TResult>
 public static IEnumerable<TResult> Apply<TSource, TResult>(
     this IEnumerable<Func<TSource, TResult>> selectorWrapper, IEnumerable<TSource> source) =>
@@ -172,7 +179,8 @@ public static IEnumerable<TResult> Apply<TSource, TResult>(
 ```
 
 So that the above N arity selector application becomes:
-```
+
+```csharp
 internal static void Apply(IEnumerable<int> xs, IEnumerable<long> ys, IEnumerable<double> zs)
 {
     Func<int, long, double, bool> selector = (x, y, z) => x + y + z > 0;
@@ -218,7 +226,8 @@ And applicative functor must satisfy the applicative laws:
 ### IEnumerable<> applicative functor
 
 IEnumerable<> functor is a applicative functor. Again, these methods are implemented as extension methods. And for IEnumerable<>, the Wrap method is called Enumerable to be intuitive:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IApplicativeFunctor<IEnumerable<>>
 {
     // Apply: (IEnumerable<TSource -> TResult>, IEnumerable<TSource>) -> IEnumerable<TResult>
@@ -243,7 +252,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IApplicativ
 ```
 
 It can be verified that the above Apply and Wrap (Enumerable) implementations satisfy the applicative laws:
-```
+
+```csharp
 internal static void ApplicativeLaws()
 {
     IEnumerable<int> source = new int[] { 0, 1, 2, 3, 4 };
@@ -285,7 +295,8 @@ internal static void ApplicativeLaws()
 ## Monoidal functor vs. applicative functor
 
 The applicative functor definition is actually equivalent to above monoidal functor definition. First, applicative functor’s Apply and Wrap methods can be implemented by monoidal functor’s Multiply and Unit methods:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IApplicativeFunctor<IEnumerable<>>
 {
     // Apply: (IEnumerable<TSource -> TResult>, IEnumerable<TSource>) -> IEnumerable<TResult>
@@ -299,7 +310,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IApplicativ
 ```
 
 On the other hand, monoidal functor’s Multiply and Unit methods can be implemented by applicative functor’s Apply and Wrap methods:
-```
+
+```csharp
 public static partial class EnumerableExtensions // IEnumerable<T> : IMonoidalFunctor<IEnumerable<>>
 {
     // Multiply: IEnumerable<T1> x IEnumerable<T2> -> IEnumerable<T1 x T2>
@@ -314,7 +326,8 @@ public static partial class EnumerableExtensions // IEnumerable<T> : IMonoidalFu
 ```
 
 Generally, for any applicative functor, its (Apply, Wrap) method pair can implement the (Multiply, Unit) method pair required as monoidal functor, and vice versa. This can be virtually demonstrated as:
-```
+
+```csharp
 // Cannot be compiled.
 public static class MonoidalFunctorExtensions // (Multiply, Unit) implements (Apply, Wrap).
 {
@@ -349,7 +362,8 @@ public static class ApplicativeFunctorExtensions // (Apply, Wrap) implements (Mu
 ## More Monoidal functors and applicative functors
 
 The Lazy<>, Func<>, Func<T,> functors are also monoidal/applicative functors:
-```
+
+```csharp
 public static partial class LazyExtensions // Lazy<T> : IMonoidalFunctor<Lazy<>>
 {
     // Multiply: Lazy<T1> x Lazy<T2> -> Lazy<T1 x T2>
@@ -443,7 +457,8 @@ public static partial class OptionalExtensions // Optional<T> : IApplicativeFunc
 ```
 
 The ValueTuple<> and Task<> functors are monoidal/applicative functors too. Notice their Multiply/Apply methods cannot defer the execution, and Task<>’s Multiply/Apply methods are impure.
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T> : IMonoidalFunctor<ValueTuple<>>
 {
     // Multiply: ValueTuple<T1> x ValueTuple<T2> -> ValueTuple<T1 x T2>
@@ -490,7 +505,8 @@ public static partial class TaskExtensions // Task<T> : IApplicativeFunctor<Task
 ```
 
 It is easy to verify all the above (Multiply, Unit) method pairs preserve the monoid laws, and all the above (Apply, Wrap) method pairs satisfy the applicative laws. However, not any (Multiply, Unit) or any (Apply, Wrap) can automatically satisfy the laws. Take the ValueTuple<T,> functor as example:
-```
+
+```csharp
 public static partial class ValueTupleExtensions // ValueTuple<T1, T2 : IMonoidalFunctor<ValueTuple<T,>>
 {
     // Multiply: ValueTuple<T, T1> x ValueTuple<T, T2> -> ValueTuple<T, T1 x T2>
@@ -515,7 +531,8 @@ public static partial class ValueTupleExtensions // ValueTuple<T, TResult> : IAp
 ```
 
 The above (Multiply, Unit) implementations cannot preserve the left unit law:
-```
+
+```csharp
 internal static void MonoidalFunctorLaws()
 {
     (string, int) source = ("a", 1);
@@ -535,7 +552,8 @@ internal static void MonoidalFunctorLaws()
 ```
 
 And the above (Apply, Wrap) implementation breaks all applicative laws:
-```
+
+```csharp
 internal static void ApplicativeLaws()
 {
     (string, int) source = ("a", 1);

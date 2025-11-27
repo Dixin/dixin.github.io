@@ -3,7 +3,7 @@ title: "Understanding LINQ to SQL (1) Object-Relational Mapping"
 published: 2010-03-28
 description: "\\]"
 image: ""
-tags: [".NET", "C#", "LINQ", "LINQ to SQL", "SQL Server", "Visual Studio", "LINQ via C#"]
+tags: [".NET", "C#", "LINQ", "LINQ to SQL", "LINQ via C#", "SQL Server", "Visual Studio"]
 category: ".NET"
 draft: false
 lang: ""
@@ -16,7 +16,8 @@ According to [Wikipedia](http://en.wikipedia.org/wiki/Object-relational_mapping)
 > a [programming](http://en.wikipedia.org/wiki/Computer_programming) technique for converting data between incompatible [type systems](http://en.wikipedia.org/wiki/Type_system) in [relational databases](http://en.wikipedia.org/wiki/Relational_database) and [object-oriented](http://en.wikipedia.org/wiki/Object-oriented) programming languages.
 
 This is the LINQ to SQL sample code at the beginning of this series:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     var results = from product in database.Products
@@ -37,7 +38,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ```
 
 According to [this post](/posts/understanding-csharp-3-0-features-7-query-expression), the above query expression will be compiled to query methods:
-```
+
+```csharp
 var results = database.Products.Where(product => product.Category.CategoryName == "Beverages")
                                .Select(product => new
                                                       {
@@ -196,7 +198,8 @@ A Northwind.dbml.layout file is created along with the dbml. It is also an XML, 
 A Northwind.designer.cs is also created, containing the auto generated C# code.
 
 This is how the NorthwindDataContext looks like:
-```
+
+```csharp
 [Database(Name = "Northwind")]
 public partial class NorthwindDataContext : DataContext
 {
@@ -295,7 +298,8 @@ After renaming Category class to CategoryEntity, the XML and C# is refined autom
 ```
 
 and[](http://11011.net/software/vspaste)
-```
+
+```csharp
 [Database(Name = "Northwind")]
 public partial class NorthwindDataContext : DataContext
 {
@@ -345,7 +349,8 @@ All the generated C# classes are partial classes. For example, it is very easy t
 ### Partial method
 
 There are also a lot of partial method in the generated code:
-```
+
+```csharp
 [Database(Name = "Northwind")]
 public partial class NorthwindDataContext : DataContext
 {
@@ -364,7 +369,8 @@ public partial class NorthwindDataContext : DataContext
 ```
 
 For example, the OnCreated() can be implemented in the NorthwindDataContext,cs:
-```
+
+```csharp
 public partial class NorthwindDataContext
 {
     // OnCreated will be invoked by constructors.
@@ -379,7 +385,8 @@ public partial class NorthwindDataContext
 When the Northwind is constructed, the OnCreated() is invoked, and the custom code is executed.
 
 So are the entities:
-```
+
+```csharp
 [Table(Name = "dbo.Categories")]
 public partial class Category : INotifyPropertyChanging, INotifyPropertyChanged
 {
@@ -402,7 +409,8 @@ public partial class Category : INotifyPropertyChanging, INotifyPropertyChanged
 ```
 
 For example, the OnValidated() is very useful for the data correction:
-```
+
+```csharp
 [Table(Name = "dbo.Categories")]
 public partial class Category
 {
@@ -436,7 +444,8 @@ public partial class Category
 When the category object (representing a record in Categories table) is updated, the custom code checking the CategoryName will be executed.
 
 And, because each entity class’s Xxx property’s setter involves OnXxxChanging() partial method:
-```
+
+```csharp
 [Table(Name = "dbo.Categories")]
 public partial class CategoryEntity : INotifyPropertyChanging, INotifyPropertyChanged
 {
@@ -463,7 +472,8 @@ public partial class CategoryEntity : INotifyPropertyChanging, INotifyPropertyCh
 ```
 
 Validation can be also done in this way:
-```
+
+```csharp
 public partial class CategoryEntity
 {
     partial void OnCategoryNameChanging(string value)
@@ -514,7 +524,8 @@ public partial class CategoryEntity : INotifyPropertyChanging, INotifyPropertyCh
 ```
 
 This is very useful to track changes of the entity object:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Category category = database.Categories.Single(item => item.CategoryName = "Beverages");
@@ -534,7 +545,8 @@ And this is used for change tracking by DataContext, which will be explained lat
 ## Programmatically access the mapping information
 
 The mapping information is stored in DataContext.Mapping as a MetaModel object. Here is an example:
-```
+
+```csharp
 public static class DataContextExtensions
 {
     public static Type GetEntityType(this DataContext database, string tableName)
@@ -549,7 +561,8 @@ public static class DataContextExtensions
 ```
 
 The method queries the mapping information with the table name, and returns the entity type:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     Type categoryType = database.GetEntityType("dbo.Categories");
@@ -559,7 +572,8 @@ using (NorthwindDataContext database = new NorthwindDataContext())
 ## Create SQL schema from C# models
 
 Usually, many people design the SQL database first, then model it with the O/R designer, and write code to work with the C# object models. But this is not required. It is totally Ok to create [POCO](http://en.wikipedia.org/wiki/Plain_Old_CLR_Object) models first without considering the SQL stuff:
-```
+
+```csharp
 public partial class Category
 {
     public int CategoryID { get; set; }
@@ -626,7 +640,8 @@ public class SimpleNorthwindDataContext : DataContext
 ```
 
 Now it is ready to create database schema in SQL server:
-```
+
+```csharp
 using (SimpleNorthwindDataContext database = new SimpleNorthwindDataContext(new SqlConnection(
     @"Data Source=localhost;Initial Catalog=SimpleNorthwind;Integrated Security=True")))
 {

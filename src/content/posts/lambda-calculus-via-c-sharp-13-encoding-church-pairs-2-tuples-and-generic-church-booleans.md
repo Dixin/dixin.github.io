@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (13) Encoding Church Pairs (2-Tuples) and Generic
 published: 2018-11-13
 description: "is the Church encoding of the  type, aka 2-"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,12 +20,14 @@ lang: ""
 ## Church pair (2-tuple)
 
 A Church pair can be constructed with 2 values x y:
-```
+
+```csharp
 CreateTuple := λx.λy.λf.f x y
 ```
 
 And it return a tuple - another lambda expression (λf.f x y). So tuple is a higher order function that takes a function and apply it with x and y.
-```
+
+```csharp
 Tuple := λf.f x y
 ```
 
@@ -35,12 +37,14 @@ Notice:
 -   f is supposed to be in the format of λx.λy.E
 
 So, to get the first item x, a f like λx.λy.x can be applied to a tuple.
-```
+
+```csharp
 Item1 := λt.t (λx.λy.x)
 ```
 
 Item1 takes a tuple as parameter, applies it with a (λx.λy.x), and returns the first item x. This is how Item1 works:
-```
+
+```csharp
 Item1 (CreateTuple x y)
 ≡ Item1 (λf.f x y)
 ≡ (λt.t (λx.λy.x)) (λf.f x y)
@@ -51,12 +55,14 @@ Item1 (CreateTuple x y)
 ```
 
 So to get the second item y, a tuple can be applied with a f of λx.λy.y:
-```
+
+```csharp
 Item2 := λt.t (λx.λy.y)
 ```
 
 And just like Item1:
-```
+
+```csharp
 Item2 (CreateTuple x y)
 ≡ Item2 (λf.f x y)
 ≡ (λt.t (λx.λy.y)) (λf.f x y)
@@ -67,7 +73,8 @@ Item2 (CreateTuple x y)
 ```
 
 Based on above definitions, here is the C# implementation:
-```
+
+```csharp
 // Tuple = f => f(item1)(item1)
 public delegate object Tuple<out T1, out T2>(Func<T1, Func<T2, object>> f);
 // Tuple is an alias of Func<Func<T1, Func<T2, object>>, object>
@@ -96,19 +103,22 @@ Tuple’s Item1 is of type T1, Item2 is of type T2. And, f is λx.λy.E, so its 
 ## Generic Church Booleans
 
 If observing above definition:
-```
+
+```csharp
 Item1 := λt.t (λx.λy.x)
 Item2 := λt.t (λx.λy.y)
 ```
 
 In Item1 f is actually True, and in Item2 f becomes False. So above definition can be simplified to:
-```
+
+```csharp
 Item1 := λt.t True
 Item2 := λt.t False
 ```
 
 In C# more work need to be done for this substitution. As fore mentioned, f is Func<T1, Func<T2, object>> but currently implemented [Church Boolean](/posts/lambda-calculus-via-c-sharp-4-encoding-church-booleans) is Func<object, Func<object, object>>. So a more specific Church Boolean is needed.
-```
+
+```csharp
 // Curried from: object Boolean(TTrue @true, TFalse @TFalse)
 public delegate Func<TFalse, object> Boolean<in TTrue, in TFalse>(TTrue @true);
 // Boolean is alias of Func<TTrue, Func<TFalse, object>>
@@ -126,7 +136,8 @@ public static partial class ChurchBoolean
 ```
 
 With this generic version of Church Booleans, above Church tuple can be re-implemented:
-```
+
+```csharp
 public delegate object Tuple<out T1, out T2>(Boolean<T1, T2> f);
 
 public static partial class ChurchTuple
@@ -148,7 +159,8 @@ public static partial class ChurchTuple
 ### Back to Church Boolean - why not using generic Church Booleans from the beginning?
 
 If the [Boolean logic](/posts/lambda-calculus-via-c-sharp-5-boolean-logic) is implemented with this generic version of Church Booleans, then:
-```
+
+```csharp
 public static partial class ChurchBoolean
 {
     // And = a => b => a(b)(False)
@@ -178,35 +190,41 @@ The type parameter becomes too noisy. It is difficult to read or use these funct
 ## Currying and type inference
 
 The [part of currying](/posts/lambda-calculus-via-c-sharp-1-fundamentals-closure-currying-and-partial-application) mentioned currying may cause some noise for [type inference in C#](/posts/understanding-csharp-3-0-features-3-type-inference). Here is an example:
-```
+
+```csharp
 Swap = λt.CreateTuple (Item2 t) (Item1 t)
 ```
 
 C# logic is simple, but the type information has to be given so it is noisy:
-```
+
+```csharp
 // Swap = tuple => Create(tuple.Item2())(tuple.Item1())
 public static Tuple<T2, T1> Swap<T1, T2>
     (this Tuple<T1, T2> tuple) => Create<T2, T1>(tuple.Item2())(tuple.Item1());
 ```
 
 When invoking the curried Create function, the type arguments cannot be omitted. This is signature of Create:
-```
+
+```csharp
 Func<T2, Tuple<T1, T2>> Create<T1, T2>(T1 item1)
 ```
 
 After currying, T2’s appearances are all relocated to Create’s returned type. So during the 2 applications of Create(item1)(item2), C# compiler does not even know how to compile first application Create(item1). It cannot infer what return type is wanted. The application code will always end up as:
-```
+
+```csharp
 ChurchTuple.Create<int, string>(1)("a");
 ```
 
 So, only for convenience of C# coding and less noise for readability, this [uncurried](/posts/lambda-calculus-via-c-sharp-1-fundamentals-closure-currying-and-partial-application) helper method can be created:
-```
+
+```csharp
 public static Tuple<T1, T2> _Create<T1, T2>
     (T1 item1, T2 item2) => Create<T1, T2>(item1)(item2);
 ```
 
 Now T2 is relocated back to parameter, so type arguments are not mandatory:
-```
+
+```csharp
 ChurchTuple._Create(1, "a");
 ```
 

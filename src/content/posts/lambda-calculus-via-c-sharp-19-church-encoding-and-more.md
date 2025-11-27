@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (19) Church Encoding, And More"
 published: 2018-11-19
 description: "So far a ton has been encoded. Here is a summary."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,13 +18,15 @@ So far a ton has been encoded. Here is a summary.
 ## Summary of church encoding
 
 ### [Boolean](/posts/lambda-calculus-via-c-sharp-4-encoding-church-booleans)
-```
+
+```csharp
 True := λt.λf.t
 False := λt.λf.f
 ```
 
 ### [Boolean logic](/posts/lambda-calculus-via-c-sharp-5-boolean-logic)
-```
+
+```csharp
 And :=  λa.λb.a b False
 Or :=  λa.λb.a True b
 Not := λb.b False True
@@ -32,12 +34,14 @@ Xor := λa.λb.a (b False True) (b True False)
 ```
 
 ### [If logic](/posts/lambda-calculus-via-c-sharp-6-if-logic-and-reduction-strategies)
-```
+
+```csharp
 If := λc.λt.λf.c t f (λx.x)
 ```
 
 ### [Numeral](/posts/lambda-calculus-via-c-sharp-7-encoding-church-numerals)
-```
+
+```csharp
 0 := λfx.x                  ≡ λf.λx.x                   ≡ λf.λx.f0 x
 1 := λfx.f x                ≡ λf.λx.f x                 ≡ λf.λx.f1 x
 2 := λfx.f (f x)            ≡ λf.λx.(f ∘ f) x           ≡ λf.λx.f2 x
@@ -47,7 +51,8 @@ n := λfx.f (f ... (f x)...) ≡ λf.λx.(f ∘ f ∘ ... ∘ f) x ≡ λf.λx.f
 ```
 
 ### [Arithmetic](/posts/lambda-calculus-via-c-sharp-9-wrapping-church-numerals-and-arithmetic)
-```
+
+```csharp
 Increase := λn.λf.λx.f (n f x)
 Increase2 := λn.λf.f ∘ (n f)
 
@@ -69,23 +74,27 @@ Pow := λm.λ e.e (λx.Multiply m x) 1
 ```
 
 A better [DivideBy will be re-implemented after introducing Y combinator](/posts/lambda-calculus-via-c-sharp-23-y-combinator-and-divide):
-```
+
+```csharp
 DivideBy := Y (λf.λa.λb.If (IsGreaterOrEqual a b) (λx.Add One (f (Subtract a b) b)) (λx.Zero))
           ≡ (λf.(λx.f (x x)) (λx.f (x x))) (λf.λa.λb.If (IsGreaterOrEqual a b) (λx.Add One (f (Subtract a b) b)) (λx.Zero))
 ```
 
 So DivideByIgnoreZero can by redefined using DivideBy instead of \_DivideBy:
-```
+
+```csharp
 DivideByIgnoreZero = λa.λb.If (IsZero b) (λx.0) (λx.DivideBy a b)
 ```
 
 ### [Predicate](/posts/lambda-calculus-via-c-sharp-11-predicates-and-divide)
-```
+
+```csharp
 IsZero := λn.n (λx.False) True
 ```
 
 ### [Comparison](/posts/lambda-calculus-via-c-sharp-12-church-numeral-comparison-operators)
-```
+
+```csharp
 IsLessOrEqual := λa.λb.IsZero (Subtract a b)
 IsGreaterOrEqual := λa.λb.IsZero (Subtract b a)
 
@@ -97,7 +106,8 @@ IsNotEqual := λa.λb.Not (IsEqual a b)
 ```
 
 ### [Pair (2-tuple)](/posts/lambda-calculus-via-c-sharp-13-encoding-church-pairs-2-tuples-and-generic-church-booleans)
-```
+
+```csharp
 CreateTuple := λx.λy.λf.f x y
 Tuple := λf.f x y
 
@@ -111,7 +121,8 @@ Swap := λt.CreateTuple (Item2 t) (Item1 t)
 ### List
 
 ### [1 pair for each node, and null](/posts/lambda-calculus-via-c-sharp-15-encoding-church-list-with-church-pair-and-null)
-```
+
+```csharp
 CreateListNode := CreateTuple ≡ λv.λn.λf.f v n
 
 Value := Item1 ≡ λl.l (λv.λn.v)
@@ -124,7 +135,8 @@ Index := λl.λi.i Next l
 ```
 
 ### [2 pairs for each node, and null](/posts/lambda-calculus-via-c-sharp-16-encoding-church-list-with-2-church-pairs-as-a-node)
-```
+
+```csharp
 CreateListNode2 := λv.λn.CreateTuple False (CreateTuple v n)
 
 Value2 := λl.Item1 (Item2 l)
@@ -137,7 +149,8 @@ Index2 := λl.λi.i Next2 l
 ```
 
 ### [Fold (aggregate) function for each node, and null](/posts/lambda-calculus-via-c-sharp-17-encoding-church-list-with-fold-aggregate-function)
-```
+
+```csharp
 CreateListNode3 := λv.λn.λf.λx.f v (n f x)
 
 Value3 := λl.λx.l (λv.λy.v) x
@@ -150,7 +163,8 @@ Index3 := λl.λi.i Next3 l
 ```
 
 ### [Signed number](/posts/lambda-calculus-via-c-sharp-18-encoding-signed-number)
-```
+
+```csharp
 Signed := Tuple
 ToSigned := λn.CreateTuple n 0
 Negate := Swap
@@ -162,7 +176,8 @@ FormatWithZero := λs.If (IsEqual sp  sn) (λx.ToSigned 0) (λx.If (IsGreater sp
 ```
 
 ### Arithmetic
-```
+
+```csharp
 AddSigned := λa.λb.FormatWithZero (CreateTuple (Add ap bp) (Add an bn))
 
 SubtractSigned := λa.λb.FormatWithZero (CreateTuple (Add ap bn) (Add an bp))

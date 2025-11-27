@@ -3,8 +3,8 @@ title: "Query Operating System Processes in C#"
 published: 2016-04-02
 description: ".NET framework provides some process APIs in  class. Only some basic information of process can be"
 image: ""
-tags: ["Windows", "WMI", "Process", "C#"]
-category: "Windows"
+tags: ["C#", "Process", "Windows", "WMI"]
+category: "C#"
 draft: false
 lang: ""
 ---
@@ -12,7 +12,8 @@ lang: ""
 .NET framework provides some process APIs in [System.Diagnostics.Process](https://msdn.microsoft.com/en-us/library/system.diagnostics.process.aspx) class. Only some basic information of process can be queried with these APIs. .NET does not have APIS for other information, for example, a process’s parent process/child processes. There are some options to query process informations, like performance counter, P/Invoke, etc. Querying [Win32\_Process](// https://msdn.microsoft.com/en-us/library/windows/desktop/aa394372.aspx) class of [WMI](https://en.wikipedia.org/wiki/Windows_Management_Instrumentation) could be an easier way.
 
 The definition of Win32\_Process class can be translated to C# class:
-```
+
+```csharp
 public partial class Win32Process
 {
     public const string WmiClassName = "Win32_Process";
@@ -20,7 +21,8 @@ public partial class Win32Process
 ```
 
 And these are all the properties:
-```
+
+```csharp
 [DebuggerDisplay("Name = {Name}; Id = {ProcessId}")]
 public partial class Win32Process
 {
@@ -121,7 +123,8 @@ This is much more information then .NET built-in Process class. It is tagged wit
 [![image](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Query-Operating-System-Processes-in-C_9DCE/image_thumb.png "image")](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/Query-Operating-System-Processes-in-C_9DCE/image_2.png)
 
 To query Win32\_Process class from WMI, the following Wmi.Query method can be defined:
-```
+
+```csharp
 public static class Wmi
 {
     public static ManagementObject[] Query(ObjectQuery objectQuery, ManagementScope managementScope = null)
@@ -145,7 +148,8 @@ public static class Wmi
 2 overloads are provided for Query method, one general version accepts a WMI ObjectQuery, the other accepts a string query. The string version will be used in the example in this post. The ManagementScope parameter will be useful, for example, when querying another computer. By default it is null, and the query will work in local machine.
 
 The Query method returns general ManagementObject, which can be converted to a Win32Process object:
-```
+
+```csharp
 public partial class Win32Process
 {
     public Win32Process(ManagementObject process)
@@ -237,7 +241,8 @@ public static partial class ProcessHelper
 The All method queries all processes in the specified ManagementScope. ById/ByName queries by process id/name.
 
 Besides querying rich information of processes, with these methods it is easy to traverse the process tree. The following ParentProcess method queries the direct parent process, if there is one. And the AllParentProcesses method queries all the parent processes in the tree:
-```
+
+```csharp
 public static partial class ProcessHelper
 {
     public static Win32Process ParentProcess(uint childProcessId, ManagementScope managementScope = null)

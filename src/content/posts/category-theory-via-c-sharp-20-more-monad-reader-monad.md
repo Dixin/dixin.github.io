@@ -3,8 +3,8 @@ title: "Category Theory via C# (20) More Monad: Reader< , > Monad"
 published: 2018-12-21
 description: "Sometimes there are functions work with a shared environment. Typical examples are:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -26,13 +26,15 @@ Sometimes there are functions work with a shared environment. Typical examples a
 The Reader< , > monad is a specialized State< , > monad. It threads an environment parameter through a sequence of functions.
 
 The definition is simple:
-```
+
+```csharp
 // Reader<TEnvironment, T> is alias of Func<TEnvironment, T>
 public delegate T Reader<in TEnvironment, out T>(TEnvironment environment);
 ```
 
 It is nothing but a Func< , >. This is its SelectMany:
-```
+
+```csharp
 [Pure]
 public static partial class ReaderExtensions
 {
@@ -56,7 +58,8 @@ public static partial class ReaderExtensions
 ```
 
 so that:
-```
+
+```csharp
 // [Pure]
 public static partial class ReaderExtensions
 {
@@ -87,7 +90,8 @@ public static partial class ReaderExtensions
 ```
 
 Here is an example of the usage in a .NET application:
-```
+
+```csharp
 Reader<Settings, string> query =
     // 1. Use settings.
     from html in new Reader<Settings, string>(settings => DownloadString(settings.BlogUrl))
@@ -102,7 +106,8 @@ string result = query(Settings.Default);
 ```
 
 ## Monad laws, and unit tests
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]

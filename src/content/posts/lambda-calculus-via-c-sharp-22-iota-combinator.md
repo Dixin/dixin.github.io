@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (22) Iota Combinator and Jot Combinators"
 published: 2018-11-22
 description: "is an  with minimum elements but still [Turing-complete](ht"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Language with 1 element
 
 [Iota](http://en.wikipedia.org/wiki/Iota_and_Jot) is an [esoteric programming language](http://en.wikipedia.org/wiki/Esoteric_programming_language) with minimum elements but still [Turing-complete](http://en.wikipedia.org/wiki/Turing-complete). Iota's universal combinator is:
-```
+
+```csharp
 ι := λf.f S K ≡ λf.f (λx.λy.λz.x z (y z)) (λx.λy.x)
 ```
 
@@ -27,14 +28,16 @@ That’s [the whole language](https://web.archive.org/web/20150121065142/http://
 ## Completeness
 
 In Iota, [SKI](/posts/lambda-calculus-via-c-sharp-21-ski-combinator-calculus) can be implemented as:
-```
+
+```csharp
 S := ι (ι (ι (ι ι)))
 K := ι (ι (ι ι))
 ι := ι ι
 ```
 
 For example:
-```
+
+```csharp
 ι ι x
 ≡ (λf.f S K) (λf.f S K) x
 ≡ (λf.f S K) S K x
@@ -48,7 +51,8 @@ For example:
 So Iota is also Turing-complete as SKI.
 
 In C#:
-```
+
+```csharp
 public static class IotaCombinator
 {
     public static Func<dynamic, dynamic>

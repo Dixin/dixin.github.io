@@ -3,8 +3,8 @@ title: "C# functional programming in-depth (3) Local Function and Closure"
 published: 2018-06-03
 description: "C# 7.0 introduces local function, which allows defining and calling a named, inline function inside a function member’s body. Unlike a local variable, which has to be used after being defined, a local"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Local function
 
 C# 7.0 introduces local function, which allows defining and calling a named, inline function inside a function member’s body. Unlike a local variable, which has to be used after being defined, a local function can be called before or after it is defined:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static void MethodWithLocalFunction()
@@ -47,7 +48,8 @@ internal static partial class Functions
 ```
 
 Besides function members, local function can also have local function:
-```
+
+```csharp
 internal static void FunctionMember()
 {
     void LocalFunction()
@@ -58,7 +60,8 @@ internal static void FunctionMember()
 ```
 
 Unlike other named methods, local function does not support ad hoc polymorphism (overload). The following code cannot be compiled:
-```
+
+```csharp
 // Cannot be compiled.
 internal static void LocalFunctionOverload()
 {
@@ -88,7 +91,8 @@ private static int BinarySearch<T>(IList<T> source, T value, IComparer<T> compar
 ```
 
 The helper function is only used by this binary search function, so it can be defined locally:
-```
+
+```csharp
 internal static int BinarySearchWithLocalFunction<T>(this IList<T> source, T value, IComparer<T> comparer = null)
 {
     int BinarySearch(
@@ -111,7 +115,8 @@ Local function is just a syntactic sugar. The above code is compiled to the prev
 ## Closure
 
 In object-oriented programming, it is [perfectly nature normal thing](http://www.bbc.co.uk/films/2003/08/08/american_pie_the_wedding_2003_review.shtml) for a method to access data inside or outside its body:
-```
+
+```csharp
 internal class Display
 {
     int outer = 1; // Outside the scope of method Add.
@@ -127,7 +132,8 @@ internal class Display
 Here in Display type, a field is defined outside the scope of the method, so that it can be viewed as an outer variable accessed by the method, in contrast of the local variable defined inside method scope. Outer variable is also called [non-local variable](https://en.wikipedia.org/wiki/Non-local_variable) or [captured variable](https://msdn.microsoft.com/en-us/library/0yw3tz5k.aspx).
 
 Local function supports accessing outer variable too:
-```
+
+```csharp
 internal static void LocalFunctionClosure()
 {
     int outer = 1; // Outside the scope of function Add.
@@ -173,7 +179,8 @@ C# compiler generates:
 So C# compiler implements closure, a functional feature, by generating object-oriented code.
 
 With closure, the above binary search’s local function can be simplified as:
-```
+
+```csharp
 internal static int BinarySearchWithClosure<T>(this IList<T> source, T value, IComparer<T> comparer = null)
 {
     int BinarySearch(int startIndex, int endIndex)
@@ -232,7 +239,8 @@ internal static int CompiledBinarySearchWithClosure<T>(IList<T> source, T value,
 ### Outer variable
 
 Apparently, outer variable can change, when this happens, the accessing local functions can be impacted. In the previous example, if the outer variable changes, the sum of outer variable and local variable is apparently different:
-```
+
+```csharp
 internal static void Outer()
 {
     int outer = 1; // Outside the scope of function Add.
@@ -248,7 +256,8 @@ internal static void Outer()
 ```
 
 Sometimes, this can be source of problems:
-```
+
+```csharp
 internal static void OuterReference()
 {
     List<Action> localFunctions = new List<Action>();
@@ -270,7 +279,8 @@ internal static void OuterReference()
 In this case, the for loop has 3 iterations. In the first iteration, outer is 0, a local function is defined to write this value, and stored in a function list. In the second iteration, outer is 1, a local function is repeatedly defined to write that value and stored, and so on. Later, when calling these 3 functions, they do not output 0, 1, 2, but 3, 3, 3, because the 3 iterations of for loop share the same outer variable, when the for loop is done, the value of outer becomes 3. Calling these 3 functions outputs the latest value of outer for 3 times, so it is 3, 3, 3.
 
 This can be resolved by taking a snapshot of shared outer variable’s current value, and store it in another variable that does not change:
-```
+
+```csharp
 internal static void CopyOuterReference()
 {
     List<Action> localFunctions = new List<Action>();
@@ -326,7 +336,8 @@ As expected, copyOfOuter variable becomes the field of display structure. And th
 ### Implicit reference
 
 C# closure is a powerful syntactic sugar to enable local function to directly access outer variable. However, it comes with a price. Closure can also be performance pitfall, because a hidden reference is persisted by the generated display structure’s field. As a result, closure extends the outer variable’s lifetime to the display structure’ lifetime, but the display structure is invisible at design time, so its life time is not intuitive. In the last example, copyOfOuter is a temporary variable inside the for loop block, but its value is persisted after for loop finishes executing all iterations. After 3 iterations, in total there are 3 copyOfOuter values still persisted as field by 3 structure instances. The following is another example of implicit reference:
-```
+
+```csharp
 internal static partial class Functions
 {
 

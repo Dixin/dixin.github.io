@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (10) Church Numeral Arithmetic Operators"
 published: 2018-11-10
 description: "Another benefits of introducing (cheating with)  into lambda calculus is - it provides a place to define"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Operators
 
 Another benefits of introducing (cheating with) [\_Numeral class](/posts/lambda-calculus-via-c-sharp-9-wrapping-church-numerals-and-arithmetic) into lambda calculus is - it provides a place to define custom operators.
-```
+
+```csharp
 public partial class _Numeral
 {
     public static _Numeral operator +
@@ -48,7 +49,8 @@ Now Church numerals and arithmetic operations are all implemented in C#. Now it�
 ## Conversion between Church numeral (now \_Numeral) and System.UInt32
 
 Similar to Church Boolean <-> System.Boolean, some conversion helper methods can be created between \_Numeral and [System.UInt32](https://msdn.microsoft.com/en-us/library/system.uint32.aspx):
-```
+
+```csharp
 public static partial class ChurchEncoding
 {
     public static _Numeral _Church
@@ -64,7 +66,8 @@ Once again, these 2 methods are tagged with underscore because unit is C# specif
 In \_Unchurch, a Church numeral (now a \_Numeral) n is converted to natural number by “applying add 1” n times on 0.
 
 Similarly to \_Unchurch, \_Numeral can be converted to string too:
-```
+
+```csharp
 public static partial class ChurchEncoding
 {
     public static string _Visualize(this _Numeral numeral)
@@ -79,7 +82,8 @@ public static partial class ChurchEncoding
 ## Compare \_Numeral and System.UInt32
 
 Similar to above operators, == and != can be defined between Church numeral and System.UInt32:
-```
+
+```csharp
 public partial class _Numeral
 {
     public static bool operator ==
@@ -101,7 +105,8 @@ bool and uint - these are totally C# specific, and will be only used for unit te
 ## Unit tests
 
 The last function needed is a Pow function for uint, because .NET only has a [Math.Pow](https://msdn.microsoft.com/en-us/library/system.math.pow.aspx) function for double.
-```
+
+```csharp
 public static class UInt32Extensions
 {
     public static uint Pow(this uint mantissa, uint exponent)

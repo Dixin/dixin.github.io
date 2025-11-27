@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (1) Fundamentals"
 published: 2024-11-01
 description: "Lambda calculus (aka λ-calculus) is a theoretical framework to describe function definition, function application, function recursion, and uses functions and function application to express computatio"
 image: ""
-tags: ["LINQ via C#", "C#", ".NET", "Lambda Calculus", "Functional Programming"]
-category: "LINQ via C#"
+tags: [".NET", "C#", "Functional Programming", "Lambda Calculus", "LINQ via C#"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -43,7 +43,8 @@ In function, its body expression can use variables. There are 2 kinds of variabl
 For example, for function λx.f x, its body expression f x has bound variable x, and free variable f. This can be viewed as x => f(x) in C# syntax, in the body x is parameter and f is closure.
 
 A variable is bound by its "nearest" function. For example, in λx.g x (λx.h x), the first occurrence of x in the body expression is bound by the outer function, and the second occurrence of x is bound by the inner function. In C#, x => g(x)(x => h(x)) cannot be compiled for this reason - the outer function parameter has the same name as the inner function parameter, which is disallowed by C# compiler:
-```
+
+```csharp
 internal static class Expression
 {
     internal static Func<T, T> Variable<T>(Func<T, Func<Func<T, T>, T>> g, Func<T, T> h) => 
@@ -62,7 +63,8 @@ In lambda calculus, there are 3 substitution rules for expression to be [reduced
 In lambda calculus, lambda expression’s bound variables can be substituted with different name. This is called [alpha-conversion, or alpha-renaming](http://en.wikipedia.org/wiki/Lambda_calculus#.CE.B1-conversion). In C#, this can be viewed as function parameter can be renamed, for example, x => f(x) is equivalent to y => f(y).
 
 In the above example of λx.g x (λx.h x), the inner function λx.h x has variable x, which can be substituted with a different name y, along with its appearance in the body h x. Then the inner function becomes λy.h y, so the outer function becomes λx.g x (λy.h y). Now it becomes intuitive how x and y are bound by the “nearest” function. In C#, x => g(x)(y => h(y)) can be compiled:
-```
+
+```csharp
 internal static Func<T, T> Variable<T>(Func<T, Func<Func<T, T>, T>> g, Func<T, T> h) => 
     x => g(x)(y => h(y));
 ```
@@ -74,7 +76,8 @@ internal static Func<T, T> Variable<T>(Func<T, Func<Func<T, T>, T>> g, Func<T, T
 ### η-conversion
 
 [Eta-conversion](http://en.wikipedia.org/wiki/Lambda_calculus#.CE.B7-conversion) means 2 functions are the same [if and only if](http://en.wikipedia.org/wiki/If_and_only_if) they always give the same result for the same argument. For example λx.f x can be substituted with f, if x does not appear free in f. In C#, this can be viewed as that function x => f(x) is equivalent to function f. For example:
-```
+
+```csharp
 internal static void LinqQuery()
 {
     Func<int, bool> isEven = value => value % 2 == 0;
@@ -83,7 +86,8 @@ internal static void LinqQuery()
 ```
 
 Here function value => isEven(value) and function isEven always have the same result for the same argument, so value=> isEven(value) can be substituted with isEven. Similarly value => Console.WriteLine(value) can be substituted by Console.WriteLine. The above LINQ query is equivalent to:
-```
+
+```csharp
 internal static void EtaConvertion()
 {
     Func<int, bool> isEven = value => value % 2 == 0;
@@ -96,7 +100,8 @@ internal static void EtaConvertion()
 ### Normal order
 
 The above reduction rules can be applied to expression with different order. With normal order, the leftmost, outermost expression is reduced first. For function application expression, this means the function is beta reduced first, then the arguments are reduced, for example:
-```
+
+```csharp
 (λx.λy.y) ((λa.λb.a) (λv.v))
 ≡ λy.λy
 ```
@@ -108,7 +113,8 @@ Here λy.y cannot be further reduced. An expression that cannot be reduced any f
 ### Applicative order
 
 With applicative order, the rightmost, innermost expression is reduced first. For function application expression, this means the arguments are reduced first, then the function is beta reduced. Take the above expression as example again:
-```
+
+```csharp
 (λx.λy.y) ((λa.λb.a) (λv.v))
 ≡ (λx.λy.y) (λb.λv.v)
 ≡ λy.λy
@@ -121,12 +127,14 @@ In lambda calculus, reducing expression in any order produces the same result, w
 ## Function composition
 
 In lambda calculus [function composition](http://en.wikipedia.org/wiki/Function_composition_\(computer_science\)) means to combine simple functions into a more complicated function, which can be viewed the same as fore mentioned C# function composition. The composition of f1 and f2 is denoted f2 ∘ f1. This new function (f2 ∘ f1)’s application is defined as:
-```
+
+```csharp
 (f2 ∘ f1) x := f2 (f1 x)
 ```
 
 Here the function names f1 and f2 indicate the order of being applied. f2 ∘ f1 can also be read as f2 after f1. in C#, this can be viewed as the forward composition discussed before:
-```
+
+```csharp
 public static partial class FuncExtensions
 {
     public static Func<T, TResult2> After<T, TResult1, TResult2>(
@@ -136,14 +144,16 @@ public static partial class FuncExtensions
 ```
 
 As fore mentioned, some other functional languages have built in composition operator for functions, like >> in F#, . in Haskell, etc. C# does not support defining custom operators for functions. As a workaround, an extension method o can be defined to represent this ∘ operator:
-```
+
+```csharp
 public static Func<T, TResult2> o<T, TResult1, TResult2>(
     this Func<TResult1, TResult2> function2, Func<T, TResult1> function1) =>
         value => function2(function1(value));
 ```
 
 So that f3 ∘ f2 ∘ f1 becomes f3.o(f2).o(f1) in C#, which is more intuitive, for example:
-```
+
+```csharp
 internal static void Compose()
 {
     Func<double, double> sqrt = Math.Sqrt;
@@ -159,21 +169,24 @@ internal static void Compose()
 Function composition is [associative](http://en.wikipedia.org/wiki/Associative). That means (f3 ∘ f2) ∘ f1 and f3 ∘ (f2 ∘ f1) are equivalent.
 
 When applying x to (f3 ∘ f2) ∘ f1, according to the definition of ∘:
-```
+
+```csharp
 ((f3 ∘ f2) ∘ f1) x
 ≡ (f3 ∘ f2) (f1 x)
 ≡ f3 (f2 (f1 x))
 ```
 
 And when applying x to f3 ∘ (f2 ∘ f1):
-```
+
+```csharp
 f3 ∘ (f2 ∘ f1) x
 ≡ f3 ∘ (f2 (f1 x))
 ≡ f3 (f2 (f1 x))
 ```
 
 In C#, this means f3.o(f2).o(f1) and f3.o(f2.o(f1)) are equivalent:’
-```
+
+```csharp
 internal static void Associativity()
 {
     Func<double, double> sqrt = Math.Sqrt;
@@ -190,18 +203,21 @@ internal static void Associativity()
 ### Unit
 
 There is a unit function Id for function composition:
-```
+
+```csharp
 Id := λx.x
 ```
 
 so that f ∘ Id and Id ∘ f are both equivalent to f:
-```
+
+```csharp
 f ∘ Id = f
 Id ∘ f = f
 ```
 
 According to the definition of ∘ and Id:
-```
+
+```csharp
 (f ∘ Id) x
 ≡ f (Id x)
 ≡ f x
@@ -212,7 +228,8 @@ According to the definition of ∘ and Id:
 ```
 
 In C#, Id can be defined as:
-```
+
+```csharp
 // Unit<T> is the alias of Func<T, T>.
 public delegate T Unit<T>(T value);
 

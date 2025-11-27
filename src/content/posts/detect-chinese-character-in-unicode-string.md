@@ -3,8 +3,8 @@ title: "Detect Chinese Character in Unicode String"
 published: 2016-01-10
 description: "Recently, when trying to convert some directory/file names between Chinese and English, it is necessary to detect if a Unicode string contains Chinese characters. Unfortunately, Chinese language detec"
 image: ""
-tags: ["Unicode", "C#"]
-category: "Unicode"
+tags: ["C#", "Unicode"]
+category: "C#"
 draft: false
 lang: ""
 ---
@@ -33,19 +33,22 @@ And there are 2 APIs accepting a char and returning the char’s UnicodeCategory
 -   CharUnicodeInfo.GetUnicodeCategory
 
 So, generally, the following extension method detects if a string contains char in the specified UnicodeCategory:
-```
+
+```csharp
 public static bool Any(this string value, UnicodeCategory category) =>
     !string.IsNullOrWhiteSpace(value)
     && value.Any(@char => char.GetUnicodeCategory(@char) == category);
 ```
 
 Chinese characters are categorized into OtherLetter, so the Chinese detection problem can becomes OtherLetter detection.
-```
+
+```csharp
 public static bool HasOtherLetter(this string value) => value.Any(UnicodeCategory.OtherLetter);
 ```
 
 The detection is easy:
-```
+
+```csharp
 bool hasOtherLetter = text.HasOtherLetter();
 ```
 

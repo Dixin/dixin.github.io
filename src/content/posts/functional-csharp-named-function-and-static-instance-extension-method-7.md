@@ -3,8 +3,8 @@ title: "C# functional programming in-depth (2) Named function and function polym
 published: 2018-06-02
 description: "In C#, the most intuitive functions are method members of class and structure, including static method, instance method, and extension method, etc. These methods have names at design and are called by"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -66,7 +66,8 @@ Here System.Reflection.MethodBase’s static GetCurrentMethod method returns a S
 ## Static method and instance method
 
 Still take above Data type as example. instance method and static method and be defined in the type:
-```
+
+```csharp
 internal partial class Data
 {
     internal int InstanceAdd(int value1, int value2)
@@ -82,7 +83,8 @@ internal partial class Data
 ```
 
 These 2 method both add a Data instance’s value field with other integers. The difference is, the static method cannot use this keyword to access the Data instance, so a Data instance is passed to the static method as the first parameter. These 2 methods are compiled to different signature, but identical CIL in their bodies:
-```
+
+```csharp
 .method assembly hidebysig instance int32 InstanceAdd (
     int32 value1,
     int32 value2) cil managed 
@@ -124,7 +126,8 @@ These 2 method both add a Data instance’s value field with other integers. The
 ```
 
 So internally, instance method works similarly to static method. The different is, in an instance method, the current instance, which can be referred by this keyword, becomes the first actual argument, the first declared argument from the method signature becomes the second actual argument, the second declared argument becomes the third actual argument, and so on. The similarity of above instance and static methods can be viewed as:
-```
+
+```csharp
 internal int CompiledInstanceAdd(int value1, int value2)
 {
     Data arg0 = this;
@@ -145,7 +148,8 @@ internal static int CompiledStaticAdd(Data @this, int value1, int value2)
 ## Extension method
 
 C# 3.0 introduces extension method syntactic sugar. An extension method is a static method defined in a static non-generic class, with this keyword proceeding the first parameter:
-```
+
+```csharp
 internal static partial class DataExtensions
 {
     internal static int ExtensionAdd(this Data @this, int value1, int value2)
@@ -156,7 +160,8 @@ internal static partial class DataExtensions
 ```
 
 The above method is called an extension method for Data type. It can be called like an instance method of Data type:
-```
+
+```csharp
 internal static void CallExtensionMethod(Data data)
 {
     int result = data.ExtensionAdd(1, 2L);
@@ -164,7 +169,8 @@ internal static void CallExtensionMethod(Data data)
 ```
 
 So extension method’s first declared argument becomes the current instance, the second declared argument becomes the first calling argument, the third declared argument becomes the second calling argument, and so on. This syntax design is easy to understand based on the nature of instance and static methods. Actually, the extension method definition is compiled to a normal static method with System.Runtime.CompilerServices.ExtensionAttribute:
-```
+
+```csharp
 internal static partial class DataExtensions
 {
     [Extension]
@@ -176,7 +182,8 @@ internal static partial class DataExtensions
 ```
 
 And the extension method call is compiled to normal static method call:
-```
+
+```csharp
 internal static void CompiledCallExtensionMethod(Data data)
 {
     int result = DataExtensions.ExtensionAdd(data, 1, 2L);
@@ -184,7 +191,8 @@ internal static void CompiledCallExtensionMethod(Data data)
 ```
 
 If a real instance method and an extension name are both defined for the same type with equivalent signature:
-```
+
+```csharp
 internal partial class Data : IEquatable<Data>
 {
     public override bool Equals(object obj)
@@ -208,7 +216,8 @@ internal static partial class DataExtensions
 ```
 
 The instance style method call is compiled to instance method call; In order to call the extension method, use the static method call syntax:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static void CallMethods(Data data1, Data data2)
@@ -228,7 +237,8 @@ When compiling instance style method call, C# compiler looks up methods in the f
 -   extension method defined in the other namespaces imported by using directives
 
 Extension method can be viewed as if instance method “added” to the specified type. For example, as fore mentioned, enumeration types cannot have methods. However, extension method can be defined for enumeration type:
-```
+
+```csharp
 internal static class DayOfWeekExtensions
 {
     internal static bool IsWeekend(this DayOfWeek dayOfWeek)
@@ -239,7 +249,8 @@ internal static class DayOfWeekExtensions
 ```
 
 Now the above extension method can be called as if it is the enumeration type’s instance method:
-```
+
+```csharp
 internal static void CallEnumerationExtensionMethod(DayOfWeek dayOfWeek)
 {
     bool result = dayOfWeek.IsWeekend();
@@ -268,7 +279,8 @@ namespace System.Linq
 These methods’ usage and implementation will be discussed in detail in the LINQ to Objects chapter.
 
 This tutorial uses the following extension methods to simplify the tracing of single value and values in sequence:
-```
+
+```csharp
 public static class TraceExtensions
 {
     public static T WriteLine<T>(this T value)
@@ -306,7 +318,8 @@ public static class TraceExtensions
 ```
 
 The WriteLine and Write extension methods are available for any value, and WriteLines is available for any IEnumerable<T> sequence:
-```
+
+```csharp
 internal static void TraceValueAndSequence(Uri value, IEnumerable<Uri> values)
 {
     value.WriteLine();
@@ -324,7 +337,8 @@ internal static void TraceValueAndSequence(Uri value, IEnumerable<Uri> values)
 ## More named functions
 
 C# supports operator overload and type conversion operator are defined, they are compiled to static methods. For example:
-```
+
+```csharp
 internal partial class Data
 {
     public static Data operator +(Data data1, Data data2)
@@ -358,7 +372,8 @@ internal partial class Data
 ```
 
 The + operator overload is compiled to static method with name op\_Addition, the explicit/implicit type conversions are compiled to static methods op\_Explicit/op\_Implicit method. These operators’ usage are compiled to static method calls:
-```
+
+```csharp
 internal static void Operators(Data data1, Data data2)
 {
     Data result = data1 + data2; // Compiled to: Data.op_Addition(data1, data2)
@@ -394,7 +409,8 @@ internal partial class Device
 ```
 
 The property getter and setter calls are compiled to method calls:
-```
+
+```csharp
 internal static void Property(Device device)
 {
     string description = device.Description; // Compiled to: device.get_Description()
@@ -437,7 +453,8 @@ internal static void Indexer(Category category)
 ```
 
 As fore mentioned, a event has an add accessor and a remove accessor, which are either custom defined, or generated by compiler. They are compiled to named methods as well:
-```
+
+```csharp
 internal partial class Data
 {
     internal event EventHandler Saved
@@ -455,7 +472,8 @@ internal partial class Data
 ```
 
 Event is a function group. The +=/-= operators adds remove event handler function to the event, and –= operator removes event handler function from the event. They are compiled to the calls to above named methods:
-```
+
+```csharp
 internal static void DataSaved(object sender, EventArgs args) { }
 
 internal static void EventAccessor(Data data)
@@ -510,7 +528,8 @@ namespace System.Diagnostics
 ```
 
 Apparently, the WriteLine overload for string writes the string message. If this is the only method provided, then all the non-string values have to be manually converted to string representation:
-```
+
+```csharp
 internal partial class Functions
 {
     internal static void TraceString(Uri uri, FileInfo file, int int32)
@@ -523,7 +542,8 @@ internal partial class Functions
 ```
 
 The WriteLine overload for object provides convenience for values of arbitrary types. The above code can be simplified to:
-```
+
+```csharp
 internal static void TraceObject(Uri uri, FileInfo file, int int32)
 {
     Trace.WriteLine(uri);
@@ -599,7 +619,8 @@ namespace System.Data
 ```
 
 C# does not allow method overload with only different return type. The following example cannot be compiled:
-```
+
+```csharp
 internal static string FromInt64(long value)
 {
     return value.ToString();
@@ -616,7 +637,8 @@ There is a exception for this. In the above example, 2 explicit type conversion 
 ### Parametric polymorphism: generic method
 
 Besides ad hoc polymorphism, C# also supports parametric polymorphism for methods since 2.0. The following is a normal method that swaps 2 int values:
-```
+
+```csharp
 internal static void SwapInt32(ref int value1, ref int value2)
 {
     (value1, value2) = (value2, value1);
@@ -624,7 +646,8 @@ internal static void SwapInt32(ref int value1, ref int value2)
 ```
 
 The above syntax is called tuple assignment, which is a new feature of C# 7.0, and is discussed in the tuple chapter. To reuse this code for values of any other type, just define a generic method, by replacing int with a type parameter. Similar to generic types, generic method’s type parameters are also declared in angle brackets following the method name:
-```
+
+```csharp
 internal static void Swap<T>(ref T value1, ref T value2)
 {
     (value1, value2) = (value2, value1);
@@ -632,7 +655,8 @@ internal static void Swap<T>(ref T value1, ref T value2)
 ```
 
 Generic type parameter’s constraints syntax also works for generic method. For example:
-```
+
+```csharp
 internal static IStack<T> PushValue<T>(IStack<T> stack) where T : new()
 {
     stack.Push(new T());
@@ -645,7 +669,8 @@ Generic types as well as generic methods are heavily used in C# functional progr
 ### Type argument inference
 
 When calling generic method, if C# compiler can infer generic method’s all type arguments, then the type arguments can be omitted at design time. For example,
-```
+
+```csharp
 internal static void TypeArgumentInference(string value1, string value2)
 {
     Swap<string>(ref value1, ref value2);
@@ -654,7 +679,8 @@ internal static void TypeArgumentInference(string value1, string value2)
 ```
 
 Swap is called with string values, so C# compiler infers type argument string is passed to the method’s type parameter T. C# compiler can only infer type arguments from type of arguments, not from type of return value. Take the following generic methods as example:
-```
+
+```csharp
 internal static T Generic1<T>(T value)
 {
     Trace.WriteLine(value);
@@ -669,7 +695,8 @@ internal static TResult Generic2<T, TResult>(T value)
 ```
 
 When calling them, Generic1’s type argument can be omitted, but Generic2’s type arguments cannot:
-```
+
+```csharp
 internal static void ReturnTypeInference()
 {
     int value1 = Generic1(0);
@@ -680,7 +707,8 @@ internal static void ReturnTypeInference()
 For Generic1, T is used as return type, but it can be inferred from the argument type. So type argument can be omitted for Generic1. For Generic2, T can be inferred from argument type too, but TResult can only possibly be inferred from type of return value, which is not supported by C# compiler. As a result, type arguments cannot be omitted when calling Generic2. Otherwise, C# compiler gives error CS0411: The type arguments for method 'Functions.Generic2<T, TResult>(T)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
 
 Type cannot be inferred from null because null can be of any reference type or nullable value type. For example, when calling above Generic1 with null:
-```
+
+```csharp
 internal static void NullArgumentType()
 {
     Generic1<FileInfo>(null);
@@ -697,7 +725,8 @@ there are some options:
 -   Create a temporary variable of the expected argument type, pass the value to the generic method
 
 Type argument inference is not supported for generic type’s constructor. Take the following generic type as example:
-```
+
+```csharp
 internal class Generic<T>
 {
     internal Generic(T input) { } // T cannot be inferred.
@@ -705,7 +734,8 @@ internal class Generic<T>
 ```
 
 When calling above constructor, type arguments must be provided:
-```
+
+```csharp
 internal static Generic<IEnumerable<IGrouping<int, string>>> GenericConstructor(
     IEnumerable<IGrouping<int, string>> input)
 {
@@ -716,7 +746,8 @@ internal static Generic<IEnumerable<IGrouping<int, string>>> GenericConstructor(
 ```
 
 A solution is to wrap the constructor call in a static factory method , where type parameter can be inferred:
-```
+
+```csharp
 internal class Generic // Not Generic<T>.
 {
     internal static Generic<T> Create<T>(T input) => new Generic<T>(input); // T can be inferred.
@@ -724,7 +755,8 @@ internal class Generic // Not Generic<T>.
 ```
 
 Now the instance can be constructed without type argument:
-```
+
+```csharp
 internal static Generic<IEnumerable<IGrouping<int, string>>> GenericCreate(
     IEnumerable<IGrouping<int, string>> input)
 {
@@ -735,7 +767,8 @@ internal static Generic<IEnumerable<IGrouping<int, string>>> GenericCreate(
 ## Static import
 
 C# 6.0 introduces using static directive, a syntactic sugar, to enable accessing static member of the specified type, so that a static method can be called type name as if it is a functions on the fly. Since extension are essentially static method, this syntax can also import extension methods from the specified type. It also enables accessing enumeration member without enumeration type name.
-```
+
+```csharp
 using static System.DayOfWeek;
 using static System.Math;
 using static System.Diagnostics.Trace;
@@ -757,7 +790,8 @@ The using directive imports the specified all types’ extension methods under t
 ## Partial method
 
 Partial methods can be defined in partial class or partial structure. One part of the type can have the partial method signature, and the partial method can be optionally implemented in another part of the type. This syntactic sugar is useful for code generation. For example, LINQ to SQL can generate entity type in the following pattern:
-```
+
+```csharp
 [Table(Name = "Production.Product")]
 public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
 {
@@ -773,7 +807,8 @@ public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
 ```
 
 The constructor calls partial method OnCreate, which is a hook. If needed, developer can provide another part of the entity type to implement OnCreate:
-```
+
+```csharp
 public partial class Product
 {
     partial void OnCreated() // Optional implementation.

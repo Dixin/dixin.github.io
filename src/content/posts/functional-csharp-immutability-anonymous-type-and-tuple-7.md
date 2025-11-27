@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (12) Immutability, Anonymous Type, an
 published: 2018-06-12
 description: "Immutability is an important aspect of functional paradigm. As fore mentioned, imperative/object-oriented programming is usually stateful, and functional programming encourages immutability without st"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -22,7 +22,8 @@ Generally, immutability can make programming easier in many cases, since it gets
 ## Immutable value
 
 Many functional languages support immutable value. In contrast to variable. Once a value is assigned with something, it cannot be reassigned so that it cannot be changed to anything else. For example, in F#, a value is immutable by default, unless the mutable keyword is specified:
-```
+
+```csharp
 let value = new Uri("https://weblogs.asp.net/dixin") // Immutable value.
 value <- null // Cannot be compiled. Cannot reassign to value.
 
@@ -35,7 +36,8 @@ As a C-like language, C# variable is mutable by default. C# has a few other lang
 ### Constant
 
 C# has a const keyword to define compile time constant, which cannot be changed at runtime. However, it only works for primitive types, string, and null reference:
-```
+
+```csharp
 internal static partial class Immutability
 {
     internal static void Const()
@@ -52,7 +54,8 @@ internal static partial class Immutability
 ### using statement and foreach statement
 
 C# also supports immutable value in a few statements, like the fore mentioned using and foreach statements:
-```
+
+```csharp
 internal static void ForEach(IEnumerable<int> source)
 {
     foreach (int immutable in source)
@@ -73,7 +76,8 @@ internal static void Using(Func<IDisposable> disposableFactory)
 ### this reference for class
 
 In class definition, this keyword can be used in instance function members. It refers to the current instance of the class, and it is immutable:
-```
+
+```csharp
 internal partial class Device
 {
     internal void InstanceMethod()
@@ -88,7 +92,8 @@ By default, this reference is mutable for structure definition, which is discuss
 ### Function’s readonly input and readonly output
 
 The fore mentioned function parameter passed by readonly reference (in parameter) is immutable in the function, and function result retuned by readonly reference (ref readonly return) is immutable for the function’s caller:
-```
+
+```csharp
 internal static void ParameterAndReturn<T>(Span<T> span)
 {
     ref readonly T Last(in Span<T> immutableInput)
@@ -114,7 +119,8 @@ C# 7.2 introduces readonly reference for local variable. In C#, when defining an
 -   By copy: directly assign to local variable. If a value type instance is assigned, that value type instance is copied to a new instance; if a reference type instance is assigned, that reference is copied. So when the new local variable is reassigned, the previous local variable is not impacted.
 -   By reference: assign to local variable with the ref keyword. The new local variable can be virtually viewed as a pointer or alias of the existing local variable. So when the new local variable is reassigned, it is equivalent to reassigning the previous local variable
 -   By readonly reference: assign to local variable with the ref readonly keywords. The new local variable can be also virtually viewed as a pointer or alias, but in this case the new local variable is immutable, and cannot be reassigned.
-```
+
+```csharp
 internal static void ReadOnlyReference()
 {
     int value = 1;
@@ -138,7 +144,8 @@ internal static void ReadOnlyReference()
 ### Immutable value in LINQ query expression
 
 In LINQ query expression introduced by C# 3.0, the from, join, let clauses can declare values, and the into query keyword can declare value too. These values are all immutable:
-```
+
+```csharp
 internal static void QueryExpression(IEnumerable<int> source1, IEnumerable<int> source2)
 {
     IEnumerable<IGrouping<int, int>> query =
@@ -198,7 +205,8 @@ internal partial class ImmutableDevice
 ```
 
 With the fore mentioned auto property syntactic sugar, the readonly field definition can be automatically generated. The following is an example of mutable data type with read write state, and immutable data type with readonly state stored in readonly instance fields:
-```
+
+```csharp
 internal partial class MutableDevice
 {
     internal string Name { get; set; }
@@ -221,7 +229,8 @@ internal partial class ImmutableDevice
 ```
 
 Apparently, constructed MutableDevice instance can change its internal state stored by fields, and ImmutableDevice instance cannot:
-```
+
+```csharp
 internal static void State()
 {
     MutableDevice mutableDevice = new MutableDevice() { Name = "Microsoft Band 2", Price = 249.99M };
@@ -235,7 +244,8 @@ internal static void State()
 ```
 
 Since the instance of immutable type cannot change state, it gets rid of a major source of bugs, and it is always thread safe. But these benefits come with a price. It is common to update some existing data to different value, for example, have a discount based on the current price:
-```
+
+```csharp
 internal partial class MutableDevice
 {
     internal void Discount() => this.Price = this.Price * 0.9M;
@@ -254,7 +264,8 @@ Many .NET built-in types are immutable data structures, including most value typ
 ### Immutable structure (readonly structure)
 
 The following structure is defined with the same pattern as above immutable class. The structure looks immutable:
-```
+
+```csharp
 internal partial struct Complex
 {
     internal Complex(double real, double imaginary)
@@ -270,7 +281,8 @@ internal partial struct Complex
 ```
 
 With the auto property syntactic sugar, readonly fields are generated. However, for structure, readonly fields are not enough for immutability. In contrast of class, in structure’s instance function members, this reference is mutable:
-```
+
+```csharp
 internal partial struct Complex
 {
     internal Complex(Complex value) => this = value; // Can reassign to this.
@@ -289,7 +301,8 @@ internal partial struct Complex
 ```
 
 With mutable this, the above structure still can be mutable:
-```
+
+```csharp
 internal static void Structure()
 {
     Complex complex1 = new Complex(1, 1);
@@ -301,7 +314,8 @@ internal static void Structure()
 ```
 
 To address this scenario, C# 7.2 enables the readonly modifier for structure definition. To make sure the structure is immutable, It enforces all the instance fields to be readonly, and makes this reference immutable in instance function members except constructor:
-```
+
+```csharp
 internal readonly partial struct ImmutableComplex
 {
     internal ImmutableComplex(double real, double imaginary)
@@ -327,7 +341,8 @@ internal readonly partial struct ImmutableComplex
 ### Immutable anonymous type
 
 C# 3.0 introduces anonymous type to represent immutable data, without providing the type definition at design time:
-```
+
+```csharp
 internal static void AnonymousType()
 {
     var immutableDevice = new { Name = "Surface Book", Price = 1349.00M };
@@ -370,7 +385,8 @@ internal sealed class AnonymousType0<TName, TPrice>
 ```
 
 And the above setting-property-like syntax is compiled to normal constructor call:
-```
+
+```csharp
 internal static void CompiledAnonymousType()
 {
     AnonymousType0<string, decimal> immutableDevice = new AnonymousType0<string, decimal>(
@@ -379,7 +395,8 @@ internal static void CompiledAnonymousType()
 ```
 
 If there are other different anonymous type used in the code, C# compiler generates more type definitions AnonymousType1, AnonymousType2, etc. Anonymous type are reused by different instantiation if their properties have same number, names, types, and order:
-```
+
+```csharp
 internal static void ReuseAnonymousType()
 {
     var device1 = new { Name = "Surface Book", Price = 1349.00M };
@@ -393,7 +410,8 @@ internal static void ReuseAnonymousType()
 ```
 
 Anonymous type’s property name can be inferred from the identifier used to initialize the property. The following 2 anonymous type instantiation are equivalent:
-```
+
+```csharp
 internal static void PropertyInference(Uri uri, int value)
 {
     var anonymous1 = new { value, uri.Host };
@@ -402,7 +420,8 @@ internal static void PropertyInference(Uri uri, int value)
 ```
 
 Anonymous type can also be part of other types, like array, and type parameter for generic type, etc:
-```
+
+```csharp
 internal static void AnonymousTypeParameter()
 {
     var source = new[] // AnonymousType0<string, decimal>[].
@@ -418,7 +437,8 @@ internal static void AnonymousTypeParameter()
 Here the source array is inferred to be of AnonymousType0<string, decimal>\[\] type, because each array value is of type AnonymousType0. Array T\[\] implements IEnumerable<T> interface, so the source array implements IEnumerable<AnonymousType0<string, decimal>> interface. Its Where extension method accepts a AnonymousType0<string, decimal> –> bool predicate function, and returns IEnumerable<AnonymousType0<string, decimal>>.
 
 C# compiler utilizes anonymous type for let clause in LINQ query expression. The let clause is compiled to Select query method call with a selector function returning anonymous type. For example:
-```
+
+```csharp
 internal static void Let(IEnumerable<int> source)
 {
     IEnumerable<double> query =
@@ -440,7 +460,8 @@ The full details of query expression compilation is covered in the LINQ to Objec
 ### Local variable type inference
 
 Besides local variable of anonymous type, the [var keyword](https://msdn.microsoft.com/en-us/library/bb383973.aspx) can be also used to initialize local variable of existing type:
-```
+
+```csharp
 internal static void LocalVariable(IEnumerable<int> source, string path)
 {
     var a = default(int); // int.
@@ -452,7 +473,8 @@ internal static void LocalVariable(IEnumerable<int> source, string path)
 ```
 
 This is just a syntactic sugar. The local variable’s type is inferred from the initial value’s type. The compilation of implicit typed local variable has no difference from explicitly typed local variable. When the initial value’s type is ambiguous, the var keyword cannot be directly used:
-```
+
+```csharp
 internal static void LocalVariableWithType()
 {
     var f = (Uri)null;
@@ -528,7 +550,8 @@ namespace System
 The value tuple is provided for better performance, since it does not managed heap allocation and garbage collection. However, all value tuple structures become mutable types, where the values are just public fields. To be functional and consistent, this tutorial only uses value tuples, and only use them as immutable types.
 
 As above tuple definition shows, in contrast of list, tuple’s values can be of different types:
-```
+
+```csharp
 internal static void TupleAndList()
 {
     ValueTuple<string, decimal> tuple = new ValueTuple<string, decimal>("Surface Book", 1349M);
@@ -537,7 +560,8 @@ internal static void TupleAndList()
 ```
 
 Tuple type and anonymous type are conceptually similar to each other, they are both a set of properties returning a list of values. The major difference is, at design time, the tuple type is defined, and anonymous type is not defined yet. Therefore, anonymous type (var) can only be used for local variable with initial value to infer the expected type from, and cannot be used as parameter type, return type, type argument, etc.:
-```
+
+```csharp
 internal static ValueTuple<string, decimal> Method(ValueTuple<string, decimal> values)
 {
     ValueTuple<string, decimal> variable1;
@@ -558,7 +582,8 @@ internal static var Method(var values) // Cannot be compiled.
 ### Construction, element and element inference
 
 C# 7.0 introduces tuple syntactic sugar, which brings great convenience. The tuple type ValuTuple<T1, T2, T3, …> can be simplified to (T1, T2, T3, …), and the tuple construction new ValueTuple<T1, T2, T3, …>(value1, value2, value3, …) can be simplified to (value1, value2, value3, …):
-```
+
+```csharp
 internal static void TupleTypeLiteral()
 {
     (string, decimal) tuple1 = ("Surface Pro 4", 899M);
@@ -572,7 +597,8 @@ internal static void TupleTypeLiteral()
 ```
 
 Apparently, tuple can be function’s parameter/return type, just like other types. When using tuple as the function return type, the tuple syntax virtually enables function to return multiple values:
-```
+
+```csharp
 internal static (string, decimal) MethodReturnMultipleValues()
 // internal static ValueTuple<string, decimal> MethodReturnMultipleValues()
 {
@@ -590,7 +616,8 @@ internal static (string, decimal) MethodReturnMultipleValues()
 ```
 
 C# 7.0 also introduces element name for tuple, so that each value of the tuple type can be given a property-like name, with the syntax (T1 Name1, T2 Name2, T3 Name3, …), and each value of the tuple instance can be given a name too, with syntax (Name1: value1, Name2, value2, Name3 value3, …). So that the values in the tuple can be accessed with a meaningful name, instead of the actual Item1, Item2, Item3, … field names. This is also a syntactic sugar, at compile time, all element names are all replaced by the underlying fields.
-```
+
+```csharp
 internal static void ElementName()
 {
     (string Name, decimal Price) tuple1 = ("Surface Pro 4", 899M);
@@ -632,7 +659,8 @@ internal static void ElementName()
 ```
 
 Similar to anonymous type’s property inference, C# 7.1 can infer tuple’s element name from the identifier used to initialize the element. The following 2 tuple are equivalent:
-```
+
+```csharp
 internal static void ElementInference(Uri uri, int value)
 {
     var tuple1 = (value, uri.Host);
@@ -643,7 +671,8 @@ internal static void ElementInference(Uri uri, int value)
 ### Deconstruction
 
 Since C# 7.0, the var keyword can also be used to deconstruct tuple to a list of values. This syntax is very useful when used with functions returning multiple values represented by tuple:
-```
+
+```csharp
 internal static void DeconstructTuple()
 {
     (string, decimal) GetProductInfo() => ("HoLoLens", 3000M);
@@ -654,7 +683,8 @@ internal static void DeconstructTuple()
 ```
 
 This deconstruction syntactic sugar can be used with any type, as long as that type has a Deconstruct instance or extension method defined, where the values as the out parameters. Take the fore mentioned Device type as example, It has 3 properties Name, Description, and Price, so its Deconstruct method can be either one of the following 2 forms:
-```
+
+```csharp
 internal partial class Device
 {
     internal void Deconstruct(out string name, out string description, out decimal price)
@@ -677,7 +707,8 @@ internal static class DeviceExtensions
 ```
 
 Now the var keyword can destruct Device too, which is just compiled to Destruct method call:
-```
+
+```csharp
 internal static void DeconstructDevice()
 {
     Device GetDevice() => new Device() { Name = "Surface studio", Description = "All-in-one PC.", Price = 2999M };
@@ -694,7 +725,8 @@ internal static void DeconstructDevice()
 ### Discard
 
 In tuple destruction, since the elements are compiled to out variables of the Destruct method, any element can be discarded with underscore just like a out variable:
-```
+
+```csharp
 internal static void Discard()
 {
     Device GetDevice() => new Device() { Name = "Surface studio", Description = "All-in-one PC.", Price = 2999M };
@@ -706,7 +738,8 @@ internal static void Discard()
 ### Tuple assignment
 
 With the tuple syntax, now C# can also support fancy tuple assignment, just like Python and other languages. The following example assigns 2 values to 2 variables with a single line of code, then swap the values of 2 variables with a single line of code:
-```
+
+```csharp
 internal static void TupleAssignment(int value1, int value2)
 {
     (value1, value2) = (1, 2);
@@ -721,7 +754,8 @@ internal static void TupleAssignment(int value1, int value2)
 ```
 
 It is easy to calculate Fibonacci number with loop and tuple assignment:
-```
+
+```csharp
 internal static int Fibonacci(int n)
 {
     (int a, int b) = (0, 1);
@@ -734,7 +768,8 @@ internal static int Fibonacci(int n)
 ```
 
 Besides variables, tuple assignment works for other scenarios too, like type member. The following example assigns 2 values to 2 properties with a single line of code:
-```
+
+```csharp
 internal class ImmutableDevice
 {
     internal ImmutableDevice(string name, decimal price) =>
@@ -751,7 +786,8 @@ internal class ImmutableDevice
 ### Immutable collection vs. readonly collection
 
 Microsoft provides immutable collections through the System.Collections.Immutable NuGet Package, including ImmutableArray<T>, ImmutableDictionary<TKey, TValue>, ImmutableHashSet<T>, ImmutableList<T>, ImmutableQueue<T>, ImmutableSet<T>, ImmutableStack<T>, etc. As fore mentioned, trying to changing an immutable collection creates a new immutable collection:
-```
+
+```csharp
 internal static void ImmutableCollection()
 {
     ImmutableList<int> immutableList1 = ImmutableList.Create(1, 2, 3);
@@ -761,7 +797,8 @@ internal static void ImmutableCollection()
 ```
 
 .NET/Core also provides readonly collections, like ReadOnlyCollection<T>, ReadOnlyDictionary<TKey, TValue>, etc., which can be confusing. These readonly collections are actually a simple wrapper of mutable collections. They just do not implement and expose methods like Add, Remove, which are used to change the collection. They are neither immutable, nor thread safe. The following example creates an immutable collection and a readonly collection from a mutable source. When the source is changed, the immutable collection apparently is not changed, but the readonly collection is changed:
-```
+
+```csharp
 internal static void ReadOnlyCollection()
 {
     List<int> mutableList = new List<int>() { 1, 2, 3 };

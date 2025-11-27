@@ -22,11 +22,12 @@ While in Silverlight, there is a extra System.ComponentModel.Composition.Hosting
 
 There are scenarios that Silverlight application may need to load all XAP files in a folder in the web server side, for example:
 
--   If the Silverlight application is extensible and supports plug-ins, there would be something like�a Plugins folder in the web server, and each pluin would be an individual XAP file in the folder. In this scenario, after the application is loaded and started up, it would like to load all XAP files in Plugins folder.
+-   If the Silverlight application is extensible and supports plug-ins, there would be something like a Plugins folder in the web server, and each pluin would be an individual XAP file in the folder. In this scenario, after the application is loaded and started up, it would like to load all XAP files in Plugins folder.
 -   If the aplication supports themes, there would be something like a Themes folder, and each theme would be an individual XAP file too. The application would also need to load all XAP files in Themes.
 
 It is useful if we have a DirectoryCatalog:
-```
+
+```csharp
 DirectoryCatalog catalog = new DirectoryCatalog("/Plugins");
 catalog.DownloadCompleted += (sender, e) => { };
 catalog.DownloadAsync();
@@ -36,7 +37,7 @@ Obviously, the implementation of DirectoryCatalog is easy. It is just a collecti
 
 ## Retrieve file list from a directory
 
-Of course, to retrieve file list from a web folder, the folder�s �Directory Browsing� feature must be enabled:
+Of course, to retrieve file list from a web folder, the folder's 'Directory Browsing' feature must be enabled:
 
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_71CB93DF.png "image")
 
@@ -46,7 +47,7 @@ So when the folder is requested, it responses a list of its files and folders:
 
 This is nothing but a simple HTML page:
 
-```xml
+```html
 <html>
     <head>
         <title>localhost - /Folder/</title>
@@ -70,7 +71,8 @@ For the ASP.NET Deployment Server of Visual Studio, directory browsing is enable
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_1D2FB4DA.png "image")
 
 The HTML <Body> is almost the same:
-```
+
+```html
 <body bgcolor="white">
     <h2><i>Directory Listing -- /ClientBin/</i></h2>
     <hr width="100%" size="1" color="silver">
@@ -84,7 +86,7 @@ The HTML <Body> is almost the same:
 </body>
 ```
 
-The only difference is, IIS�s links start with slash, but here the links do not.
+The only difference is, IIS's links start with slash, but here the links do not.
 
 Here one way to get the file list is read the href attributes of the links:
 
@@ -118,10 +120,11 @@ private IEnumerable<Uri> GetFilesFromDirectory(string html)
 }
 ```
 
-Please notice the folders� links end with a slash. They are filtered by the second Where() query.
+Please notice the folders' links end with a slash. They are filtered by the second Where() query.
 
-The above method can find files� URIs from the specified IIS folder, or ASP.NET Deployment Server folder while debugging. To support other formats of file list, a constructor is needed to pass into a customized method:
-```
+The above method can find files' URIs from the specified IIS folder, or ASP.NET Deployment Server folder while debugging. To support other formats of file list, a constructor is needed to pass into a customized method:
+
+```csharp
 /// <summary>
 /// Initializes a new instance of the <see cref="T:System.ComponentModel.Composition.Hosting.DirectoryCatalog" /> class with <see cref="T:System.ComponentModel.Composition.Primitives.ComposablePartDefinition" /> objects based on all the XAP files in the specified directory URI.
 /// </summary>
@@ -146,10 +149,11 @@ public DirectoryCatalog(Uri uri, Func<string, IEnumerable<Uri>> getFilesFromDire
 
 When the getFilesFromDirectory parameter is null, the above GetFilesFromDirectory() method will be used as default.
 
-## Download the directory�s XAP file list
+## Download the directory's XAP file list
 
 Now a public method can be created to start the downloading:
-```
+
+```csharp
 /// <summary>
 /// Begins downloading the XAP files in the directory.
 /// </summary>
@@ -174,7 +178,7 @@ Here the HandleOpenReadCompleted() method is invoked when the file list HTML is 
 
 ## Download all XAP files
 
-After retrieving all files� URIs, the next thing becomes even easier. HandleOpenReadCompleted() just uses built in DeploymentCatalog to download the XAPs, and aggregate them into one AggregateCatalog:
+After retrieving all files' URIs, the next thing becomes even easier. HandleOpenReadCompleted() just uses built in DeploymentCatalog to download the XAPs, and aggregate them into one AggregateCatalog:
 
 ```csharp
 private void HandleOpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
@@ -292,7 +296,7 @@ private void HandleOpenReadCompleted(object sender, OpenReadCompletedEventArgs e
 }
 ```
 
-Please notice Silverlight 3+ application can work in�[either client HTTP handling, or browser HTTP handling](http://msdn.microsoft.com/en-us/library/dd920295.aspx). One difference is:
+Please notice Silverlight 3+ application can work in [either client HTTP handling, or browser HTTP handling](http://msdn.microsoft.com/en-us/library/dd920295.aspx). One difference is:
 
 -   In browser HTTP handling, only HTTP status code 200 (OK) and 404 (not OK, including 500, 403, etc.) are supported
 -   In client HTTP handling, all HTTP status code are supported
@@ -301,7 +305,7 @@ So in above code, exceptions in 2 modes are handled differently.
 
 ## Conclusion
 
-Here is the whole DirectoryCatelog�s looking:
+Here is the whole DirectoryCatelog's looking:
 
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_263C405B.png "image")
 

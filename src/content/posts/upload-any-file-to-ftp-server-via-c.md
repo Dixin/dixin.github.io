@@ -10,7 +10,8 @@ lang: ""
 ---
 
 Microsoft has a C# example of uploading file to FTP server in MSDN [https://msdn.microsoft.com/en-us/library/ms229715(v=vs.100).aspx](https://msdn.microsoft.com/en-us/library/ms229715\(v=vs.100\).aspx "https://msdn.microsoft.com/en-us/library/ms229715(v=vs.100).aspx") and Microsoft docs [https://docs.microsoft.com/en-us/dotnet/framework/network-programming/how-to-upload-files-with-ftp](https://docs.microsoft.com/en-us/dotnet/framework/network-programming/how-to-upload-files-with-ftp "https://docs.microsoft.com/en-us/dotnet/framework/network-programming/how-to-upload-files-with-ftp"):
-```
+
+```csharp
 // Copy the contents of the file to the request stream.  
 StreamReader sourceStream = new StreamReader("testfile.txt");
 byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
@@ -27,7 +28,8 @@ It uses StreamReader to read a string from a text file, then encode the string t
 This document’s title has a general title “Upload Files with FTP". However, this approach with StreamReader only works with text file. If the above code is used to upload a binary file, like a picture, the uploaded file on FTP server becomes corrupted. The general options are:
 
 1\. Call File.ReadAllBytes to read the bytes, and write to request stream:
-```
+
+```csharp
 byte[] fileContents = File.ReadAllBytes(filePath);
 using (Stream requestStream = request.GetRequestStream())
 {
@@ -36,7 +38,8 @@ using (Stream requestStream = request.GetRequestStream())
 ```
 
 2\. Use FileStream to read the file, and copy the file stream to request stream:
-```
+
+```csharp
 public static async Task<FtpStatusCode> FtpUploadAsync(string uri, string userName, string password, string filePath)
 {
     FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uri);
@@ -58,7 +61,8 @@ public static async Task<FtpStatusCode> FtpUploadAsync(string uri, string userNa
 ```
 
 3\. Use WebClient, which wraps all the above work flow:
-```
+
+```csharp
 public static async Task FtpUploadAsync(string uri, string userName, string password, string filePath)
 {
     using (WebClient webClient = new WebClient())

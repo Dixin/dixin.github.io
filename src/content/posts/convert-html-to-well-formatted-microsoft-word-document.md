@@ -3,7 +3,7 @@ title: "Convert HTML to Well-Formatted Microsoft Word Document"
 published: 2016-02-23
 description: "Recently I wanted to convert my  into a Word document (.doc). The tasks are:"
 image: ""
-tags: ["C#", "C# 6.0", "HTML", "XML", "VSTO", "Open XML", "OneDrive", "Office", "LINQ", "LINQ to Objects"]
+tags: ["C#", "C# 6.0", "HTML", "LINQ", "LINQ to Objects", "Office", "OneDrive", "Open XML", "VSTO", "XML"]
 category: "C#"
 draft: false
 lang: ""
@@ -29,7 +29,8 @@ There might be several possible solutions, e.g.:
     -   [VSTO (Visual Studio Tools for Office)](https://en.wikipedia.org/wiki/Visual_Studio_Tools_for_Office): Microsoft.Office.Interop.Word.dll from VSTO provides APIs to directly automate Word application itself to build a document.
 
 After searching around, I found [CsQuery library](https://www.nuget.org/packages/CsQuery/), which is available from [Nuget](https://www.nuget.org/packages/CsQuery/):
-```
+
+```csharp
 Install-Package CsQuery
 ```
 
@@ -160,7 +161,8 @@ foreach (IGrouping<string, Tuple<string, string>> chapter in this.Chapters)
 As fore mentioned. <h1> represents each chapter title, and <h2> represents each section title. A little CSS is used to unify all tables with 1 pixel solid border. This Html.tt file will automatically generate a Html.cs file, containing above Html type.
 
 The generated Html class is a partial class, so that some custom code can be appended to make is more intuitive:
-```
+
+```csharp
 internal partial class Html
 {
     internal Html(string title, IEnumerable<IGrouping<string, Tuple<string, string>>> chapters)
@@ -180,7 +182,8 @@ Straightforward. To get the HTML string, just need to call Html.TransformText me
 ## Convert HTML to Word document via VSTO
 
 As fore mentioned, one possible way is to using Microsoft’s Open XML SDK. It is extremely easy with a third party helper [HtmlToOpenXml](https://html2openxml.codeplex.com/), which is also available from [Nuget](https://www.nuget.org/packages/HtmlToOpenXml.dll):
-```
+
+```csharp
 Install-Package HtmlToOpenXml.dll
 ```
 
@@ -370,7 +373,8 @@ The last line of the .ini file contains the local OneDrive path, e.g.:
 > library = 1 4 A3BD24426A36B9EE!129 1388966861 "SkyDrive" Me personal "D:\\SkyDrive"
 
 And here is the implementation of above TryGetOneDriveRoot method:
-```
+
+```csharp
 public static bool TryGetOneDriveRoot(out string oneDrive)
 {
     oneDrive = Registry.GetValue(

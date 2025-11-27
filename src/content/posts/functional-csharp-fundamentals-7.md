@@ -3,8 +3,8 @@ title: "C# functional programming in-depth (1) C# language fundamentals"
 published: 2018-06-01
 description: "C# 1.0 was initially released in 2002, as its first language specification says at the beginning, C# is a “simple, modern, object oriented, and type-safe” programming language for general purpose. Now"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -246,7 +246,8 @@ internal readonly struct ValuePoint
 ```
 
 Instances of reference type and value type are allocated differently. Reference type is always allocated on the managed heap, and deallocated by garbage collection. Value type is either allocated on the stack and deallocated by stack unwinding, or is allocated and deallocated inline with the container. So generally value type can have better performance for allocation and deallocation. Usually, a type [can be designed as value type](https://msdn.microsoft.com/en-us/library/ms229017.aspx) if it is small, immutable, and logically similar to a primitive type. The above **System.TimeSpan** type structure represents a duration of time, it is designed to be value type, because it is just a immutable wrapper of a long value, which represents ticks. The following example demonstrates this difference:
-```
+
+```csharp
 internal static partial class Fundamentals
 {
     internal static void ValueTypeReferenceType()
@@ -268,7 +269,8 @@ internal static partial class Fundamentals
 When a **Point** instance is constructed as a local variable, since it is reference type, it is allocated in the managed heap. Its fields are value types, so the fields are allocated inline on the managed heap too. The local variable **reference1** can be viewed as a pointer, pointing to managed heap location that holds the data. When assigning **reference1** to **reference2**, the pointer is copied. So **reference1** and **reference2** both point to the same **Point** instance in the managed heap. When **ValuePoint** is constructed as a local variable, since it is value type. it is allocated in the stack. Its fields are also allocated inline in the stack. The local variable **value1** holds the actual data. When assigning value1 to **value2**, the entire instance is copied, so **value1** and **value2** are 2 different **ValuePoint** instances in stack. In C#, array always derives from System.Array class and is reference type. So referenceArray and valueArray are both allocated on heap, and their elements are both on heap too.
 
 Reference type can be null and value type cannot:
-```
+
+```csharp
 internal static void Default()
 {
     Point defaultReference = default(Point);
@@ -281,7 +283,8 @@ internal static void Default()
 ```
 
 The default value of reference type is simply null. The default of value type is an actual instance, with all fields initialized to their default values. Actually, the above local variables’ initialization is compiled to:
-```
+
+```csharp
 internal static void CompiledDefault()
 {
     Point defaultReference = null;
@@ -295,7 +298,8 @@ A structure always virtually has a parameterless default constructor. Calling th
 ### default literal expression
 
 Since C# 7.1, the type in the default value expression can be omitted, if the type can be inferred. So the above default value syntax can be simplified to:
-```
+
+```csharp
 internal static void DefaultLiteralExpression()
 {
     Point defaultReference = default;
@@ -376,7 +380,8 @@ This is good for managing large type by splitting it into multiple smaller files
 ## Interface and implementation
 
 When a type implements an interface, this type can implement each interface member either implicitly or explicitly. The following interface has 2 member methods:
-```
+
+```csharp
 internal interface IInterface
 {
     void Implicit();
@@ -386,7 +391,8 @@ internal interface IInterface
 ```
 
 And the following type implementing this interface:
-```
+
+```csharp
 internal class Implementation : IInterface
 {
     public void Implicit() { }
@@ -396,7 +402,8 @@ internal class Implementation : IInterface
 ```
 
 This **Implementations** type has a public **Implicit** method with the same signature as the **IInterface**’s **Implicit** method, so C# compiler takes **Implementations.**Implicit method as the implementation of **IInterface.**Implicit method. This syntax is called implicit interface implementation. The other method Explicit, is implemented explicitly as a interface member, not as a member method of Implementations type. The following example demonstrates how to use these interface members:
-```
+
+```csharp
 internal static void InterfaceMembers()
 {
     Implementation @object = new Implementation();
@@ -425,7 +432,8 @@ namespace System
 ```
 
 A type implementing the above System.IDisposable interface must have a Dispose method, which explicitly releases its unmanaged resources when called. For example, System.Data.SqlClient.SqlConnection represents a connection to a SQL database, it implements IDisposable and provides Dispose method to release the underlying database connection. The following example is the standard try-finally pattern to use IDisposable object and call Dispose method:
-```
+
+```csharp
 internal static void Dispose(string connectionString)
 {
     SqlConnection connection = new SqlConnection(connectionString);
@@ -446,7 +454,8 @@ internal static void Dispose(string connectionString)
 ```
 
 The Dispose method is called in finally block, so it is ensured to be called, even if exception is thrown from the operations in the try block, or if the current thread is aborted. IDisposable is widely used, so C# introduces a using statement syntactic sugar since 1.0. The above code is equivalent to:
-```
+
+```csharp
 internal static void Using(string connectionString)
 {
     using (SqlConnection connection = new SqlConnection(connectionString))
@@ -536,7 +545,8 @@ internal class Stack<T> : IStack<T>
 ```
 
 When using this generic stack, specify a concrete type for parameter T:
-```
+
+```csharp
 internal static void Stack()
 {
     Stack<int> stack1 = new Stack<int>();
@@ -562,7 +572,8 @@ The syntax for generic structure is the same as above generic class. Generic del
 ### Type parameter constraints
 
 For above generic types and the following generic type, the type parameter can be arbitrary value:
-```
+
+```csharp
 internal class Constraint<T>
 {
     internal void Method()
@@ -573,7 +584,8 @@ internal class Constraint<T>
 ```
 
 Above code cannot be compiled, with error CS0403: Cannot convert null to type parameter 'T' because it could be a non-nullable value type. The reason is, as fore mentioned, only values of reference types (instances of classes) can be **null**, but here **T** is allowed be structure type too. For this kind of scenario, C# supports constraints for type parameters, with the where keyword:
-```
+
+```csharp
 internal class Constraint<T> where T: class
 {
     internal static void Method()
@@ -584,7 +596,8 @@ internal class Constraint<T> where T: class
 ```
 
 Here T must be reference type, for example, **Constraint<string>** is allowed by compiler, and **Constraint<int>** causes a compiler error. Here are some more examples of constraints syntax:
-```
+
+```csharp
 internal partial class Constraints<T1, T2, T3, T4, T5, T6, T7>
     where T1 : struct
     where T2 : class
@@ -606,7 +619,8 @@ The above generic type has 7 type parameters:
 -   **T7** must be or derive from or implement **T2**, **T3**, **T4**, and must implement the specified interface, and must have a public parameterless constructor
 
 Take **T3** as example:
-```
+
+```csharp
 internal partial class Constraints<T1, T2, T3, T4, T5, T6, T7>
 {
     internal static void Method(T3 connection)
@@ -622,7 +636,8 @@ internal partial class Constraints<T1, T2, T3, T4, T5, T6, T7>
 Regarding **System.Data.Common.DbConnection** implements **System.IDisposable**, and has a **CreateCommand** method, so the above t3 object can be used with using statement, and the **CreateCommand** call can be compiled too.
 
 The following is an example closed type of **Constraints<T1, T2, T3, T4, T5, T6, T7>**:
-```
+
+```csharp
 internal static void CloseType()
 {
     Constraints<bool, object, DbConnection, IDbConnection, int, Exception, SqlConnection> closed = default;
@@ -681,7 +696,8 @@ namespace System
 ```
 
 The following example demonstrates how to use nullable int:
-```
+
+```csharp
 internal static void Nullable()
 {
     int? nullable = null;
@@ -694,7 +710,8 @@ internal static void Nullable()
 ```
 
 Apparently, int? is the Nullable<int> structure, and cannot be real null. Above code is syntactic sugar and compiled to normal structure usage:
-```
+
+```csharp
 internal static void CompiledNullable()
 {
     Nullable<int> nullable = new Nullable<int>();
@@ -711,7 +728,8 @@ When nullable is assigned with null, it is actually assigned with a instance of 
 ## Auto property
 
 A property is essentially a getter with body and/or a setter with body. In many cases, a property’s setter and getter just wraps a data field, like the above Device type’s Name property. This pattern can be annoying when a type has many properties for wrapping data fields, so C# 3.0 introduces auto property syntactic sugar:
-```
+
+```csharp
 internal partial class Device
 {
     internal decimal Price { get; set; }
@@ -740,7 +758,8 @@ internal class CompiledDevice
 ```
 
 Since C# 6.0, auto property can be getter only:
-```
+
+```csharp
 internal partial class Category
 {
     internal Category(string name)
@@ -777,7 +796,8 @@ internal partial class CompiledCategory
 ## Property initializer
 
 C# 6.0 introduces property initializer syntactic sugar, so that property’s initial value can be provided inline:
-```
+
+```csharp
 internal partial class Category
 {
     internal Guid Id { get; } = Guid.NewGuid();
@@ -819,7 +839,8 @@ internal partial class CompiledCategory
 ## Object initializer
 
 A Device instance can be initialized with a sequence of imperative property assignment statements:
-```
+
+```csharp
 internal static void SetProperties()
 {
     Device device = new Device();
@@ -829,7 +850,8 @@ internal static void SetProperties()
 ```
 
 C# 3.0 introduces object initializer syntactic sugar, above call constructor and set properties code can be merged in a declarative style:
-```
+
+```csharp
 internal static void ObjectInitializer()
 {
     Device device = new Device() { Name = "Surface Book", Price = 1349M };
@@ -861,7 +883,8 @@ internal class DeviceCollection : IEnumerable
 ```
 
 It can be initialized declaratively too:
-```
+
+```csharp
 internal static void CollectionInitializer(Device device1, Device device2)
 {
     DeviceCollection devices = new DeviceCollection() { device1, device2 };
@@ -869,7 +892,8 @@ internal static void CollectionInitializer(Device device1, Device device2)
 ```
 
 The above code is compiled to a normal constructor call followed by a sequence of Add method calls:
-```
+
+```csharp
 internal static void CompiledCollectionInitializer(Device device1, Device device2)
 {
     DeviceCollection devices = new DeviceCollection();
@@ -881,7 +905,8 @@ internal static void CompiledCollectionInitializer(Device device1, Device device
 ## Index initializer
 
 C# 6.0 introduces index initializer for type with indexer setter:
-```
+
+```csharp
 internal class DeviceDictionary
 {
     internal Device this[int id] { set { } }
@@ -889,7 +914,8 @@ internal class DeviceDictionary
 ```
 
 It is another declarative syntactic sugar:
-```
+
+```csharp
 internal static void IndexInitializer(Device device1, Device device2)
 {
     DeviceDictionary devices = new DeviceDictionary { [10] = device1, [11] = device2 };
@@ -897,7 +923,8 @@ internal static void IndexInitializer(Device device1, Device device2)
 ```
 
 The above syntax is compiled to normal constructor call followed by a sequence of indexer calls:
-```
+
+```csharp
 internal static void CompiledIndexInitializer(Device device1, Device device2)
 {
     DeviceDictionary devices = new DeviceDictionary();
@@ -909,7 +936,8 @@ internal static void CompiledIndexInitializer(Device device1, Device device2)
 ## Null coalescing operator
 
 C# 2.0 introduces a null coalescing operator ??. It works with 2 operand as left ?? right. If the left operand is not null, it returns the left operand, otherwise, it returns the right operand. For example, when working with reference or nullable value, it is very common to have null check at runtime, and have null replaced:
-```
+
+```csharp
 internal partial class Point
 {
     internal static Point Default { get; } = new Point(0, 0);
@@ -929,7 +957,8 @@ internal static void DefaultValueForNull(Point reference, ValuePoint? nullableVa
 ```
 
 This can be simplified with the null coalescing operator:
-```
+
+```csharp
 internal static void DefaultValueForNullWithNullCoalescing(Point reference, ValuePoint? nullableValue)
 {
     Point point = reference ?? Point.Default;
@@ -940,7 +969,8 @@ internal static void DefaultValueForNullWithNullCoalescing(Point reference, Valu
 ## Null conditional operators
 
 It is also very common to check null before member or indexer access:
-```
+
+```csharp
 internal static void NullCheck(Category category, Device[] devices)
 {
     string categoryText = null;
@@ -961,7 +991,8 @@ internal static void NullCheck(Category category, Device[] devices)
 ```
 
 C# 6.0 introduces null conditional operators (also called null propagation operators), ?. for member access and ?\[\] for indexer access, to simplify this:
-```
+
+```csharp
 internal static void NullCheckWithNullConditional(Category category, Device[] devices)
 {
     string categoryText = category?.ToString();
@@ -972,7 +1003,8 @@ internal static void NullCheckWithNullConditional(Category category, Device[] de
 ## throw expression
 
 Since C# 7.0, throw statement can be used as expression. The throw expression is frequently used with the conditional operator and above null coalescing operator to simplify argument check:
-```
+
+```csharp
 internal partial class Subcategory
 {
     internal Subcategory(string name, Category category)
@@ -990,7 +1022,8 @@ internal partial class Subcategory
 ## Exception filter
 
 In C#, it used to be common to catch an exception, filter, and then handle/rethrow. The following example tries to download HTML string from the specified URI, and it can handle the download failure if there is response status of bad request. So it catches the exception to check. If the exception has expected info, it handles the exception; otherwise, it rethrows the exception.
-```
+
+```csharp
 internal static void CatchFilterRethrow(WebClient webClient)
 {
     try
@@ -1012,7 +1045,8 @@ internal static void CatchFilterRethrow(WebClient webClient)
 ```
 
 C# 6.0 introduces exception filter at the language level. the catch block can have a expression to filter the specified exception before catching. If the expression returns true, the catch block is executed:
-```
+
+```csharp
 internal static void ExceptionFilter(WebClient webClient)
 {
     try
@@ -1027,7 +1061,8 @@ internal static void ExceptionFilter(WebClient webClient)
 ```
 
 Exception filter is not a syntactic sugar, but a CLR feature. The above exception filter expression is compiled to filter clause in CIL. The following cleaned CIL virtually demonstrates the compilation result:
-```
+
+```csharp
 .method assembly hidebysig static void ExceptionFilter(class [System]System.Net.WebClient webClient) cil managed
 {
   .try
@@ -1049,7 +1084,8 @@ When the filter expression returns false, the catch clause is never executed, so
 ## String interpolation
 
 For many years, string [composite formatting](https://msdn.microsoft.com/en-us/library/txafckwd.aspx) is widely used in C#. It inserts values to indexed placeholders in string format:
-```
+
+```csharp
 internal static void Log(Device device)
 {
     string message = string.Format("{0}: {1}, {2}", DateTime.Now.ToString("o"), device.Name, device.Price);
@@ -1058,7 +1094,8 @@ internal static void Log(Device device)
 ```
 
 C# 6.0 introduces string interpolation syntactic sugar to declare the values in place, without maintaining the orders separately:
-```
+
+```csharp
 internal static void LogWithStringInterpolation(Device device)
 {
     string message = string.Format($"{DateTime.Now.ToString("o")}: {device.Name}, {device.Price}");
@@ -1071,7 +1108,8 @@ The second interpolation version is more declarative and productive, without mai
 ## nameof operator
 
 C# 6.0 introduces a nameof operator to obtain the string name of variable, type, or member. Take argument check as example:
-```
+
+```csharp
 internal static void ArgumentCheck(int count)
 {
     if (count < 0)
@@ -1082,7 +1120,8 @@ internal static void ArgumentCheck(int count)
 ```
 
 The parameter name is a hard coded string, and cannot be checked by compiler. Now with nameof operator, the compiler can generated the above parameter name string constant:
-```
+
+```csharp
 internal static void NameOf(int count)
 {
     if (count < 0)
@@ -1095,7 +1134,8 @@ internal static void NameOf(int count)
 ## Digit separator and leading underscore
 
 C# 7.0 introduces underscore as the digit separator, as well as the 0b prefix for binary number. C# 7.1 supports an optional underscore at the beginning of the number.
-```
+
+```csharp
 internal static void DigitSeparator()
 {
     int value1 = 10_000_000;

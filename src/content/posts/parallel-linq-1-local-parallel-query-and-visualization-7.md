@@ -3,8 +3,8 @@ title: "Parallel LINQ in Depth (1) Local Parallel Query and Visualization"
 published: 2018-09-01
 description: "So far, all the discussion for LINQ to Objects/XML does not involve multi-threading, concurrency, or parallel computing. This is by design, because pulling values from an IEnumerable<T> sequence is no"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -143,7 +143,8 @@ They are covered in this part and the next parts.
 ## Parallel vs. sequential query
 
 A ParallelQuery<T> instance can be created by calling generation methods of ParallelEnumerable, like Range, Repeat, etc., then the parallel query methods can be called fluently:
-```
+
+```csharp
 internal static void Generation()
 {
     IEnumerable<double> sequentialQuery = Enumerable
@@ -161,14 +162,16 @@ internal static void Generation()
 ```
 
 It can also be created by calling ParallelEnumerable.AsParallel for IEnumerable<T> or IEnumerable:
-```
+
+```csharp
 public static ParallelQuery AsParallel(this IEnumerable source);
 
 public static ParallelQuery<TSource> AsParallel<TSource>(this IEnumerable<TSource> source);
 ```
 
 For example,
-```
+
+```csharp
 internal static void AsParallel(IEnumerable<int> source1, IEnumerable source2)
 {
     ParallelQuery<int> parallelQuery1 = source1 // IEnumerable<int>.
@@ -183,7 +186,8 @@ internal static void AsParallel(IEnumerable<int> source1, IEnumerable source2)
 AsParallel also has a overload accepting a partitioner, which is discussed later in this chapter.
 
 To apply sequential query methods to a ParallelQuery<T> instance, just call ParallelEnumerable.AsSequential method, which returns \]IEnumerable<T>, from where the sequential query methods can be called:
-```
+
+```csharp
 public static IEnumerable<TSource> AsSequential<TSource>(this ParallelQuery<TSource> source);
 ```
 
@@ -208,7 +212,8 @@ internal static partial class QueryMethods
 ```
 
 The query expression version of the above query is:
-```
+
+```csharp
 internal static void QueryExpression()
 {
     IEnumerable<string> obsoleteTypes =
@@ -244,7 +249,8 @@ namespace System.Linq
 ```
 
 FoAll can pull values from ParallelQuery<T> source with multiple threads simultaneously, and call function on those threads in parallel:
-```
+
+```csharp
 internal static void ForEachForAll()
 {
     Enumerable
@@ -260,7 +266,8 @@ internal static void ForEachForAll()
 Above is the output after executing the code in a quad core CPU, ForAll can output the values in different order from ForEach. And if this code is executed multiple times, the order can be different from time to time. Apparently, this is the consequence of parallel pulling. The parallel query execution and values’ order preservation is discussed in detail later.
 
 The following ForAll overload can be defined to simply execute parallel query without calling a function for each query result:
-```
+
+```csharp
 public static partial class ParallelEnumerableX
 {
     public static void ForAll<TSource>(this ParallelQuery<TSource> source) => source.ForAll(value => { });
@@ -354,7 +361,8 @@ public class MarkerSeries
 ```
 
 The following example calls these APIs to trace/visualize the sequence and parallel LINQ query execution:
-```
+
+```csharp
 internal static void ForEachForAllTimeSpans()
 {
     string sequentialTimeSpanName = nameof(EnumerableEx.ForEach);
@@ -394,7 +402,8 @@ internal static void ForEachForAllTimeSpans()
 ```
 
 In the functions which are passed to ForEach and ForAll, a foreach loop over a sequence with 10 million values adds some workload to make the function call take longer time, otherwise the function execution timespan looks too tiny in the visualization. Now, setup a trace listener and call the above method to visualize the execution:
-```
+
+```csharp
 internal static void TraceToFile()
 {
     // Trace to file:
@@ -430,7 +439,8 @@ This is about 27% of ForEach execution time, close a quarter, as expected. It ca
 > [![image_thumb41](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Parallel-LINQ-1-Local-Parallel-Query-and_8DE9/image_thumb41_thumb.png "image_thumb41")](https://aspblogs.z22.web.core.windows.net/dixin/Open-Live-Writer/Parallel-LINQ-1-Local-Parallel-Query-and_8DE9/image_thumb41_2.png)
 
 Above LINQ visualization code looks noisy, because it mixes the LINQ query and the tracing/visualizing. Regarding the Single Responsibility Principle, the tracing/visualizing logics can be encapsulated for reuse. The following methods wraps the tracing calls:
-```
+
+```csharp
 public static partial class Visualizer
 {
     internal const string Parallel = nameof(Parallel);
@@ -472,7 +482,8 @@ public static partial class Visualizer
 ```
 
 Now the LINQ queries can be visualized in a much cleaner way:
-```
+
+```csharp
 internal static void VisualizeForEachForAll()
 {
     Enumerable
@@ -496,7 +507,8 @@ internal static void VisualizeForEachForAll()
 ### Visualize chaining query methods
 
 Besides visualizing function calls for ForEach and ForAll, the following Visualize overloads can be defined to visualize sequential and parallel query methods:
-```
+
+```csharp
 internal static IEnumerable<TResult> Visualize<TSource, TMiddle, TResult>(
     this IEnumerable<TSource> source,
     Func<IEnumerable<TSource>, Func<TSource, TMiddle>, IEnumerable<TResult>> query,
@@ -539,7 +551,8 @@ internal static ParallelQuery<TResult> Visualize<TSource, TMiddle, TResult>(
 ```
 
 And the following method encapsulates the workload generation according to the input value:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static int ComputingWorkload(int value = 0, int iteration = 10_000_000)
@@ -551,7 +564,8 @@ internal static partial class Functions
 ```
 
 Take a simple Where and Select query chaining as example,
-```
+
+```csharp
 // using static Functions;
 internal static void WhereSelect()
 {

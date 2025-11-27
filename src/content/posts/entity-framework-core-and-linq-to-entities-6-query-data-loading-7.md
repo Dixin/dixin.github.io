@@ -3,8 +3,8 @@ title: "Entity Framework/Core and LINQ to Entities (6) Query Data Loading"
 published: 2019-03-27
 description: "After translated to SQL, in LINQ to Entities, sequence queries returning IQueryable<T> implements deferred execution too."
 image: ""
-tags: ["C#", ".NET", ".NET Core", "LINQ", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -28,7 +28,8 @@ As previous part discussed, when defining a LINQ to Entities query represented b
 ### Iterator pattern
 
 IQueryable<T> is derived from IEnumerable<T>, so values can be pulled from IQueryable<T> with the standard iterator pattern. When trying to pull the first value, EF Core translates LINQ to Entities query to SQL, and execute SQL in the database. The implementation can be demonstrated with the Iterator<T> type from the LINQ to Objects chapter:
-```
+
+```csharp
 public static class QueryableExtensions
 {
     public static IEnumerator<TEntity> GetEntityIterator<TEntity>(
@@ -65,7 +66,8 @@ public static class QueryableExtensions
 ```
 
 The following example executes Where and Take query to load 3 products with more than 10 characters in name. It demonstrates how to pull the results from IQueryable<T> with the iterator pattern:
-```
+
+```csharp
 internal static partial class Loading
 {
     internal static void DeferredExecution(AdventureWorks adventureWorks)
@@ -365,7 +367,7 @@ internal static void EagerLoadingMultipleLevels(AdventureWorks adventureWorks)
 > -   To globally disable lazy loading for specific navigation properties, just do not mark it as virtual, so that the derived proxy entity cannot override it with the lazy load implementation.
 > -   To disable lazy loading for specific DbContext or specific query, call DbContext.Configuration to get a DbConfiguration instance, and set its LazyLoadingEnabled property to false.
 > 
-> ```
+> ```csharp
 > internal static void DisableLazyLoading(AdventureWorks adventureWorks)
 > {
 >     adventureWorks.Configuration.LazyLoadingEnabled = false;

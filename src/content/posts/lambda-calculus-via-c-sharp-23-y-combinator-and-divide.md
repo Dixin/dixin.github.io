@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (23) Y Combinator, And Divide"
 published: 2018-11-23
 description: "p is the ) of function F :"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -18,7 +18,8 @@ lang: ""
 ## Fix point
 
 p is the [fixed point](http://en.wikipedia.org/wiki/Fixed_point_\(mathematics\)) of function F [if and only if](http://en.wikipedia.org/wiki/If_and_only_if):
-```
+
+```csharp
 p
 ≡ F p
 ```
@@ -32,13 +33,15 @@ A simple example:
 F := 0 - x
 
 has a fixed point 0:
-```
+
+```csharp
 0
 ≡ F 0
 ```
 
 The above fixed point definition also leads to:
-```
+
+```csharp
 p
 ≡ F p
 ≡ F (F p)
@@ -49,20 +52,23 @@ p
 ## Fixed point combinator
 
 In lambda calculus and combinatory logic, [Y combinator](http://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed_point_combinators_in_lambda_calculus) is a [fixed point combinator](http://en.wikipedia.org/wiki/Fixed_point_combinator):
-```
+
+```csharp
 Y := λf.(λx.f (x x)) (λx.f (x x))
 ```
 
 It is called so because it calculates a function F’s fixed point Y F.
 
 According to the above definition of fixed point p ≡ F p, there is:
-```
+
+```csharp
 (Y F)
 ≡ F (Y F)
 ```
 
 Proof:
-```
+
+```csharp
 Y F
 ≡ (λf.(λx.f (x x)) (λx.f (x x))) F
 ≡ (λx.F (x x)) (λx.F (x x))
@@ -75,7 +81,8 @@ Y combinator was discovered by [Haskell Curry](http://en.wikipedia.org/wiki/Hask
 [![y_combinator](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/3c3b4cb86227_12489/y_combinator_1.jpg "y_combinator")](http://matt.might.net/articles/compiling-up-to-lambda-calculus/)
 
 As a fixed point combinator, Y also has the same property of:
-```
+
+```csharp
 Y F
 ≡ F (Y F)
 ≡ F (F (Y F))
@@ -88,17 +95,20 @@ So Y can be used to implement [recursion](http://en.wikipedia.org/wiki/Recursion
 [![390px-Knights_of_the_Lambda_Calculus.svg](https://aspblogs.z22.web.core.windows.net/dixin/Windows-Live-Writer/3c3b4cb86227_12489/390px-Knights_of_the_Lambda_Calculus.svg_3.png "390px-Knights_of_the_Lambda_Calculus.svg")](http://en.wikipedia.org/wiki/Knights_of_the_Lambda_Calculus)
 
 And this is Y in SKI:
-```
+
+```csharp
 Y2 := S (K (S I I)) (S (S (K S) K) (K (S I I)))
 ```
 
 or just in SK:
-```
+
+```csharp
 Y3 := S S K (S (K (S S (S (S S K)))) K)
 ```
 
 And in C#:
-```
+
+```csharp
 public delegate Func<T, TResult> Recursion<T, TResult>(Recursion<T, TResult> f);
 
 public static class YCombinator
@@ -120,36 +130,42 @@ As explaned in [the part of Church numeral arithmetic](/posts/lambda-calculus-vi
 ### Example - factorial
 
 The [factorial](http://en.wikipedia.org/wiki/Factorial) function can be intuitively implemented by recursion. In C#:
-```
+
+```csharp
 Func<uint, uint> factorial = null; // Must have. So that factorial can recursively refer itself.
 factorial = x => x == 0U ? 1U : factorial(x - 1U);
 ```
 
 But in lambda calculus:
-```
+
+```csharp
 λn.If (IsZero n) (λx.1) (λx.Self (Decrease n))
 ```
 
 An anonymous function cannot directly refer itself by its name in the body.
 
 With Y, the solution is to create a helper to pass “the algorithm itself” as a parameter. So:
-```
+
+```csharp
 FactorialHelper := λf.λn.If (IsZero n) (λx.1) (λx.f (Decrease n))
 ```
 
 Now Y can be applied with the helper:
-```
+
+```csharp
 Y FactorialHelper n
 ```
 
 So:
-```
+
+```csharp
 Factorial := Y FactorialHelper
            ≡ Y (λf.λn.If (IsZero n) (λx.1) (λx.f (Decrease n)))
 ```
 
 In C# lambda calculus:
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     // Factorial = factorial => numeral => If(numeral.IsZero())(_ => One)(_ => factorial(numeral.Decrease()));
@@ -167,34 +183,40 @@ public static partial class _NumeralExtensions
 ### Example - Fibonacci
 
 Another recursion example is [Fibonacci](http://en.wikipedia.org/wiki/Fibonacci_number):
-```
+
+```csharp
 Func<uint, uint> fibonacci = null; // Must have. So that fibonacci can recursively refer itself.
 fibonacci = x => x > 1U ? fibonacci(x - 1U) + fibonacci(x - 2U) : x;
 ```
 
 The recursion cannot be done in anonymous function either:
-```
+
+```csharp
 λn.If (IsGreater n 1) (λx.Add (Self (Subtract n 1)) (Self (Subtract n 2))) (λx.n)
 ```
 
 The same solution can be used - create a helper to pass “the algorithm itself” as a parameter:
-```
+
+```csharp
 FibonacciHelper := λf.λn.If (IsGreater n 1) (λx.Add (f (Subtract n 1)) (f (Subtract n 2))) (λx.n)
 ```
 
 Application to Y will be the same way too:
-```
+
+```csharp
 Y FibonacciHelper n
 ```
 
 So:
-```
+
+```csharp
 Fibonacci := Y FibonacciHelper
            ≡ Y (λf.λn.If (IsGreater n 1) (λx.Add (f (Subtract n 1)) (f (Subtract n 2))) (λx.n))
 ```
 
 C#:
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     // Fibonacci  = fibonacci  => numeral => If(numeral > One)(_ => fibonacci(numeral - One) + fibonacci(numeral - One - One))(_ => numeral);
@@ -212,12 +234,14 @@ public static partial class _NumeralExtensions
 ## DivideBy
 
 In the [Church numeral arithmetic](/posts/lambda-calculus-via-c-sharp-11-predicates-and-divide), this (cheating) recursive \_DivideBy was temporarily used:
-```
+
+```csharp
 _DivideBy := λa.λb.If (IsGreaterOrEqual a b) (λx.Add One (_DivideBy (Subtract a b) b)) (λx.Zero)
 ```
 
 Finally, with Y, a real DivideBy in lambda calculus can be defined:
-```
+
+```csharp
 DivideByHelper := λf.λa.λb.If (IsGreaterOrEqual a b) (λx.Add One (f (Subtract a b) b)) (λx.Zero)
 
 DivideBy := Y DivideByHelper
@@ -227,7 +251,8 @@ DivideBy := Y DivideByHelper
 Once again, just create a helper to pass itself as a parameter to implement recursion, as easy as Factorial and Fibonacci.
 
 C#:
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     // DivideBy = divideBy => dividend => divisor => If(dividend >= divisor)(_ => One + divideBy(dividend - divisor)(divisor))(_ => Zero)

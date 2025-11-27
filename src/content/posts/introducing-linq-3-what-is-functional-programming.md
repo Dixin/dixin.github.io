@@ -3,7 +3,7 @@ title: "Functional Programming and LINQ Paradigm (2) Programming Paradigms and F
 published: 2019-05-28
 description: "Object-oriented programming and functional programming are programming paradigms. A programming paradigm is a fundamental style or approach of programming. Paradigms are not mutually exclusive. It is"
 image: ""
-tags: [".NET", "C#", "LINQ", "LINQ via C#", "Ruby", "TSQL", "Introducing LINQ"]
+tags: [".NET", "C#", "Introducing LINQ", "LINQ", "LINQ via C#", "Ruby", "TSQL"]
 category: ".NET"
 draft: false
 lang: ""
@@ -82,167 +82,172 @@ Functional programming is declarative, which means it focus on expressing what t
 The following example implements this query with traditional C# imperative programming:
 
 internal static void DelegateTypes()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Assembly coreLibrary = typeof(object).Assembly;
 ```
-```
+```csharp
 IEnumerable<Type> allTypes = coreLibrary.ExportedTypes;
 ```
-```
+
+```csharp
 // Filter delegate types from all types, and group them by namespace.
 ```
-```
+```csharp
 Dictionary<string, List<Type>> delegateGroups = new Dictionary<string, List<Type>>();
 ```
-```
+```csharp
 foreach (Type type in allTypes)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 // Delegate type's base type is System.MulticastDelegate.
 ```
-```
+```csharp
 if (type.BaseType == typeof(MulticastDelegate))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 if (!delegateGroups.TryGetValue(type.Namespace, out List<Type> delegateGroup))
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 delegateGroup = delegateGroups[type.Namespace] = new List<Type>();
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 delegateGroup.Add(type);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
 ```csharp
 // Sort delegate type groups by count (descending), and then by namespace (ascending).
 ```
-```
+```csharp
 List<KeyValuePair<string, List<Type>>> sortedDelegateGroups =new List<KeyValuePair<string, List<Type>>>();
 ```
-```
+```csharp
 foreach (KeyValuePair<string, List<Type>> nextGroup in delegateGroups)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 for (int index = 0; index <= sortedDelegateGroups.Count; index++)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 if (index < sortedDelegateGroups.Count)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 KeyValuePair<string, List<Type>> currentGroup = sortedDelegateGroups[index];
 ```
-```
+```csharp
 int compare = currentGroup.Value.Count - nextGroup.Value.Count;
 ```
-```
+```csharp
 if (compare == 0)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 compare = string.CompareOrdinal(nextGroup.Key, currentGroup.Key);
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 if (compare >= 0)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 continue;
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 sortedDelegateGroups.Insert(index, nextGroup);
 ```
-```
+```csharp
 break;
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 // Output the results.
 ```
-```
+```csharp
 foreach (KeyValuePair<string, List<Type>> delegateGroup in sortedDelegateGroups)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.Write(delegateGroup.Value.Count + " in " + delegateGroup.Key + ":");
 ```
-```
+```csharp
 foreach (Type delegateType in delegateGroup.Value)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.Write(" " + delegateType.Name);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 Trace.Write(Environment.NewLine);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 // 27 in System: Action`1 Action Action`2 Action`3 Action`4 Func`1 Func`2 Func`3 Func`4 Func`5 Action`5 Action`6 Action`7 Action`8 Func`6 Func`7 Func`8 Func`9 Comparison`1 Converter`2 Predicate`1 AssemblyLoadEventHandler AsyncCallback EventHandler EventHandler`1 ResolveEventHandler UnhandledExceptionEventHandler
 ```
-```
+```csharp
 // 8 in System.Threading: WaitCallback WaitOrTimerCallback IOCompletionCallback TimerCallback ContextCallback ParameterizedThreadStart SendOrPostCallback ThreadStart
 ```
-```
+```csharp
 // 3 in System.Reflection: MemberFilter ModuleResolveEventHandler TypeFilter
 ```
-```
+```csharp
 // 3 in System.Runtime.CompilerServices: TryCode CleanupCode CreateValueCallback
 ```
 
@@ -251,55 +256,57 @@ Trace.Write(Environment.NewLine);
 The following example is implemented with LINQ, which is totally declarative:
 
 internal static void DelegateTypesWithQueryExpression()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Assembly coreLibrary = typeof(object).Assembly;
 ```
-```
+```csharp
 IEnumerable<IGrouping<string, Type>> delegateGroups =
 ```
-```
+```csharp
 from type in coreLibrary.ExportedTypes
 ```
-```
+```csharp
 where type.BaseType == typeof(MulticastDelegate)
 ```
-```
+```csharp
 group type by type.Namespace into delegateGroup
 ```
-```
+```csharp
 orderby delegateGroup.Count() descending, delegateGroup.Key
 ```
-```
+```csharp
 select delegateGroup;
 ```
-```
+
+```csharp
 foreach (IGrouping<string, Type> delegateGroup in delegateGroups) // Output.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.Write(delegateGroup.Count() + " in " + delegateGroup.Key + ":");
 ```
-```
+```csharp
 foreach (Type delegateType in delegateGroup)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.Write(" " + delegateType.Name);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 Trace.Write(Environment.NewLine);
 ```
-```
+```csharp
 }
 ```
 
@@ -346,55 +353,57 @@ In object-oriented programming, object can have behaviours in the form of method
 In the previous example, LINQ query expression is actually implemented with the following function calls (In practice, LINQ code can be written with either syntax. They are totally equivalent. The previous query syntax is compiled to the following query, and the compilation is discussed in detail later):
 
 internal static void DelegateTypesWithQueryMethods()
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Assembly coreLibrary = typeof(object).Assembly;
 ```
-```
+```csharp
 IEnumerable<IGrouping<string, Type>> delegateGroups = coreLibrary.ExportedTypes
 ```
-```
+```csharp
 .Where(type => type.BaseType == typeof(MulticastDelegate))
 ```
-```
+```csharp
 .GroupBy(type => type.Namespace)
 ```
-```
+```csharp
 .OrderByDescending(delegateGroup => delegateGroup.Count())
 ```
-```
+```csharp
 .ThenBy(delegateGroup => delegateGroup.Key);
 ```
-```
+
+```csharp
 foreach (IGrouping<string, Type> delegateGroup in delegateGroups) // Output.
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.Write(delegateGroup.Count() + " in " + delegateGroup.Key + ":");
 ```
-```
+```csharp
 foreach (Type delegateType in delegateGroup)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 Trace.Write(" " + delegateType.Name);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 Trace.Write(Environment.NewLine);
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
 
@@ -409,82 +418,89 @@ To further demonstrate, a task can be implemented to process document:
 The following example designs the task with object-oriented paradigm:
 
 internal class Crawler
-```
+
+```csharp
 {
 ```
 ```csharp
 private readonly DirectoryInfo downloadDirectory;
 ```
-```
+
+```csharp
 internal Crawler(DirectoryInfo downloadDirectory)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 this.downloadDirectory = downloadDirectory;
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 // Download the specified URI to the download directory.
 ```
-```
+```csharp
 internal FileInfo Download(Uri sourceUri)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 throw new NotImplementedException();
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal class Template
 ```
-```
+```csharp
 {
 ```
 ```csharp
 private readonly FileInfo templateFile;
 ```
-```
+
+```csharp
 internal Template(FileInfo templateFilerr
 ```
-```
+```csharp
 this.templateFile = templateFile;
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 // Convert the specified HTML document with template.
 ```
-```
+```csharp
 internal FileInfo Convert(FileInfo sourceFile)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 throw new NotImplementedException();
 ```
-```
+```csharp
 }
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal class DocumentBuilder
 ```
-```
+```csharp
 {
 ```
 ```csharp
@@ -494,34 +510,36 @@ private readonly Crawler crawler;
 ```csharp
 private readonly Template template;
 ```
-```
+
+```csharp
 internal DocumentBuilder(Crawler crawler, Templatetemplate)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 this.crawler = crawler;
 ```
-```
+```csharp
 this.template = template;
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal FileInfo Build(Uri uri)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 FileInfo htmlDocument = this.crawler.Download(uri);
 ```
-```
+```csharp
 return this.template.Convert(htmlDocument);
 ```
-```
+```csharp
 }
 ```
 
@@ -530,13 +548,14 @@ return this.template.Convert(htmlDocument);
 The above Crawler class provides the operation to download the document to a directory. Template class provides the operation to convert a document with template. To focus on the paradigm, the implementations are omitted. To build the document, DocumentBuilder class is defined to compose crawler and template. The following code demonstrates how the task can be done using instances of above classes:
 
 internal static void BuildDocument(Uri sourceUri, DirectoryInfo downloadDirectory, FileInfo templateFile)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 DocumentBuilder builder = new DocumentBuilder(new Crawler(downloadDirectory), new Template(templateFile));
 ```
-```
+```csharp
 FileInfo resultFile = builder.Build(sourceUri);
 ```
 
@@ -545,49 +564,52 @@ FileInfo resultFile = builder.Build(sourceUri);
 In functional paradigm, each operation can be simply modelled as a function, and functions can be composed:
 
 internal static FileInfo Download(Uri sourceUri, DirectoryInfo downloadDirectory)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 throw new NotImplementedException();
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal static FileInfo Convert(FileInfo sourceFile, FileInfo templateFile)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 throw new NotImplementedException();
 ```
-```
+```csharp
 }
 ```
-```
+
+```csharp
 internal static Func<Uri, DirectoryInfo, FileInfo, FileInfo> CreateDocumentBuilder(
 ```
-```
+```csharp
 Func<Uri, DirectoryInfo, FileInfo> download, Func<FileInfo, FileInfo, FileInfo> convert)
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 return (sourceUri, downloadDirectory, templateFile) =>
 ```
-```
+```csharp
 {
 ```
-```
+```csharp
 FileInfo sourceFile = download(sourceUri, downloadDirectory);
 ```
-```
+```csharp
 return convert(sourceFile, templateFile);
 ```
-```
+```csharp
 };
 ```
 
@@ -596,13 +618,14 @@ return convert(sourceFile, templateFile);
 This is how the task can be done using above functions:
 
 internal static void BuildDocument(Uri sourceUri, DirectoryInfo downloadDirectory, FileInfo templateFile)
-```
+
+```csharp
 {
 ```
-```
+```csharp
 Func<Uri, DirectoryInfo, FileInfo, FileInfo> buildDocument = CreateDocumentBuilder(Download, Convert);
 ```
-```
+```csharp
 FileInfo resultFile = buildDocument(sourceUri, downloadDirectory, templateFile);
 ```
 

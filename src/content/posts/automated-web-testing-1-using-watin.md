@@ -167,7 +167,8 @@ internal class Program
 [](http://11011.net/software/vspaste)
 
 There is a sample folder in the WatiN-2.0.1.754-net-2.0. When trying, exceptions are thrown from CrossBrowserTest.ExecuteTest(). So a Thread.Sleep(5000) has to be added between two Firefox test cases, so that WatiN works.
-```
+
+```csharp
 // Simple method
 program.SearchForWatiNOnGoogleVerbose();
 
@@ -240,7 +241,8 @@ public class SomePage : IE
 [](http://11011.net/software/vspaste)
 
 Then testing code can be easy and clear:
-```
+
+```csharp
 [TestMethod]
 public void SomePageTest()
 {

@@ -235,7 +235,8 @@ N'@p0 int',@p0=9
 ## Query plan overhead
 
 The last thing is about the SQL Server [query plan](http://en.wikipedia.org/wiki/Query_plan). Before .NET 4.0, LINQ to SQL has an issue (not sure if it is a bug). LINQ to SQL internally uses ADO.NET, but it does not set the SqlParameter.Size for a variable-length argument, like argument of NVARCHAR type, etc. So for two queries with the same SQL but different argument length:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     database.Products.Where(product => product.ProductName == "A")

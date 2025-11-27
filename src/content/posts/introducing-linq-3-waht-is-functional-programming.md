@@ -3,8 +3,8 @@ title: "Functional Programming and LINQ Paradigm (3) Programming Paradigms and F
 published: 2018-05-30
 description: "Programming paradigm is the fundamental style of programming. There are , for example:"
 image: ""
-tags: ["C#", "LINQ", ".NET", ".NET Core", ".NET Standard"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -66,7 +66,8 @@ Functional programming is declarative, and describes what to do; Object-oriented
 -   sort the groups by each group’s delegate type count in descending order, and if groups have identical delegate type count, then sort them by their namespaces
 
 The following query is implemented this with traditional C# object-oriented programming. It is imperative. The code is a sequence of statements and commands, specifying how to execute the query:
-```
+
+```csharp
 internal static void DelegateTypes()
 {
     Assembly coreLibrary = typeof(object).Assembly;
@@ -125,7 +126,8 @@ internal static void DelegateTypes()
 ```
 
 The following example is functional LINQ implementation, it is declarative. The code describes the logic, without specifying the execution details:
-```
+
+```csharp
 internal static partial class Linq
 {
     internal static void DelegateTypesQueryExpression()
@@ -151,7 +153,8 @@ internal static partial class Linq
 ```
 
 The following is the identical query in query method syntax:
-```
+
+```csharp
 internal static partial class Linq
 {
     internal static void DelegateTypesQueryMethods()
@@ -330,7 +333,8 @@ internal class DocumentBuilder
 ```
 
 The above WebClient class provides the operation to download HTML content to a document. DocumentConverter class provides the operation to convert HTML document to Word document, with a specified template. And OneDriveClient class provides the operation to upload file to OneDrive. To focus on the paradigm, the implementations are omitted (If interested, the complete web content to Word document building implementation can be found [here](/posts/convert-html-to-well-formatted-microsoft-word-document)). To build the document, DocumentBuilder class is defined to compose everything together. The following code demonstrates how these objects works:
-```
+
+```csharp
 internal partial class Imperative
 {
     internal static void BuildDocument(Uri uri, FileInfo template)
@@ -343,7 +347,8 @@ internal partial class Imperative
 ```
 
 In functional paradigm, each operation can be simply represented by a functions, and functions can be composed:
-```
+
+```csharp
 internal static partial class Functional
 {
     internal static FileInfo DownloadHtml(Uri uri)
@@ -372,7 +377,8 @@ internal static partial class Functional
 ```
 
 This is how these functions work:
-```
+
+```csharp
 internal static partial class Functional
 {
     internal static void BuildDocument(Uri uri, FileInfo template)

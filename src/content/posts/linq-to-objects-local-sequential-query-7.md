@@ -3,8 +3,8 @@ title: "LINQ to Objects in Depth (1) Local Sequential Query"
 published: 2018-07-01
 description: "LINQ to Objects queries sequences of .NET objects in local memory of current .NET application or service. Its data source and the queries are represented by IEnumerable<T>."
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ LINQ to Objects queries sequences of .NET objects in local memory of current .NE
 ## Iteration pattern and foreach statement
 
 C#/.NET follows [iterator pattern](http://en.wikipedia.org/wiki/Iterator_pattern) to define sequence of values, and implement sequential access to the values in sequence in a unified approach. Iteration pattern consists of a sequence (also called container of items, or aggregate of elements) and an iterator:
-```
+
+```csharp
 internal abstract class Sequence
 {
     public abstract Iterator GetEnumerator(); // Must be public.
@@ -35,7 +36,8 @@ internal abstract class Iterator
 ```
 
 And their generic version is:
-```
+
+```csharp
 internal abstract class GenericSequence<T>
 {
     public abstract GenericIterator<T> GetEnumerator(); // Must be public.
@@ -55,7 +57,8 @@ These types and members demonstrate the minimum requirements for iteration patte
 -   Iterator traverses all values in the sequence. Its MoveNext method returns a bool value to indicate whether there is still a next value that can be pulled. If true is returned, its Current property can be called to pull that value.
 
 Then the values in above non-generic and generic sequences can be access with C# foreach statement:
-```
+
+```csharp
 internal static partial class IteratorPattern
 {
     internal static void ForEach<T>(Sequence sequence, Action<T> processNext)
@@ -77,7 +80,8 @@ internal static partial class IteratorPattern
 ```
 
 The above foreach loops are compiled to while loops:
-```
+
+```csharp
 internal static void CompiledForEach<T>(Sequence sequence, Action<T> processNext)
 {
     Iterator iterator = sequence.GetEnumerator();
@@ -116,7 +120,8 @@ internal static void CompiledForEach<T>(GenericSequence<T> sequence, Action<T> p
 So the foreach loops is syntactic sugar to make above imperative control flow declarative. The generic version is always preferred, becuase the non-generic Iterator’s Current property returns object, it has to be explicitly casted to the expected type specified in the foreach statement, which could be a chance of failure.
 
 To demonstrate the iterator pattern implementation, a sequence of values can be stored with a singly linked list, with one value in each node:
-```
+
+```csharp
 internal class SinglyLinkedListNode<T>
 {
     internal SinglyLinkedListNode(T value, SinglyLinkedListNode<T> next = null)
@@ -169,7 +174,8 @@ internal class LinkedListSequence<T> : GenericSequence<T>
 ```
 
 Now the values in the linked list sequence can be sequentially pulled with the foreach syntactic sugar:
-```
+
+```csharp
 internal static void ForEach(SinglyLinkedListNode<int> head)
 {
     LinkedListSequence<int> sequence = new LinkedListSequence<int>(head);
@@ -250,7 +256,8 @@ In Microsoft’s unit test framework [MSTest](https://en.wikipedia.org/wiki/MSTe
 -   CollectionAssert to check conditions for ICollection, providing methods like AllItemsAreInstancesOfType, AllItemsAreNotNull, IsSubsetOf, etc.
 
 To demonstrate how to consume IEnumerator<T> and IEnumerator<T> with the iterator pattern, an EnumerableAssert utility type can be defined to check conditions for sequence. For example, the following assertion methods check whether the specified sequence is not null and is empty/is not null and is not empty/is null or is empty:
-```
+
+```csharp
 public static partial class EnumerableAssert
 {
     public static void IsEmpty<T>(IEnumerable<T> actual, string message = null, params object[] parameters)
@@ -283,7 +290,8 @@ public static partial class EnumerableAssert
 ```
 
 The following methods check whether the specified sequence contains one single value/contains more then one values:
-```
+
+```csharp
 public static void Single<T>(IEnumerable<T> actual, string message = null, params object[] parameters)
 {
     Assert.IsNotNull(actual, message, parameters);
@@ -304,7 +312,8 @@ public static void Multiple<T>(IEnumerable<T> actual, string message = null, par
 ```
 
 The following methods check whether the specified sequence contains/does not contain the specified value:
-```
+
+```csharp
 public static void Contains<T>(
     T expected,
     IEnumerable<T> actual,
@@ -343,7 +352,8 @@ public static void DoesNotContain<T>(
 ```
 
 The following AreSequentialEqual method checks whether 2 sequences’ values are sequentially equal:
-```
+
+```csharp
 public static void AreSequentialEqual<T>(
     IEnumerable<T> expected,
     IEnumerable<T> actual,
@@ -394,7 +404,8 @@ namespace System
 ```
 
 Instead, T\[\] directly implements IEnumerable<T>, ICollection<T>, and IList<T>, as long as T\[\] is single dimensional, and zero–lower bound. So array T\[\] can be used with foreach loop:
-```
+
+```csharp
 internal static void ForEach<T>(T[] array, Action<T> action)
 {
     foreach (T value in array)
@@ -405,7 +416,8 @@ internal static void ForEach<T>(T[] array, Action<T> action)
 ```
 
 For better performance, it is compiled into a for loop, accessing each value with index. For array, this is cheaper than calling MoveNext method and Current getter:
-```
+
+```csharp
 internal static void CompiledForEach<T>(T[] array, Action<T> action)
 {
     for (int index = 0; index < array.Length; index++)
@@ -417,7 +429,8 @@ internal static void CompiledForEach<T>(T[] array, Action<T> action)
 ```
 
 And so is string. Since string is a sequence of characters, it implements IEnumerable<char>. When string is used with foreach loop, it is also compiled to for loop for better performance:
-```
+
+```csharp
 internal static void ForEach(string @string, Action<char> action)
 {
     foreach (char value in @string)
@@ -518,7 +531,8 @@ So the LINQ to Objects query methods and query expression are available for to a
 ### Non-generic sequence
 
 For historical reason, there are a number of .NET early built-in types only implement IEnumerable. The following example queries these types from the core library:
-```
+
+```csharp
 internal static void NonGenericSequences()
 {
     Type nonGenericEnumerable = typeof(IEnumerable);

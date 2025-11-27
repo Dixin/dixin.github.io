@@ -57,7 +57,8 @@ Above sequence/Iterator classes demonstrate the minimum requirements of using a 
 ## The foreach and in keywords
 
 Now foreach loop can be compiled for above non-generic and generic containers:
-```
+
+```csharp
 public static partial class IteratorPattern
 {
     public static void ForEach<T>(Sequence sequence, Action<T> processValue)
@@ -79,7 +80,8 @@ public static partial class IteratorPattern
 ```
 
 These foreach loops are compiled to while loops, and GetEnumeraotor/MoveNext/Current calls:
-```
+
+```csharp
 public static void CompiledForEach<T>(Sequence sequence, Action<T> next)
 {
     Iterator iterator = sequence.GetEnumerator();
@@ -194,7 +196,8 @@ It might be more straightforward if these interfaces were named IItorable/IItera
 ### foreach loop vs. for loop
 
 As fore mentioned, array T\[\] implements IEnumerable<T> if it is single dimensional and zero–lower bound. foreach loop for array:
-```
+
+```csharp
 public static void ForEach<T>(T[] array, Action<T> next)
 {
     foreach (T value in array)
@@ -205,7 +208,8 @@ public static void ForEach<T>(T[] array, Action<T> next)
 ```
 
 will be compiled into a for loop for better performance:
-```
+
+```csharp
 public static void CompiledForEach<T>(T[] array, Action<T> next)
 {
     for (int index = 0; index < array.Length; index++)
@@ -217,7 +221,8 @@ public static void CompiledForEach<T>(T[] array, Action<T> next)
 ```
 
 And so is string:
-```
+
+```csharp
 public static void ForEach(string @string, Action<char> next)
 {
     foreach (char value in @string)
@@ -239,7 +244,8 @@ public static void CompiledForEach(string @string, Action<char> next)
 ### Non-generic vs. generic sequence
 
 IEnumerable<T> is stronger-typed and should always be preferred. However, for above historical reason, some types in .NET only implement IEnumerable. To inspect these types, just need to query the IEnumerable types, and the IEnumerable<T> types, then use Except query method:
-```
+
+```csharp
 public static IEnumerable<Type> NonGenericSequences(Assembly assembly)
 {
     Type nonGenericEnumerable = typeof(IEnumerable);
@@ -255,7 +261,8 @@ public static IEnumerable<Type> NonGenericSequences(Assembly assembly)
 ```
 
 Here Type.IsAssignableFrom is a method provided by .NET. It only works for non-generic types, and closed generic types like typeof(IEnumerable<string>). So another IsAssignableTo extension method has to be created for open generic types like typeof(IEnumerable<>):
-```
+
+```csharp
 public static partial class TypeExtensions
 {
     public static bool IsAssignableTo(this Type from, Type to)
@@ -288,7 +295,8 @@ public static partial class TypeExtensions
 ```
 
 The following code queries non-generic sequences in mscorlib.dll and System.dll:
-```
+
+```csharp
 public static void NonGenericSequences()
 {
     foreach (Type nonGenericSequence in NonGenericSequences(typeof(object).GetTypeInfo().Assembly)) // mscorlib.dll.
@@ -416,7 +424,8 @@ In Microsoft’s unit test framework [MSTest](https://en.wikipedia.org/wiki/MSTe
 -   CollectionAssert: for ICollection
 
 After understanding the IEnumerable<T>/IEnumerator<T> pattern in .NET, an EnumerableAssert class can be defined for IEnumerable<T>.
-```
+
+```csharp
 public static partial class EnumerableAssert
 {
     public static void AreSequentialEqual<T>(
@@ -476,7 +485,8 @@ public static partial class EnumerableAssert
 ```
 
 And a few other assert methods:
-```
+
+```csharp
 public static void IsEmpty<T>(IEnumerable<T> actual, string message = null, params object[] parameters)
 {
     Assert.IsNotNull(actual, message, parameters);

@@ -3,7 +3,7 @@ title: "Functional Programming and LINQ via C#"
 published: 2025-03-02
 description: "!"
 image: ""
-tags: [".NET", "C#", "Functional Programming", "LINQ", "LINQ via C#", ".NET Core", ".NET Standard", "C# 8.0"]
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "C# 8.0", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""

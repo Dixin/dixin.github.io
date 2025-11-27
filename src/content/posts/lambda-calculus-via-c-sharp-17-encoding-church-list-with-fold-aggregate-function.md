@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (17) Encoding Church List with Fold (Aggregate) F
 published: 2018-11-17
 description: "A third way to encode Church list, is to use ) (also called [aggregate in C#/.NET](https://msdn.microsoft.com/en-us/library/v"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -16,7 +16,8 @@ lang: ""
 ## **Latest version: [https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-5-list](/posts/lambda-calculus-via-csharp-5-list "https://weblogs.asp.net/dixin/lambda-calculus-via-csharp-5-list")**
 
 A third way to encode Church list, is to use [fold function](http://en.wikipedia.org/wiki/Fold_\(higher-order_function\)) (also called [aggregate in C#/.NET](https://msdn.microsoft.com/en-us/library/vstudio/bb549218.aspx)):
-```
+
+```csharp
 CreateListNode3 = λv.λn.λf.λx.f v (n f x)
 Null3 = λf.λx.x
 IsNull3 = λl.l (λv.λx.False) True
@@ -28,7 +29,8 @@ Index3 = λl.λi.i Next3 l
 ## ListNode and wrapper
 
 According to the definition, this is the ListNode in C#:
-```
+
+```csharp
 // Curried from TResult ListNode<out T, TResult>(Func<T, TResult, TResult> f, TResult x)
 public delegate Func<TAccumulate, TAccumulate> ListNode<out T, TAccumulate>(Func<TAccumulate, Func<T, TAccumulate>> f);
 // ListNode is the alias of: Func<Func<T, Func<TResult, TResult>>, Func<TResult, TResult>>
@@ -84,7 +86,8 @@ public partial class _ListNode<T>
 ## IsNull
 
 Null is \_ListNode<T>.Null, so IsNull function is easy to implement:
-```
+
+```csharp
 public static partial class _ListNodeExtensions
 {
     // IsNull = node => node(value => _ => ChurchBoolean.False)(ChurchBoolean.True)
@@ -97,7 +100,8 @@ public static partial class _ListNodeExtensions
 IsNull predicate is similar to the IsNull of Church list encoded with 1 tuple as each node.
 
 ## Create, value and Next
-```
+
+```csharp
 public static partial class _ListNodeExtensions
 {
     // Create = value => next => f => x => f(value)(next(f)(x))
@@ -123,7 +127,8 @@ Next is tricky but the same way as Church numeral’s Decrease2, which version w
 ## Index
 
 The same as other list encodings:
-```
+
+```csharp
 public static partial class _ListNodeExtensions
 {
     // Index = start => index => index(Next)(start)

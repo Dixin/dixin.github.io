@@ -12,7 +12,8 @@ lang: ""
 When programming Silverlight, it is neccessary to pay attention to the order of the XAML element’s attributes. Here is a simple example.
 
 Here is the ListBox in the XAML:
-```
+
+```csharp
 <ListBox SelectedItem="{Binding SelectedItem}" ItemsSource="{Binding Items}" x:Name="listBox">
     <ListBox.ItemTemplate>
         <DataTemplate>
@@ -61,7 +62,8 @@ We hope 4 items appear in this ListBox, and the third one is selected. But it wo
 The third item is not selected because the SelectedItem attribute is binded before ItemsSource. So when SelectedItem is set, there is no ItemsSource to check.
 
 The solution is to swap the two attributes, put ItemsSource before SelectedItem:
-```
+
+```csharp
 <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" x:Name="listBox">
 ```
 [](http://11011.net/software/vspaste)

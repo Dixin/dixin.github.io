@@ -3,7 +3,7 @@ title: "Understanding C# Features (3) Implicit Type and Immutable Anonymous Type
 published: 2009-11-26
 description: "\\] - \\]"
 image: ""
-tags: [".NET", "C#", "C# 3.0", "C# 4.0", "Dynamic", "Functional Programming", "LINQ", "LINQ via C#", "C# Features"]
+tags: [".NET", "C#", "C# 3.0", "C# 4.0", "C# Features", "Dynamic", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -14,17 +14,20 @@ lang: ""
 ## Local variable type inference
 
 The [var keyword](https://msdn.microsoft.com/en-us/library/bb383973.aspx) is introduced since C# 3.0. Consider the local variable declaration and initialization:
-```
+
+```csharp
 TypeName localVariable = value;
 ```
 
 Since the type of localVariable can be inferred from the type of value, it is Ok to write code like this:
-```
+
+```csharp
 var localVariable = value; // Compiler infers type of localVariable from type of value.
 ```
 
 Here are some samples:
-```
+
+```csharp
 var a = 1;
 var b = 1.0;
 var c = "Mark";
@@ -35,7 +38,8 @@ var g = f.Length;
 ```
 
 They are identical to:
-```
+
+```csharp
 int a = 1;
 double b = 1.0;
 string c = "Mark";
@@ -65,7 +69,8 @@ private void Action(var paramter) // Compiler cannot infer the type of parameter
 ### var vs. explicit typing
 
 Sometimes the “var” keyword seems somewhat convenient:
-```
+
+```csharp
 Dictionary<string, IEnumerable<Person>> dictionary1 = GetDictionary();
 var dictionary2 = GetDictionary();
 ```
@@ -99,7 +104,8 @@ private void Action(dynamic paramter) // private void Action(object paramter)
 ## Immutable anonymous type
 
 This feature provides a way to create an instance without specifying the type name:
-```
+
+```csharp
 var dixin = new 
     { 
         Name = "Dixin", 
@@ -163,7 +169,8 @@ internal sealed class AnonymousType<TName, TAge>
 ```
 
 It is atomic/immutable type. And the instantiation code s compiled to constructor call:
-```
+
+```csharp
 AnonymousType<string, int> dixin = new AnonymousType<string, int>("Dixin", 30);
 ```
 
@@ -179,7 +186,8 @@ Anonymous type are reused by 2 anonymous instantiation if they have:
 -   the same types of properties
 
 For example:
-```
+
+```csharp
 [TestMethod()]
 public void ReuseAnonymousType()
 {
@@ -195,7 +203,8 @@ Compiler also generates a override of object.Equals(), two anonymous objects are
 
 -   they are of the same anonymous type
 -   their each property’s value are equal
-```
+
+```csharp
 [TestMethod()]
 public void AnonymousObjectEquality()
 {

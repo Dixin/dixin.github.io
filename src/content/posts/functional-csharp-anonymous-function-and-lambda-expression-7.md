@@ -3,8 +3,8 @@ title: "C# Functional Programming In-Depth (6) Anonymous Function and Lambda Exp
 published: 2018-06-06
 description: "Besides named function represented by method members, C# also supports anonymous functions, represented by anonymous method or lambda expression with no name at design time. This part discussed lambda"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -20,7 +20,8 @@ Besides named function represented by method members, C# also supports anonymous
 ## Anonymous method
 
 As fore mentioned, a function can be initialized from a named method:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static bool IsPositive(int int32)
@@ -37,7 +38,8 @@ internal static partial class Functions
 ```
 
 C# 2.0 introduces a syntactic sugar called anonymous method, enabling methods to be defined inline with the delegate keyword. The above named method can be inline as:
-```
+
+```csharp
 internal static void AnonymousFunction()
 {
     Func<int, bool> isPositive = delegate (int int32)
@@ -80,7 +82,8 @@ Besides named methods, C# compiler also generates a cache field for performance.
 ## Lambda expression
 
 C# 3.0 introduces lambda expression syntactic sugar, so above anonymous method can be simplified as:
-```
+
+```csharp
 internal static void Lambda()
 {
     Func<int, bool> isPositive = (int int32) =>
@@ -98,7 +101,8 @@ Its compilation is identical to above anonymous method with delegate keyword. Th
 -   if the body of the lambda expression has only one statement, the expression body syntactic sugar applies, the curly brackets for the body and return keyword can be omitted,
 
 Lambda expression with expression body are called expression lambda, for example:
-```
+
+```csharp
 internal static void ExpressionLambda()
 {
     Func<int, int, int> add = (int32A, int32B) => int32A + int32B;
@@ -108,7 +112,8 @@ internal static void ExpressionLambda()
 ```
 
 When a lambda expression having more than one statements in the body, its body has to be a block with curly brackets. It is called statement lambda:
-```
+
+```csharp
 internal static void StatementLambda()
 {
     Func<int, int, int> add = (int32A, int32B) =>
@@ -130,7 +135,8 @@ internal static void StatementLambda()
 ```
 
 Lambda expression (both expression lambda and statement lambda) can also be used with the constructor call syntax of delegate, or type conversion syntax:
-```
+
+```csharp
 internal static void ConstructorCall()
 {
     Func<int, int, int> add = new Func<int, int, int>((int32A, int32B) => int32A + int32B);
@@ -155,7 +161,8 @@ internal static void TypeConversion()
 ## Call anonymous function
 
 An anonymous function is not required to be assigned to a function variable. It can be used (called) directly. Unfortunately, the following syntax does not work in C#:
-```
+
+```csharp
 internal static void CallLambdaExpression()
 {
     (int32 => int32 > 0)(1); // Define an expression lambda and call.
@@ -163,7 +170,8 @@ internal static void CallLambdaExpression()
 ```
 
 The above code cannot be compiled because C# compiler cannot infer any type for the lambda expression. For this kind of IIFE ([immediately-invoked function expression](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression)), the above constructor call syntax, or type conversion syntax can be used to provide type information to compiler:
-```
+
+```csharp
 internal static void CallLambdaExpressionWithConstructor()
 {
     bool result = new Func<int, bool>(int32 => int32 > 0)(1);
@@ -208,7 +216,8 @@ internal static partial class CompiledFunctions
 ```
 
 Here are more examples:
-```
+
+```csharp
 internal static void CallAnonymousFunction()
 {
     new Func<int, int, int>((int32A, int32B) => int32A + int32B)(1, 2);
@@ -233,17 +242,20 @@ internal static void CallAnonymousFunction()
 ```
 
 Some other functional languages support the IIFE syntax without type information. For example, F# compiler can infer the types in the following lambda expression:
-```
+
+```csharp
 (fun value -> value > 0) 1
 ```
 
 Regarding value is compared with int value 1 with the > operator, F# infers parameter value is of type int, and also infers return type is bool from the result type of the > operator for int. Similarly, the following lambda expression works in Haskell (named after [Haskell Curry](http://en.wikipedia.org/wiki/Haskell_Curry), mathematician and logician):
-```
+
+```csharp
 (\value -> value > 0) 1
 ```
 
 This can also work In some loosely typed languages, like JavaScript:
-```
+
+```csharp
 (value => value > 0)(1);
 
 (function(value) {
@@ -254,7 +266,8 @@ This can also work In some loosely typed languages, like JavaScript:
 ## Closure
 
 Anonymous function has the same closure capability as local function:
-```
+
+```csharp
 internal static partial class Functions
 {
     internal static void Closure()

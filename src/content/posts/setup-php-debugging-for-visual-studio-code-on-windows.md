@@ -3,8 +3,8 @@ title: "End-to-end: Setup PHP Debugging for Visual Studio Code on Windows"
 published: 2018-04-07
 description: "This is a quick tutorial of minimum installation and configurations of development environment for PHP programming, including Apache, PHP, and Visual Studio Code (VSCode) on 64 bit Windows."
 image: ""
-tags: ["Visual Studio Code", "PHP", "Apache", "XDebug"]
-category: "Visual Studio Code"
+tags: ["Apache", "PHP", "Visual Studio Code", "XDebug"]
+category: "Apache"
 draft: false
 lang: ""
 ---

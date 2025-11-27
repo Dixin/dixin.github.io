@@ -55,7 +55,8 @@ public class Address
 Think about the above type. The first problem is, validation code is needed in each property setter. For example, zip code should not be negative.
 
 The second problems is, the client code could be like this:
-```
+
+```csharp
 Address address = new Address();
 address.City = "Bellevue";
 address.ZipCode = 98007;
@@ -100,7 +101,8 @@ The values can only be injected from the constructor, so the validation is centr
 -   you do not need to know its type.
 
 Actually var is mostly used because of anonymous type. Here is a sample:
-```
+
+```csharp
 var results = source.Where(item => item.Value > 20).Select(item => new
 {
     Id = employee.Id,
@@ -118,7 +120,8 @@ The Select() query method returns a generic IEnumerable of some anonymous type g
 **✘** Do not use var keyword in the other scenarios. In another way it means: do not use var if possible.
 
 For example, these code are from a project:
-```
+
+```csharp
 var a = dictionary[key];
 // ...
 // ...
@@ -147,7 +150,8 @@ Continuously using var will make the code harder to read.
 This is copied from the title of a paper, [Static Typing Where Possible, Dynamic Typing When Needed: The End of the Cold War Between Programming Languages](http://research.microsoft.com/~emeijer/papers/rdl04meijer.pdf).
 
 As [Anders Hejlsberg](http://en.wikipedia.org/wiki/Anders_Hejlsberg) said, When C# code is “talking to anything that isn’t statically typed to be a .NET class”, dynamic is a great solution. For example:
-```
+
+```csharp
 Type type = Type.GetTypeFromProgID("SAPI.SpVoice");
 dynamic optimusPrime = Activator.CreateInstance(type);
 optimusPrime.Speak("Autobots, transform, and roll out!");
@@ -165,7 +169,8 @@ This rule need to be emphasized a lot. Otherwise these are going to happen:
 -   a lot of errors cannot be checked at compile time.
 
 Take the above Address class as an example:
-```
+
+```csharp
 dynamic address = new Address("Bellevue", 98007);
 Console.WriteLine(address.City);
 Console.WriteLine(address.State); // RuntimeBinderException

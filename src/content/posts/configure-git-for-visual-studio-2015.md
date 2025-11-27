@@ -24,7 +24,8 @@ After installing [GitHub for Windows Desktop](https://desktop.github.com/), it p
 > …
 
 The configurations for Visual Studio 2015 can be added to local repository/all repositories/all users with git config --edit –local/global/system:
-```
+
+```csharp
 [diff]
     tool = vs2015
 [difftool]

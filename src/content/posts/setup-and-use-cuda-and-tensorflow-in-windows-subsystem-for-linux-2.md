@@ -3,8 +3,8 @@ title: "Setup and use CUDA and TensorFlow in Windows Subsystem for Linux 2"
 published: 2020-12-17
 description: "Table of contents"
 image: ""
-tags: ["Windows", "Linux", "CUDA", "Nvidia", "WSL", "Windows Subsystem for Linux", "WSL 2", "Docker", "Hardware", "Windows 10", "TensorFlow"]
-category: "Windows"
+tags: ["CUDA", "Docker", "Hardware", "Linux", "Nvidia", "TensorFlow", "Windows", "Windows 10", "Windows Subsystem for Linux", "WSL", "WSL 2"]
+category: "CUDA"
 draft: false
 lang: ""
 ---

@@ -3,7 +3,7 @@ title: "Build custom Windows 10 PE"
 published: 2019-01-14
 description: "Windows PE (WinPE) is a small version of Windows, which can be used to boot up computers from CD or USB disk drive. It is very useful to deploy or repair the desktop or server edition of Windows. For"
 image: ""
-tags: ["Windows", "Windows PE", "WinPE", "Windows 10"]
+tags: ["Windows", "Windows 10", "Windows PE", "WinPE"]
 category: "Windows"
 draft: false
 lang: ""

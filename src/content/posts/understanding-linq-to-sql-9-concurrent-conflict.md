@@ -16,7 +16,8 @@ Conflicts are very common when [concurrently](http://en.wikipedia.org/wiki/Concu
 ## Conflicts in concurrent data access
 
 The following code demonstrates the concurrent conflict scenario:
-```
+
+```csharp
 Action<int, Action<Category>> updateCategory = (id, updater) =>
     {
         using (NorthwindDataContext database = new NorthwindDataContext())
@@ -88,7 +89,8 @@ This original state check is specified by the \[Column\] attribute of entity pro
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_14545167.png "image")
 
 If ColumnAttribute.UpdateCheck is not specified:
-```
+
+```csharp
 [Column(Storage = "_CategoryName", DbType = "NVarChar(15) NOT NULL", CanBeNull = false)]
 public string CategoryName
 {
@@ -124,7 +126,8 @@ In the above screenshot, there is a \[Time Stamp\] option in the O/R designer, w
 ![image](https://aspblogs.z22.web.core.windows.net/dixin/Media/image_2F5CFAA8.png "image")
 
 And recreate the model in O/R designer. Now this is the generated \[Column\] attribute:
-```
+
+```csharp
 [Column(Storage = "_Version", AutoSync = AutoSync.Always, DbType = "rowversion NOT NULL", 
     CanBeNull = false, IsDbGenerated = true, IsVersion = true, UpdateCheck = UpdateCheck.Never)]
 public Binary Version
@@ -181,7 +184,8 @@ So if the caller of DataContext.SubmitChanges() knows how to resolve the conflic
 ### Merge changes to resolve conflict
 
 For example, a common tactic is to merge the changes into database:
-```
+
+```csharp
 Action<int, Action<Category>> updateCategory = (id, updater) =>
     {
         using (NorthwindDataContext database = new NorthwindDataContext())
@@ -282,7 +286,8 @@ COMMIT TRANSACTION -- Updating successes.
 ```
 
 To resolve conflicts, an easier way is just invoking ChangeConflictCollection.ResolveAll():
-```
+
+```csharp
 catch (ChangeConflictException)
 {
     database.ChangeConflicts.ResolveAll(RefreshMode.KeepChanges);

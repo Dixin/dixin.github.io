@@ -3,8 +3,8 @@ title: "Lambda Calculus via C# (18) Encoding Signed Number"
 published: 2018-11-18
 description: "In lambda calculus, a signed number (integer) can be represented by a  of [Chur"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -19,7 +19,8 @@ In lambda calculus, a signed number (integer) can be represented by a [Church pa
 
 -   the first Church number represents the positive part
 -   the second Church number represents the negative part
-```
+
+```csharp
 Signed := Tuple
 ```
 
@@ -28,25 +29,29 @@ So a signed number (npositive, negative) ≡ Subtract npositive nnegative.
 ## Create Signed number from Church numeral
 
 Church numeral represents natural number and is always greater than or equal to 0. So Converting Church numeral to signed number is easy:
-```
+
+```csharp
 ToSigned := λn.CreateTuple n 0
 ```
 
 It just need to append a negative part 0.
 
 To create a negative signed number, just swap the Church numeral and 0:
-```
+
+```csharp
 Negate := Swap
 ```
 
 And it is straightforward to get the positive part or negative part from a signed number:
-```
+
+```csharp
 Positive := Item1
 Negative := Item2
 ```
 
 C#:
-```
+
+```csharp
 // SignedNumeral is the alias of Tuple<_Numeral, _Numeral>
 public delegate object SignedNumeral(Boolean<_Numeral, _Numeral> f);
 
@@ -75,24 +80,28 @@ public static partial class ChurchSignedNumeral
 ## Format with 0
 
 In this way, one signed number can have many representations. For example:
-```
+
+```csharp
 1  ≡ (1, 0) ≡ (2, 1) ≡ (3, 2) ≡ (4, 3) ≡ …
 -1  ≡ (0, 1) ≡ (1, 2) ≡ (2, 3) ≡ (3, 4) ≡ …
 ```
 
 So for convenience a format function can be create to consistently represent a signed number in (positive, 0) or (0, negative):
-```
+
+```csharp
 FormatWithZero = λs.If (IsEqual sp  sn) (λx.ToSigned 0) (λx.If (IsGreater sp sn) (λy.ToSigned (Subtract sp sn)) (λy.Negate (ToSigned (Subtract sn sp))))
 ```
 
 where
-```
+
+```csharp
 sp ≡ Positive s
 sn ≡ Negative s
 ```
 
 C#:
-```
+
+```csharp
 // FormatWithZero = signed => If(positive == negative)(_ => Zero.Sign())(_ => If(positive > negative)(__ => (positive - negative).Sign())(__ => (negative - positive).Sign().Negate()))
 public static SignedNumeral FormatWithZero(this SignedNumeral signed)
 {
@@ -111,7 +120,8 @@ public static SignedNumeral FormatWithZero(this SignedNumeral signed)
 ## Arithmetic
 
 Naturally, for signed numbers a, b:
-```
+
+```csharp
 a + b
 ≡ (ap, an) + (bp, bn)
 ≡ (ap - an) + (bp - bn)
@@ -134,7 +144,8 @@ a + b
 ```
 
 So in lambda calculus:
-```
+
+```csharp
 AddSigned := λa.λb.FormatWithZero (CreateTuple (Add ap bp) (Add an bn))
 
 SubtractSigned := λa.λb.FormatWithZero (CreateTuple (Add ap bn) (Add an bp))
@@ -145,14 +156,16 @@ DivideBySigned := λa.λb.FormatWithZero (CreateTuple (Add (DivideByIgnoreZero a
 ```
 
 In DivideBySigned,
-```
+
+```csharp
 DivideByIgnoreZero = λa.λb.If (IsZero b) (λx.0) (λx._DivideBy a b)
 ```
 
 When a Church numeral a is divided by Church numeral 0, just returns 0.
 
 C#:
-```
+
+```csharp
 // Add = a => b => ChurchTuple.Create(a.Positive() + b.Positive())(a.Negative() + b.Negative()).FormatWithZero()
 public static SignedNumeral Add
     (this SignedNumeral a, SignedNumeral b) => 
@@ -187,7 +200,8 @@ public static SignedNumeral DivideBy
 ```
 
 In DivideBy, operator | is DivideByIgnoreZero, since it looks like /:
-```
+
+```csharp
 public static partial class _NumeralExtensions
 {
     // DivideByIgnoreZero = dividend => divisor => If(divisor.IsZero())(_ => Zero)(_ => dividend._DivideBy(divisor))
@@ -359,13 +373,15 @@ public class ChurchSignedNumeralTests
 More intuitively, signed number can also be encoded by a Church pair of a Church Boolean and a Church numeral: (sign, absolute-value). For example, +1 will be (True, 1), -2 will be (False, 2), etc.
 
 So:
-```
+
+```csharp
 Signed2 := Tuple
 Sign := Item1
 Absolute := Item2
 ```
 
 Its arithmetic, for example, multiply, also becomes [intuitively](/posts/lambda-calculus-via-c-sharp-5-boolean-logic):
-```
+
+```csharp
 MultiplySigned2 = λa.λb.CreateTuple (Xor (Sign a) (Sign b)) (Multiply (Absolute a) (Absolute b))
 ```

@@ -3,8 +3,8 @@ title: "Category Theory via C# (21) More Monad: Writer< , > Monad"
 published: 2018-12-22
 description: "Unlike the Reader< , > monad, the Writer< , > monad output contents with a sequence of functions:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -46,7 +46,8 @@ public TContent Content
 A Writer< , > is more complex than Reader< , >. It is a pair of value and output content, plus a monoid. A monoid is needed because its Binary operator is used to combine multiple output contents into one.
 
 This is the SelectMany:
-```
+
+```csharp
 [Pure]
 public static partial class WriterExtensions
 {
@@ -71,7 +72,8 @@ public static partial class WriterExtensions
 ```
 
 so that
-```
+
+```csharp
 // [Pure]
 public static partial class WriterExtensions
 {
@@ -103,7 +105,8 @@ public static partial class WriterExtensions
 ```
 
 A typical usage is to output string logs when applying a sequence of functions:
-```
+
+```csharp
 // [Pure]
 public static partial class WriterExtensions
 {
@@ -115,7 +118,8 @@ public static partial class WriterExtensions
 ```
 
 Take previous IEnumerable stack as example:
-```
+
+```csharp
 public static void Stack()
 {
     IEnumerable<int> stack = Enumerable.Empty<int>();
@@ -140,7 +144,8 @@ The logs will be like:
 > 2015-05-25T10:18:50.1769264-07:00 - Push 1 to stack. 2015-05-25T10:18:50.1769264-07:00 - Push 2 to stack. 2015-05-25T10:18:50.2082128-07:00 - Pop 2 from stack. 2015-05-25T10:18:50.2082128-07:00 - Reset stack to 0, 1, 2. 2015-05-25T10:18:50.2082128-07:00 - Push 4 to stack. 2015-05-25T10:18:50.2082128-07:00 - Pop 4 from stack. 2015-05-25T10:18:50.2082128-07:00 - Get current stack.
 
 ## Monad laws, and unit tests
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod()]

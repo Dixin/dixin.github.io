@@ -235,7 +235,8 @@ Before running the query, take a look at the IQueryable<T> query methods.
 ### Deferred execution methods
 
 Take Where() as an example:
-```
+
+```csharp
 public static class Queryable
 {
     public static IQueryable<TSource> Where<TSource>(
@@ -269,7 +270,8 @@ It is very very different from [IEnumerable<T>’s Where() query method](/posts/
 Obviously, the above constructed expression tree is used to contain the information which is prepared to be translated.
 
 The ordering query method, like OrderBy(), is a little different, which converts the constructed IQueryable<TSource> object to an IOrderedQueryable<TSource> object:
-```
+
+```csharp
 public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(
     this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
 {
@@ -291,7 +293,8 @@ public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(
 ```
 
 And so is ThenBy():
-```
+
+```csharp
 public static IOrderedQueryable<TSource> ThenBy<TSource, TKey>(
     this IOrderedQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
 {
@@ -316,7 +319,8 @@ ThenBy() / ThenByDescending() are extension methods of IOrderedQueryable<TSource
 ### Eager execution methods
 
 Single() is different:
-```
+
+```csharp
 public static TSource Single<TSource>(this IQueryable<TSource> source)
 {
     // Checks arguments.
@@ -337,7 +341,8 @@ public static TSource Single<TSource>(this IQueryable<TSource> source)
 Logically, Single() cannot be deferred. So after construction the expression tree, it invokes query provider’s generic Execute() method, and returns a TSource object instead of a IQueryable<TSource>.
 
 Of course, the aggregate methods looks similar, invoking Execute() instead of CreateQuery():
-```
+
+```csharp
 public static decimal Average<TSource>(
     this IQueryable<TSource> source, Expression<Func<TSource, decimal>> selector)
 {
@@ -366,7 +371,8 @@ Now it is ready to run all the stuff above.
 ### Query a collection of items (deferred execution)
 
 The following query expects a collection of Product objects:
-```
+
+```csharp
 using (NorthwindDataContext database = new NorthwindDataContext())
 {
     IQueryProvider provider = new QueryProvider(database.GetCommand, database.ExecuteQuery);
@@ -412,7 +418,8 @@ This is the printed output:
 ### Query a single item (eager execution)
 
 The following sample is different:
-```
+
+```csharp
 IQueryProvider provider = new QueryProvider(database.GetCommand, database.ExecuteQuery);
 IQueryable<Product> source = new Queryable<Product>(provider, database.GetTable<Product>());
 string productName = source.Where(product => product.CategoryID > 2)
@@ -433,7 +440,8 @@ WHERE [t0].[CategoryID] > @p0',N'@p0 int',@p0=2
 ### Aggregate (eager execution)
 
 Aggregate query is also eager:
-```
+
+```csharp
 IQueryProvider provider = new QueryProvider(database.GetCommand, database.ExecuteQuery);
 IQueryable<Product> source = new Queryable<Product>(provider, database.GetTable<Product>());
 decimal averagePrice = source.Where(product => product.CategoryID == 2)
@@ -620,7 +628,8 @@ etc.
 ### LINQ to Objects provider
 
 LINQ to Objects is IEnumerable based, but the interesting thing is, IEnumerble<T> has an AsQueryable() extension method, which turns IEnumerble-based query into IQueryable-based query:
-```
+
+```csharp
 public static class Queryable
 {
     public static IQueryable<TElement> AsQueryable<TElement>(

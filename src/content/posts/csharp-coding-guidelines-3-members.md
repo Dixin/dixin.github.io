@@ -24,7 +24,8 @@ C# Coding Guidelines:
 **✔** Consider designing lightweight constructors doing minimal work, like initializing the fields with the parameters.
 
 When we call a constructor, an instance is expected to return immediately. These constructors are heavy and could be slow:
-```
+
+```csharp
 internal class Category
 {
     internal Category(int id)
@@ -43,14 +44,16 @@ internal class Taxonomy
 ```
 
 When the database or network is busy:
-```
+
+```csharp
 Category category = new Category(id);
 Taxonomy taxonomy = new Taxonomy(uri);
 ```
 [](http://11011.net/software/vspaste)
 
 In the above thread it would take 5 minutes to create a new instance of the class, which will be surprising. So it is recommended to deign the constructors like this:
-```
+
+```csharp
 internal class Category
 {
     internal Category(int id)
@@ -228,7 +231,8 @@ Sometimes, designing a GetXxx() method results a warning in Code Analysis: “CA
 **✔** Consider using extension methods to manage dependencies.
 
 [](http://11011.net/software/vspaste)This sample is from [this talk](http://channel9.msdn.com/pdc2008/PC58/). Consider we might need a String.ToUri() method to convert a string to a URI:
-```
+
+```csharp
 Uri uri = "http://www.CoolWebOS.com".ToUri();
 ```
 

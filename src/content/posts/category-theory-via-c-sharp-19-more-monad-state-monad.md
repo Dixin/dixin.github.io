@@ -3,8 +3,8 @@ title: "Category Theory via C# (19) More Monad: State< , > Monad"
 published: 2018-12-20
 description: "represents a abstract machine with one state or a number of state. C# use state machine a lot. For example:"
 image: ""
-tags: ["C#", ".NET", ".NET Core", ".NET Standard", "LINQ"]
-category: "C#"
+tags: [".NET", ".NET Core", ".NET Standard", "C#", "LINQ"]
+category: ".NET"
 draft: false
 lang: ""
 ---
@@ -86,7 +86,8 @@ public class RedState : ITrafficLightState // ConcreteStateC
 ```
 
 where TraceHelper.TypeName is just:
-```
+
+```csharp
 public static partial class TraceHelper
 {
     public static Unit TypeName(Type type)
@@ -117,7 +118,8 @@ public class TrafficLightStateMachine
 Notice the state machine is mutable. The underlined code updates the state of the state machine.
 
 Running the state machine:
-```
+
+```csharp
 new TrafficLightStateMachine().MoveNext().Wait();
 ```
 
@@ -130,13 +132,15 @@ can result the following trace message:
 In purely functional programming, objects are immutable, state cannot just be updated when changing. State monad can be used to thread a state parameter through a sequence of functions to represent the state updating.
 
 This is the definition of state monad:
-```
+
+```csharp
 // State<T, TState> is alias of Func<TState, Lazy<T, TState>>
 public delegate Lazy<T, TState> State<T, TState>(TState state);
 ```
 
 As usual, its SelectMany will be defined firstly:
-```
+
+```csharp
 [Pure]
 public static partial class StateExtensions
 {
@@ -162,7 +166,8 @@ public static partial class StateExtensions
 ```
 
 so that:
-```
+
+```csharp
 // [Pure]
 public static partial class StateExtensions
 {
@@ -196,7 +201,8 @@ public static partial class StateExtensions
 State<> is monad, monoidal functor, and functor.
 
 Also a few other helper functions:
-```
+
+```csharp
 // [Pure]
 public static partial class StateExtensions
 {
@@ -224,14 +230,16 @@ public static class State
 ### Traffic light state machine with State<> monad and LINQ
 
 Now everything becomes functions. This is the definition of the traffic light state:
-```
+
+```csharp
 public delegate IO<Task<TrafficLightState>> TrafficLightState();
 ```
 
 Not interface any more.
 
 And each state is a pure function of above type:
-```
+
+```csharp
 // Impure.
 public static partial class StateQuery
 {
@@ -259,7 +267,8 @@ public static partial class StateQuery
 ```
 
 where Trace.Log is a pure function too:
-```
+
+```csharp
 [Pure]
 public static partial class TraceHelper
 {
@@ -276,7 +285,8 @@ public static partial class TraceHelper
 Please also notice Task.Delay returns a Task (not Task<>). As mentioned in an earlier part, Task can be viewed as Task<Unit>, a special case of Task<>. So the LINQ syntax works for Task.
 
 The state machine is also pure function:
-```
+
+```csharp
 // Impure.
 public static partial class StateQuery
 {
@@ -303,7 +313,8 @@ public static partial class StateQuery
 ```
 
 Running this state machine with State<> monad:
-```
+
+```csharp
 // Impure.
 public static partial class StateQuery
 {
@@ -318,7 +329,8 @@ will result similar trace message:
 ### Immutable IEnumerable<T> stack
 
 An easier example could be using a immutable IEnumerable<T> to simulate a mutable stack. Firstly, a Pop and a Push function can be implemented:
-```
+
+```csharp
 // [Pure]
 public static partial class EnumerableExtensions
 {
@@ -334,7 +346,8 @@ public static partial class EnumerableExtensions
 ```
 
 So a stateful stack can be implemented as:
-```
+
+```csharp
 // Impure.
 public static partial class StateQuery
 {
@@ -381,7 +394,8 @@ public class StackTests
 ```
 
 ## Monad laws, and unit tests
-```
+
+```csharp
 public partial class MonadTests
 {
     [TestMethod]

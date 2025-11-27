@@ -10,7 +10,8 @@ lang: ""
 ---
 
 For non-form elements, like <div>, etc., document.getElementById() usually works stably, except Opera:
-```
+
+```csharp
 <div name="userName">1</div>
 <div id="userName">2</div>
 <script type="text/javascript">
@@ -22,7 +23,8 @@ For non-form elements, like <div>, etc., document.getElementById() usually works
 Opera also checks name attribute, so the alerted message is “1”.
 
 For form elements, IE and Opera have the same behavior:
-```
+
+```html
 <input type="text" name="userName" value="1" />
 <input type="text" id="userName" value="2" />
 <script type="text/javascript">

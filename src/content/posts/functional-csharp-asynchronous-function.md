@@ -3,7 +3,7 @@ title: "C# Functional Programming In-Depth (14) Asynchronous Function"
 published: 2025-03-04
 description: "Asynchronous function can improve the responsiveness and scalability of the application and service. C# 5.0 introduces asynchronous function to greatly simplify the async programming model."
 image: ""
-tags: [".NET", "C#", "C# 5.0", "LINQ", "LINQ via C#", "C# Features", "Functional Programming", "Functional C#"]
+tags: [".NET", "C#", "C# 5.0", "C# Features", "Functional C#", "Functional Programming", "LINQ", "LINQ via C#"]
 category: ".NET"
 draft: false
 lang: ""
@@ -20,7 +20,8 @@ Asynchronous function can improve the responsiveness and scalability of the appl
 The C# async programming model uses System.Threading.Tasks.Task to represent async operation without output, and uses System.Threading.Tasks.Task<TResult> to represent async operation with TResult output:
 
 namespace System.Threading.Tasks
-```
+
+```csharp
 {
 public partial class Task : IAsyncResult
 {
@@ -67,7 +68,8 @@ Func<Task<TResult>, TNewResult> continuationFunction);
 Task can be constructed with () –>void function, and Task<TResult> can be constructed with () –> TResult function. They can be started by calling the Start method. A () –> void function or () –> TResult function runs synchronously on the thread. In contrast, a task runs asynchronously, and does not block the current thread. Its status can be queried by the Status, IsCanceled, IsCompleted, IsFaulted properties. A task can be waited by calling its Wait method, which blocks the current thread until the task is completed successfully, or fails, or is cancelled. For Task<TResult>, when the underlying async operation is completed successfully, the result is available through Result property. For Task or Task<TResult>, if the underlying async operation fails with exception, the exception is available through the Exception property. A task can be chained with another async continuation operation by calling the ContinueWith methods. When the task finishes running, the specified continuation starts running asynchronously. If the task already finishes running when its ContinueWith method is called, then the specified continuation immediately starts running. The following example constructs and starts a task to read a file, and chains another continuation task to write the contents to another file:
 
 internal static partial class Functions
-```
+
+```csharp
 {
 internal static void ConstructTask(string readPath, string writePath)
 {
@@ -104,7 +106,8 @@ In .NET Framework, Task also implements System.Threading.IThreadPoolWorkItem and
 Task also provides Run methods to construct and automatically start tasks:
 
 namespace System.Threading.Tasks
-```
+
+```csharp
 {
 public partial class Task : IAsyncResult
 {
@@ -125,7 +128,8 @@ internal static Task<string\>ReadAsync(string path) => Task.Run(() => File.ReadA
 Write without output and Read with string output run synchronously. WriteAsync with Task output and ReadAsync with Task<string> output run asynchronously, where Task can be viewed as future void, and Task<TResult> can be viewed as future TResult result. Here WriteAsync and ReadAsync become async by simply offloading the operations to thread pool. This is for demonstration purpose, and does not bring any scalability improvement. A better implementation is discussed later.
 
 internal static void CallReadWrite(string path, string contents)
-```
+
+```csharp
 {
 Write(path, contents); // Blocking.
 // When the underlying write operation is done, the call is completed with no result.
@@ -149,7 +153,8 @@ When Write is called, its execution blocks the current thread. When the writing 
 By default, named async function’s output type is Task or Task<TResult>, and has an Async or AsyncTask postfix in the name as the convention. The following example is a file read and write workflow of sync function calls:
 
 internal static void ReadWrite(string readPath, string writePath)
-```
+
+```csharp
 {
 string contents = Read(readPath);
 Write(writePath, contents);
@@ -160,7 +165,8 @@ Write(writePath, contents);
 The same logic can be implemented by calling the async version of functions:
 
 internal static async Task ReadWriteAsync(string readPath, string writePath)
-```
+
+```csharp
 {
 string contents = await ReadAsync(readPath);
 await WriteAsync(writePath, contents);
@@ -238,7 +244,8 @@ Again, the async workflow persists the same code structure as the sync workflow,
 The above Write and Read functions calls File.WriteAllText and File.ReadAllText to execute sync I/O operation, which are internally implemented by calling StreamWriter.Write and StreamReader.ReadToEnd. Now with the async and await keywords, WriteAsync and ReadAsync can be reimplemented as real async I/O (assuming async I/O is actually supported by the underlying operating system) by calling StreamWriter.WriteAsync and StreamReader.ReadToEndAsync:
 
 internal static async Task WriteAsync(string path, string contents)
-```
+
+```csharp
 {
 // File.WriteAllText implementation:
 // using (StreamWriter writer = new StreamWriter(new FileStream(
@@ -339,7 +346,8 @@ result = await task6;
 If a task is never started, apparently it never finishes running. The code after its await expression is never called back:
 
 internal static async Task HotColdTasks(string path)
-```
+
+```csharp
 {
 Task hotTask = new Task(() => { });
 hotTask.Start();
@@ -396,7 +404,8 @@ TResult GetResult(); // TResult result.
 And INotifyCompletion interface has a single OnCompleted method to chain a continuation:
 
 namespace System.Runtime.CompilerServices
-```
+
+```csharp
 {
 public interface INotifyCompletion
 {
@@ -463,7 +472,8 @@ Task.Run(function).GetAwaiter();
 Now the await keyword can be directly used with a function of Action type or Func<TResult> type:
 
 internal static async Task AwaitFunctions(string readPath, string writePath)
-```
+
+```csharp
 {
 Func<string>read = () => File.ReadAllText(readPath);
 string contents = await read;
@@ -479,7 +489,8 @@ await write;
 As fore mentioned, with async and await keywords, an async function outputs a task immediately, so it is non-blocking. At compile time, the workflow of an async function is compiled to an async state machine. At runtime, when this async function is called, it just starts that generated async state machine , and immediately outputs a task representing the workflow in the async state machine. To demonstrate this, define the following async methods:
 
 internal static async Task<T\> Async<T\>(T value)
-```
+
+```csharp
 {
 T value1 = Start(value);
 T result1 = await Async1(value1);
@@ -509,7 +520,8 @@ internal static T Continuation3<T\>(T value) => value;
 After compilation, the async modifier is gone. The async function becomes a normal function to start an async state machine:
 
 \[AsyncStateMachine(typeof(AsyncStateMachine<>))\]
-```
+
+```csharp
 internal static Task<T> CompiledAsync<T>(T value)
 {
 AsyncStateMachine<T>asyncStateMachine = new AsyncStateMachine<T>()
@@ -740,7 +752,8 @@ When Capture is called, it captures a 3-tuple of SynchronizationContext, TaskSch
 Task and Task<TResult> provides a ConfigureAwait method to specify whether the continuation is marshalled to the previously captured runtime context:
 
 namespace System.Threading.Tasks
-```
+
+```csharp
 {
 public partial class Task : IAsyncResult
 {
@@ -777,7 +790,8 @@ this.TryExecuteTask(task);
 The following async function has 2 await expressions, where ConfigureAwait is called with different bool values:
 
 internal static async Task ConfigureRuntimeContextCapture(
-```
+
+```csharp
 string readPath, string writePath)
 {
 TaskScheduler taskScheduler1 = TaskScheduler.Current;
@@ -801,7 +815,8 @@ object.ReferenceEquals(taskScheduler1, taskScheduler3).WriteLine(); // False
 To demonstrate the task scheduler capture, call the above async function by specifying the custom task scheduler:
 
 internal static async Task CallConfigureContextCapture(string readPath, string writePath)
-```
+
+```csharp
 {
 Task<Task> task = new Task<Task>(() =>
 ConfigureRuntimeContextCapture(readPath, writePath));
@@ -814,7 +829,8 @@ await task.Unwrap(); // Equivalent to: await await task;
 Here since async function ConfigureRuntimeContextCapture outputs Task, so the task constructed with () -> Task function is of type Task<Task>. Similarly, if task is constructed with () -> Task<TResult> function, the constructed task is of type Task<Task<TResult>>. For this scenario, Unwrap extension methods are provided to convert nested task to normal task:
 
 namespace System.Threading.Tasks
-```
+
+```csharp
 {
 public static class TaskExtensions
 {
@@ -976,7 +992,8 @@ this.taskMethodBuilder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
 Now the FuncAwaitable<TResult> type can be output type of async function, just like task:
 
 internal static async FuncAwaitable<T\> AsyncFunctionWithFuncAwaitable<T\>(T value)
-```
+
+```csharp
 {
 await Task.Delay(TimeSpan.FromSeconds(1));
 return value;
@@ -987,7 +1004,8 @@ return value;
 Its compilation is in the same pattern as async function with task output. The only difference is, in the generated async state machine, the builder field become the specified AsyncFuncAwaitableMethodBuilder<TResult>, instead of the AsyncTaskMethodBuilder<TResult> for task. And apparently, this async function can be called in the await expression since its output type FuncAwaitable<TResult> is awaitable:
 
 internal static async Task CallAsyncFunctionWithFuncAwaitable<T\>(T value)
-```
+
+```csharp
 {
 T result = await AsyncFunctionWithFuncAwaitable(value);
 ```
@@ -999,7 +1017,8 @@ T result = await AsyncFunctionWithFuncAwaitable(value);
 With the generalized async function output type support, Microsoft also provides a System.Threading.Tasks.ValueTask<TResult> awaitable structure in the System.Threading.Tasks.Extensions NuGet package:
 
 namespace System.Threading.Tasks
-```
+
+```csharp
 {
 [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder<>))]
 [StructLayout(LayoutKind.Auto)]
@@ -1020,7 +1039,8 @@ public ValueTaskAwaiter<TResult> GetAwaiter();
 Its awaiter is System.Threading.Tasks.ValueTaskAwaiter<TResult>, and its async method builder is System.Runtime.CompilerServices.AsyncValueTaskMethodBuilder<TResult>, which are provided in the same NuGet package. So ValueTask<TResult> can be used with both await expression and async function. As a value type, it can be allocated and deallocated on stack, with better performance than reference type Task<TResult>. Also, unlike Task<TResult> as a wrapper of Func<TResult> operation, ValueTask<TResult> can be a wrapper of either Func<TResult> operation or TResult result. So ValueTask<TResult> can improve the performance for async function that may have result available before any async operation. The following example downloads data from the specified URI:
 
 private static readonly Dictionary<string, byte\[\]> Cache =
-```
+
+```csharp
 new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
 
 internal static async Task<byte[]> DownloadAsyncTask(string uri)
@@ -1043,7 +1063,8 @@ return result;
 It first checks the cache, if the data is already cached for the specified URI, then it outputs the cached data directly, no async operation is needed. However, at compile time, since the function has the async modifier, the entire function body, including the if statement, is compiled into an async state machine. At runtime, a task is always allocated on the heap and should be garbage collected, and the async state machine is always started, even when the result is available in the cache and no async operation is needed. With ValueTask<TResult>, this can be easily optimized:
 
 internal static ValueTask<byte\[\]> DownloadAsyncValueTask(string uri)
-```
+
+```csharp
 {
 // Not compiled to async state machine. When URI is cached, no async state machine is started.
 return Cache.TryGetValue(uri, out byte[] cachedResult)
@@ -1071,7 +1092,8 @@ Now the function becomes a sync function with awaitable ValueTask<TResult> outpu
 The async and await keywords can be used with the lambda expression syntax for anonymous function. Just like named async function, anonymous async function’s output type is task:
 
 internal static async Task AsyncAnonymousFunction(string readPath, string writePath)
-```
+
+```csharp
 {
 Func<string, Task<string>>readAsync = async path =>
 {
@@ -1122,7 +1144,8 @@ await task2.Unwrap(); // Equivalent to: await await task2;
 The first task is constructed with anonymous async function of type () –> Task<string>, so the constructed task is of type Task<Task<string>>. Similarly, the second task is constructed with anonymous async function of type () –> Task, so the constructed task is of type Task<Task>. As fore mentioned, nested task can be unwrapped and awaited.
 
 internal static async Task RunAsyncWithAutoUnwrap(string readPath, string writePath)
-```
+
+```csharp
 {
 Task<string> task1 = Task.Run(async () => await ReadAsync(readPath)); // Automatically unwrapped.
 string contents = await task1; // Hot task.
@@ -1159,7 +1182,8 @@ ValueTask<bool> MoveNextAsync();
 The following example define a async function that generates a sequence of values by using yield statement:
 
 internal static async IAsyncEnumerable<string\>DownloadAsync(IEnumerable<Uri> uris)
-```
+
+```csharp
 {
 using WebClient webClient = new WebClient();
 foreach (Uri uri in uris)
@@ -1174,7 +1198,8 @@ yield return webPage;
 The following example consumes an async sequence by pulling the values asynchronously using async foreach statement:
 
 internal static async void PrintDownloadAsync(IEnumerable<Uri> uris)
-```
+
+```csharp
 {
 IAsyncEnumerable<string> webPages = DownloadAsync(uris);
 await foreach (string webPage in webPages)
@@ -1192,7 +1217,8 @@ In above 2 async functions, the code are both compiled to a state macine similar
 In C# 8.0, an instance can be decared with async using keywords, if its type implements System.IAsyncDispose interface:
 
 namespace System
-```
+
+```csharp
 {
 public interface IAsyncDisposable
 {
@@ -1205,7 +1231,8 @@ ValueTask DisposeAsync();
 For example, FileStream type implements IAsyncDispose:
 
 internalstaticasyncvoid AsyncUsing(string file)
-```
+
+```csharp
 {
 awaitusing FileStream fileStream = File.OpenRead(file);
 Trace.WriteLine(fileStream.Length);
