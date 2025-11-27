@@ -244,7 +244,11 @@ function normalizeLinks(contentElement) {
         
         // If we found a valid last segment, update the href
         if (lastSegment && lastSegment.length > 0) {
-            link.setAttribute('href', `/posts/${lastSegment}`);
+            const newHref = `/posts/${lastSegment}`;
+            console.log(`Old link: ${href}`);
+            console.log(`New link: ${newHref}`);
+            console.log('');
+            link.setAttribute('href', newHref);
         }
     });
 }
