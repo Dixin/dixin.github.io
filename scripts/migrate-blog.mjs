@@ -134,49 +134,16 @@ async function fetchPostUrlsFromPage(pageNum) {
     
     const postUrls = [];
     
-    // Find all post links on the page - common selectors for ASP.NET blog listing pages
-    const linkSelectors = [
-        '.post-title a',
-        '.entry-title a',
-        'h2.title a',
-        'h3.title a',
-        '.blog-post-title a',
-        'article h2 a',
-        'article h3 a',
-        '.post h2 a',
-        '.post h3 a',
-        'a.post-link',
-    ];
-    
-    for (const selector of linkSelectors) {
-        const links = doc.querySelectorAll(selector);
-        if (links.length > 0) {
-            links.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && !postUrls.includes(href)) {
-                    // Handle relative URLs
-                    const fullUrl = href.startsWith('http') ? href : `https://weblogs.asp.net${href}`;
-                    postUrls.push(fullUrl);
-                }
-            });
-            break; // Found posts with this selector, no need to try others
+    // Find all post links on the page
+    const links = doc.querySelectorAll('ul.blog-posts li h2 a');
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && !postUrls.includes(href)) {
+            // Handle relative URLs
+            const fullUrl = href.startsWith('http') ? href : `https://weblogs.asp.net${href}`;
+            postUrls.push(fullUrl);
         }
-    }
-    
-    // If no posts found with specific selectors, try to find all links that look like post URLs
-    if (postUrls.length === 0) {
-        const allLinks = doc.querySelectorAll('a[href*="/dixin/"]');
-        allLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            // Filter to only include post URLs (typically have a slug after /dixin/)
-            if (href && href.match(/\/dixin\/[a-z0-9-]+$/i) && !href.includes('?page=')) {
-                const fullUrl = href.startsWith('http') ? href : `https://weblogs.asp.net${href}`;
-                if (!postUrls.includes(fullUrl)) {
-                    postUrls.push(fullUrl);
-                }
-            }
-        });
-    }
+    });
     
     console.log(`  Found ${postUrls.length} post URLs on page ${pageNum}`);
     return postUrls;
@@ -213,90 +180,44 @@ async function fetchPostData(url) {
     const doc = dom.window.document;
     
     // Extract post title
-    const titleSelectors = [
-        '.post-title',
-        '.entry-title',
-        'h1.title',
-        'h2.title',
-        'article h1',
-        '.blog-post-title',
-        'h1',
-    ];
-    
     let title = '';
-    for (const selector of titleSelectors) {
-        const titleEl = doc.querySelector(selector);
-        if (titleEl && titleEl.textContent.trim()) {
-            title = titleEl.textContent.trim();
-            break;
-        }
+    const titleEl = doc.querySelector('article.blog-post header h1');
+    if (titleEl && titleEl.textContent.trim()) {
+        title = titleEl.textContent.trim();
     }
     
     // Extract post date
-    const dateSelectors = [
-        '.post-date',
-        '.entry-date',
-        '.date',
-        'time',
-        '.published',
-        '.post-meta time',
-        '.meta time',
-    ];
-    
     let pubDate = new Date();
-    for (const selector of dateSelectors) {
-        const dateEl = doc.querySelector(selector);
-        if (dateEl) {
-            const dateText = dateEl.getAttribute('datetime') || dateEl.textContent;
-            const parsedDate = new Date(dateText);
-            if (!isNaN(parsedDate.getTime())) {
-                pubDate = parsedDate;
-                break;
-            }
+    const dateEl = doc.querySelector('article.blog-post header .metadata time');
+    if (dateEl) {
+        const dateText = dateEl.getAttribute('datetime') || dateEl.textContent;
+        const parsedDate = new Date(dateText);
+        if (!isNaN(parsedDate.getTime())) {
+            pubDate = parsedDate;
         }
     }
     
     // Extract categories/tags
-    const categorySelectors = [
-        '.post-categories a',
-        '.categories a',
-        '.tags a',
-        '.post-tags a',
-        '.category a',
-        '.tag a',
-    ];
-    
     const categories = [];
-    for (const selector of categorySelectors) {
-        const categoryEls = doc.querySelectorAll(selector);
-        if (categoryEls.length > 0) {
-            categoryEls.forEach(el => {
-                const cat = el.textContent.trim();
-                if (cat && !categories.includes(cat)) {
-                    categories.push(cat);
-                }
-            });
-            break;
-        }
+    const tagsContainer = doc.querySelector('article.blog-post header .tags');
+    if (tagsContainer) {
+        const tagLinks = tagsContainer.querySelectorAll('a');
+        tagLinks.forEach(el => {
+            const cat = el.textContent.trim();
+            if (cat && !categories.includes(cat)) {
+                categories.push(cat);
+            }
+        });
     }
     
-    // Try to find the post content - common selectors for ASP.NET blogs
-    const contentSelectors = [
-        '.entry-content',
-        '.post-content',
-        '.article-content',
-        '.content',
-        '#content',
-        'article',
-        '.post-body',
-        '.itemBody',
-    ];
-    
-    let content = null;
-    for (const selector of contentSelectors) {
-        content = doc.querySelector(selector);
-        if (content && content.innerHTML.trim().length > 100) break;
+    // Remove header before getting content
+    const header = doc.querySelector('article.blog-post header');
+    if (header) {
+        header.remove();
     }
+    
+    // Get post content
+    const content = doc.querySelector('article.blog-post');
     
     if (!content) {
         console.warn('Could not find content for:', url);
