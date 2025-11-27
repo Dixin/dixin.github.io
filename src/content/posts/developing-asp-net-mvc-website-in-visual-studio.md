@@ -18,14 +18,12 @@ The difference is, when removing the code-behind file of ViewPage, the C# generi
 ```csharp
 <%@ Page Language="C#" Inherits="WebOS.Website.Views.ViewPageBase<DesktopViewModel>" %>
 ```
-[](http://11011.net/software/vspaste)
 
 The above code only works in ASP.NET MVC project. In normal web application project, the CLR syntax is needed:
 
 ```csharp
 <%@ Page Language="C#" Inherits="WebOS.Website.Views.ViewPageBase`1[[WebOS.Website.ViewModels.DesktopViewModel, WebOS.Website]]" %>
 ```
-[](http://11011.net/software/vspaste)
 
 This way works for developing, debugging, and deploy. And the intellisense also works. [CoolWebOS.com](http://www.coolwebos.com) has being developed in this way.
 
@@ -42,14 +40,12 @@ In normal Web application project, it is:
 ```csharp
 <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
 ```
-[](http://11011.net/software/vspaste)
 
 While in MVC project, it is:
 
 ```csharp
 <ProjectTypeGuids>{603c0e0b-db56-11dc-be95-000d561079b0};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
 ```
-[](http://11011.net/software/vspaste)
 
 An extra GUID {603c0e0b-db56-11dc-be95-000d561079b0} is added to indicate this is an ASP.NET MVC project. So when ASP.NET MVC add-on is not installed for Visual Studio , Visual Studio cannot recognize ASP.NET MVC project.
 

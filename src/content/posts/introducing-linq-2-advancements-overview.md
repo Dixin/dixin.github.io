@@ -51,7 +51,6 @@ var results = from product in database.Products
                select product.ProductName; // Defines the query.
 ```
 
-[](http://11011.net/software/vspaste)
 
 Please notice at this time positive is not the query result, but the query definition itself.
 

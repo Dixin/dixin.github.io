@@ -49,7 +49,7 @@ namespace System.Collections.Generic
 }
 ```
 
-The meaning of out keyword is explained in another post [Understanding C# Covariance And Contravariance (2) Interfaces](/posts/understanding-csharp-covariance-and-contravariance-2-interfaces).[](http://11011.net/software/vspaste)
+The meaning of out keyword is explained in another post [Understanding C# Covariance And Contravariance (2) Interfaces](/posts/understanding-csharp-covariance-and-contravariance-2-interfaces).
 
 For years I have different ideas on the design:
 

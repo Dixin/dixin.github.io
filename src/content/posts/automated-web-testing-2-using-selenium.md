@@ -95,7 +95,6 @@ public class SeleniumTest
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 Please notice the port used by the remote control is 4444.
 

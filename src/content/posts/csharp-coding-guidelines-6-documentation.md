@@ -91,7 +91,7 @@ namespace WebOS.Common
     }
 }
 ```
-[](http://11011.net/software/vspaste)[](http://11011.net/software/vspaste)[](http://11011.net/software/vspaste)
+[](http://11011.net/software/vspaste)
 
 **✔** Use Microsoft XML documentation tags to write the comments.
 
@@ -108,7 +108,6 @@ Here is a sample of referring to property:
 /// The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0).
 /// </exception>
 ```
-[](http://11011.net/software/vspaste)
 
 and a sample of referring to a generic interface:
 
@@ -117,7 +116,6 @@ and a sample of referring to a generic interface:
 /// An <see cref="T:System.Linq.IQueryable`1"/> that contains elements in the specified page of the input sequence.
 /// </returns>
 ```
-[](http://11011.net/software/vspaste)
 
 **✔** Use one space between “///” or “//” and your comments.
 

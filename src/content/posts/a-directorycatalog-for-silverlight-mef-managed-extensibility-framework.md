@@ -4,7 +4,7 @@ published: 2011-01-29
 description: "In the MEF (Managed Extension Framework) for .NET, there are useful ComposablePartCatalog implementations in System.ComponentModel.Composition.dll, like:"
 image: ""
 tags: [".NET", "ASP.NET", "C#", "MEF", "Silverlight"]
-category: ".NET"
+category: "Silverlight"
 draft: false
 lang: ""
 ---
@@ -17,6 +17,13 @@ In the MEF (Managed Extension Framework) for .NET, there are useful ComposablePa
 -   System.ComponentModel.Composition.Hosting.TypeCatalog
 
 While in Silverlight, there is a extra System.ComponentModel.Composition.Hosting.DeploymentCatalog. As a wrapper of AssemblyCatalog, it can load all assemblies in a XAP file in the web server side. Unfortunately, in silverlight there is no DirectoryCatalog to load a folder.
+
+- [Background](#background)
+- [Retrieve file list from a directory](#retrieve-file-list-from-a-directory)
+- [Download the directory's XAP file list](#download-the-directorys-xap-file-list)
+- [Download all XAP files](#download-all-xap-files)
+- [Exception handling](#exception-handling)
+- [Conclusion](#conclusion)
 
 ## Background
 

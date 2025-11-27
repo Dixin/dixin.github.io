@@ -17,7 +17,6 @@ Everyone knows IE 6 does not like PNG images. When a transparent PNG is created 
     background: url(Transparent.png);
 }
 ```
-[](http://11011.net/software/vspaste)
 
 IE 6 renders it in a wrong way, which causes a lot of trouble in web design. Here a filter has to be used.
 
@@ -27,7 +26,6 @@ IE 6 renders it in a wrong way, which causes a lot of trouble in web design. Her
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Contents/Transparent.png', sizingMethod='scale');
 }
 ```
-[](http://11011.net/software/vspaste)
 
 Filter is more difficult to use. One of the biggest trouble is, in the filter, the path of the png file is not related to the CSS file, but the page using the CSS. Usually we share one CSS file among a lot of pages, and if the pages are in different paths, the filter does not work well.
 
@@ -43,7 +41,6 @@ For these years, I use the following to display transparent PNG background, whic
     background:url(Transparent.png);
 }
 ```
-[](http://11011.net/software/vspaste)
 
 In IE 7, this bug seems to be fixed. But today when writing WebOS, there is a new trouble. A JavaScript animation is created, a div with a transparent PNG background was resized by JavaScript. This animation ran well in Opera, Firefox and Safari, even smoothly in IE 6. But in IE7, it ran extremely slowly, and caused very high CPU usage. Finally, I found the reason: the high CPU usage was caused by the transparent PNG background.
 

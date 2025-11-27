@@ -188,6 +188,5 @@ public static class DirectoryInfoExtensions
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 The above code has been tested on Windows Vista and Windows Server 2008.

@@ -14,7 +14,6 @@ Here is a ToString(IFormatProvider) method on the System.Enum type. It looks a I
 ```csharp
 someEnum.ToString(cultureInfo);
 ```
-[](http://11011.net/software/vspaste)
 
 But this is the source code from .NET 1.1:
 
@@ -47,4 +46,3 @@ public string ToString(IFormatProvider provider)
     return this.ToString();
 }
 ```
-[](http://11011.net/software/vspaste)

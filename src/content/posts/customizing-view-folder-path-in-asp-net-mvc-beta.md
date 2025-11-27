@@ -56,7 +56,6 @@ public static class ViewEngines
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 By default, we will have a instance of WebFormViewEngine, which implemented IViewEngine. Here is the definition of WebFormViewEngine, which looks clear:
 
@@ -95,7 +94,6 @@ public class WebFormViewEngine : VirtualPathProviderViewEngine
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 So what need to do is very simple: just add another customized IViewEngine object to the Engines property:
 
@@ -125,6 +123,5 @@ ViewEngines.Engines.Add(new WebFormViewEngine()
             }
     });
 ```
-[](http://11011.net/software/vspaste)
 
 Now it rocks!

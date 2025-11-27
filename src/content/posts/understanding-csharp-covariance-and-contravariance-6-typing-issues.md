@@ -42,7 +42,6 @@ Console.WriteLine(derivedFunc is Func<Derived>);
 // This prints "False" in C# 2.0 / 3.0, prints "True" in C# 4.0.
 Console.WriteLine(derivedFunc is Func<Base>);
 ```
-[](http://11011.net/software/vspaste)
 
 And this contravariance sample:
 
@@ -56,7 +55,6 @@ Console.WriteLine(baseAction is Action<Base>);
 // This prints "False" in C# 2.0 / 3.0, prints "True" in C# 4.0.
 Console.WriteLine(baseAction is Action<Derived>);
 ```
-[](http://11011.net/software/vspaste)
 
 Yes, in C# 4.0, delegate types are more convertable.
 
@@ -74,7 +72,6 @@ Console.WriteLine(derivedEnumerator is IEnumerator<Derived>);
 // This prints "False" in C# 2.0 / 3.0, prints "True" in C# 4.0.
 Console.WriteLine(derivedEnumerator is IEnumerator<Base>);
 ```
-[](http://11011.net/software/vspaste)
 
 It looks acceptable.
 
@@ -90,7 +87,6 @@ Console.WriteLine(deriveds is IEnumerable<Derived>);
 // This prints "True" in C# 2.0 / 3.0 / 4.0.
 Console.WriteLine(deriveds is IEnumerable<Base>);
 ```
-[](http://11011.net/software/vspaste)
 
 Looks like a big mess.
 
@@ -109,7 +105,6 @@ internal class Derived : Base
 {
 }
 ```
-[](http://11011.net/software/vspaste)
 
 Then:
 
@@ -125,7 +120,6 @@ Console.WriteLine(baseComparable is IComparable<Base>);
 // This prints "False" in C# 2.0 / 3.0, prints "True" in C# 4.0.
 Console.WriteLine(baseComparable is IComparable<Derived>);
 ```
-[](http://11011.net/software/vspaste)
 
 The interface variances are also confusing.
 

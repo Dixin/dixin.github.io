@@ -64,4 +64,4 @@ internal class Program
     }
 }
 ```
-[](http://11011.net/software/vspaste)You can see more details about variances in [my posts](/posts/understanding-csharp-covariance-and-contravariance-1-delegates). And you can see more photos of the baby [here](https://cid-8a0406089aad8752.skydrive.live.com/browse.aspx/.res/8a0406089aad8752!1113?ct=photos).
+You can see more details about variances in [my posts](/posts/understanding-csharp-covariance-and-contravariance-1-delegates). And you can see more photos of the baby [here](https://cid-8a0406089aad8752.skydrive.live.com/browse.aspx/.res/8a0406089aad8752!1113?ct=photos).

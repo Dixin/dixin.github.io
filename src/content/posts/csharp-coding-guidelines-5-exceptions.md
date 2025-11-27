@@ -27,7 +27,6 @@ Action2();
 // ...
 ActionN();
 ```
-[](http://11011.net/software/vspaste)
 
 So he was asked to fix the code, and his solution is:
 
@@ -105,7 +104,6 @@ namespace System.Web.Security
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 It outputs a MembershipCreateStatus enum to report the status:
 
@@ -189,7 +187,7 @@ catch (Exception)
 {
 }
 ```
-[](http://11011.net/software/vspaste)Or:
+Or:
 ```csharp
 try
 {
@@ -255,7 +253,6 @@ private static long Fibonacci(int value)
     return Fibonacci(value - 1) + Fibonacci(value - 2);
 }
 ```
-[](http://11011.net/software/vspaste)
 
 The above function is very ineffective with a recursive computing. Write some experimental stack overflow code:
 
@@ -285,7 +282,6 @@ internal class Program
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 The above code demonstrates writing code to catch CLR exceptions like StackOverflowException is useless.
 
@@ -309,7 +305,7 @@ internal static class ExceptionHelper
 }
 ```
 
-[](http://11011.net/software/vspaste)This is very useful for [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself) and standardization consideration. Another example is the [Exception Handling Application Block](http://msdn.microsoft.com/en-us/library/dd203116.aspx) of Microsoft [Enterprise Library](http://msdn.microsoft.com/en-us/library/cc467894.aspx):
+This is very useful for [DRY](http://en.wikipedia.org/wiki/Don't_repeat_yourself) and standardization consideration. Another example is the [Exception Handling Application Block](http://msdn.microsoft.com/en-us/library/dd203116.aspx) of Microsoft [Enterprise Library](http://msdn.microsoft.com/en-us/library/cc467894.aspx):
 
 ```csharp
 try
@@ -326,7 +322,6 @@ catch (Exception exception)
     // ...
 }
 ```
-[](http://11011.net/software/vspaste)
 
 **✔** Consider Trier-Doer Pattern for the API which frequently throw exceptions.
 
@@ -345,7 +340,6 @@ namespace System
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 When there a Do() method which frequently throw exceptions, provide a TryDo() method which is not likely to throw exceptions but using a bool to indicate the success.
 

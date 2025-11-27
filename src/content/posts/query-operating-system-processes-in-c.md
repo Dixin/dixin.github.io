@@ -208,7 +208,6 @@ public partial class Win32Process
 }
 ```
 
-[](http://11011.net/software/vspaste)
 
 Now it is to define methods to query process information from MWI:
 
@@ -236,7 +235,6 @@ public static partial class ProcessHelper
 }
 ```
 
-[](http://11011.net/software/vspaste)
 
 The All method queries all processes in the specified ManagementScope. ById/ByName queries by process id/name.
 

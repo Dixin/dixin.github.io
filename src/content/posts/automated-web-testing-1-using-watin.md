@@ -61,7 +61,6 @@ internal class Program
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 You can watch from your screen how the IE works. The related elements will be highlighted when being operated.
 
@@ -100,7 +99,6 @@ public class WatiNTest
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 In this scenario, the STAThread attribute is not required for the test methods.
 
@@ -164,7 +162,6 @@ internal class Program
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 There is a sample folder in the WatiN-2.0.1.754-net-2.0. When trying, exceptions are thrown from CrossBrowserTest.ExecuteTest(). So a Thread.Sleep(5000) has to be added between two Firefox test cases, so that WatiN works.
 
@@ -177,7 +174,6 @@ Thread.Sleep(5000);
 // Generic method
 program.ExecuteTest(program.SearchForWatiNOnGoogleUsingBaseTest);
 ```
-[](http://11011.net/software/vspaste)
 
 ## Tools for WatiN
 
@@ -238,7 +234,6 @@ public class SomePage : IE
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 Then testing code can be easy and clear:
 
@@ -257,7 +252,6 @@ public void SomePageTest()
     Assert.IsTrue(hasText, "Message");
 }
 ```
-[](http://11011.net/software/vspaste)
 
 ## The future of WatiN
 

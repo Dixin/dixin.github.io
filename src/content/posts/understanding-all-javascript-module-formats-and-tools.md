@@ -467,7 +467,7 @@ The following is the compatibility of import/dynamic import/export, from <https:
 
 ## System module: SystemJS module
 
-SystemJS is a library that can enable ES module syntax for older ES. For example, the following module is defined in ES 6syntax:
+SystemJS is a library that can enable ES module syntax for older ES. For example, the following module is defined in ES 6 syntax:
 
 ```js
 // Define ES module.

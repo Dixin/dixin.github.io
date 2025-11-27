@@ -23,7 +23,6 @@ body
     scrollbar-darkshadow-color: #247624;
 }
 ```
-[](http://11011.net/software/vspaste)
 
 But not for XHTML. For XHTML page, it should be like this:
 

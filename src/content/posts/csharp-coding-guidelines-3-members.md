@@ -49,7 +49,6 @@ When the database or network is busy:
 Category category = new Category(id);
 Taxonomy taxonomy = new Taxonomy(uri);
 ```
-[](http://11011.net/software/vspaste)
 
 In the above thread it would take 5 minutes to create a new instance of the class, which will be surprising. So it is recommended to deign the constructors like this:
 
@@ -100,7 +99,6 @@ public class ProductController : Controller
     }    
 }
 ```
-[](http://11011.net/software/vspaste)
 
 As you see, to implement the functionalities, ProductController class (higher layer code) need to call IRepository interface (lower layer code). So there is a dependency between ProductController class and IRepository interface. We can inject IRepository into ProductController via ProductController’s constructor:
 
@@ -134,7 +132,7 @@ public class ProductController : Controller
     }
 }
 ```
-[](http://11011.net/software/vspaste)[](http://11011.net/software/vspaste)[](http://11011.net/software/vspaste)
+[](http://11011.net/software/vspaste)
 
 For more information of dependency injection pattern, please read [Martin Fowler](http://martinfowler.com/)’s [article](http://martinfowler.com/articles/injection.html).
 
@@ -230,7 +228,7 @@ Sometimes, designing a GetXxx() method results a warning in Code Analysis: “CA
 
 **✔** Consider using extension methods to manage dependencies.
 
-[](http://11011.net/software/vspaste)This sample is from [this talk](http://channel9.msdn.com/pdc2008/PC58/). Consider we might need a String.ToUri() method to convert a string to a URI:
+This sample is from [this talk](http://channel9.msdn.com/pdc2008/PC58/). Consider we might need a String.ToUri() method to convert a string to a URI:
 
 ```csharp
 Uri uri = "http://www.CoolWebOS.com".ToUri();
@@ -250,7 +248,6 @@ namespace System
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 String type is defined in mscorlib.dll assembly, and Uri type is defined in System.dll assembly. The dependency is from System.dll to mscorlib.dll. It is improper to use the Uri type inside the String type.
 
@@ -268,6 +265,5 @@ namespace System.Net
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 And of course it should be defined in the higher-level code, not in the mscorlib.dll.

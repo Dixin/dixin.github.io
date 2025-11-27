@@ -22,7 +22,6 @@ Here is the ListBox in the XAML:
     </ListBox.ItemTemplate>
 </ListBox>
 ```
-[](http://11011.net/software/vspaste)
 
 and the the data binding in the code-behind:
 
@@ -53,7 +52,6 @@ public class Data
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 We hope 4 items appear in this ListBox, and the third one is selected. But it won’t work as expected:
 
@@ -66,7 +64,6 @@ The solution is to swap the two attributes, put ItemsSource before SelectedItem:
 ```csharp
 <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" x:Name="listBox">
 ```
-[](http://11011.net/software/vspaste)
 
 Now the control works:
 

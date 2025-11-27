@@ -18,7 +18,6 @@ For non-form elements, like <div>, etc., document.getElementById() usually works
     alert(document.getElementById("userName").innerHTML);
 </script>
 ```
-[](http://11011.net/software/vspaste)
 
 Opera also checks name attribute, so the alerted message is “1”.
 
@@ -31,7 +30,6 @@ For form elements, IE and Opera have the same behavior:
     alert(document.getElementById("userName").value);
 </script>
 ```
-[](http://11011.net/software/vspaste)
 
 Here IE and Opera alerts “1”.
 

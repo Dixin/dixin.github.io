@@ -11,7 +11,7 @@ lang: ""
 
 This following hack works for IE6 / IE7 / Firefox:
 
-```csharp
+```css
 .some-class
 {
     color: #FF0000 !important; /* For firefox, safari and opera */
@@ -23,4 +23,3 @@ This following hack works for IE6 / IE7 / Firefox:
     color: #0000FF; /* For ie7 */
 }
 ```
-[](http://11011.net/software/vspaste)

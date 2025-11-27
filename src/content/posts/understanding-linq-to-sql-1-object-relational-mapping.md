@@ -221,7 +221,7 @@ public partial class NorthwindDataContext : DataContext
 }
 ```
 
-And this is the Category class:[](http://11011.net/software/vspaste)
+And this is the Category class:
 
 ```csharp
 [Table(Name = "dbo.Categories")]
@@ -297,7 +297,7 @@ After renaming Category class to CategoryEntity, the XML and C# is refined autom
 </Database>
 ```
 
-and[](http://11011.net/software/vspaste)
+and
 
 ```csharp
 [Database(Name = "Northwind")]

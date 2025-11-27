@@ -23,7 +23,6 @@ public struct Int32
     // Other members.
 }
 ```
-[](http://11011.net/software/vspaste)
 
 Because [MSDN](http://msdn.microsoft.com/) said that [in C#, int is just an alias of System.Int32](http://msdn.microsoft.com/en-us/library/s1ax56ch\(VS.80\).aspx), the above code should be equal to:
 
@@ -35,7 +34,6 @@ public struct Int32
     // Other members.
 }
 ```
-[](http://11011.net/software/vspaste)
 
 The confusion is, the fore mentioned code cannot be compiled. As we know, when defining an instance field of a class, the type of the field can be the class itself:
 
@@ -45,7 +43,6 @@ class Class
     Class _instanceField;
 }
 ```
-[](http://11011.net/software/vspaste)
 
 However for a struct:
 
@@ -55,7 +52,6 @@ struct Struct
     Struct _instanceField;
 }
 ```
-[](http://11011.net/software/vspaste)
 
 The above code cannot be compiled and causes this error message: “Struct member 'Struct.\_instanceField' of type 'Struct' causes a cycle in the struct layout”. It looks obvious that the above System.Int32 code should not be compiled.
 
@@ -84,7 +80,6 @@ In C#, int is just an alias for System.Int32, supported by the C# compiler. So t
 int integer = new int();
 System.Int32 integer = new System.Int32();
 ```
-[](http://11011.net/software/vspaste)
 
 So in the first and second code snippet of this post, the actual type of m\_value field is not System.Int32 or int, but the int32 CLR primitive type. “int” appears there because [Reflector](http://www.red-gate.com/products/reflector/) tries to use a C# symbol to represent the CLR symbol**.** So only the third code snippet of System.Int32 is telling the truth.
 
@@ -104,7 +99,6 @@ public enum Status : int
 {
 }
 ```
-[](http://11011.net/software/vspaste)
 
 The corresponding FCL type cannot be used:
 
@@ -113,7 +107,6 @@ public enum Status : Int32
 {
 }
 ```
-[](http://11011.net/software/vspaste)
 
 ## More confusions from primitive type and FCL type
 

@@ -68,7 +68,6 @@ internal class Person
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 Actually this code is Ok even the name field and Name property defer by case only. Because Framework Design Guidelines is talking about exposed members. The name field is not exposed.
 
@@ -93,7 +92,6 @@ internal class Person
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 So it become very easy to distinguish:
 
@@ -153,7 +151,6 @@ protected override void OnLoad(EventArgs e)
     base.OnLoad(e);
 }
 ```
-[](http://11011.net/software/vspaste)
 
 For the other scenarios, like exception, error, element, event, … e should not be used:
 
@@ -165,7 +162,6 @@ catch (InvalidOperationException exception)
 {
 }
 ```
-[](http://11011.net/software/vspaste)
 
 ## Special Names
 
@@ -217,7 +213,6 @@ namespace System.Web.Security
     }
 }
 ```
-[](http://11011.net/software/vspaste)
 
 “userName” should be used for the parameter name.
 

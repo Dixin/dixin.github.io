@@ -448,7 +448,7 @@ decimal averagePrice = source.Where(product => product.CategoryID == 2)
                              .Average(product => product.UnitPrice.GetValueOrDefault());
 ```
 
-This is the translated SQL:[](http://11011.net/software/vspaste)
+This is the translated SQL:
 
 ```sql
 exec sp_executesql N'SELECT AVG([t1].[value]) AS [value]

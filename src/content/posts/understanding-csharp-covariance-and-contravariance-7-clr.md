@@ -62,7 +62,7 @@ internal class AnotherDerived : Base
 {
 }
 ```
-[](http://11011.net/software/vspaste)[](http://11011.net/software/vspaste)
+
 
 Many materials from Internet start variances from the relationship of type A and type B:
 

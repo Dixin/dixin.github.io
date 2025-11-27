@@ -49,7 +49,6 @@ HTML 5 can be declared via HTML grammar:
     </body>
 </html>
 ```
-[](http://11011.net/software/vspaste)
 
 as well as XML grammar:
 
@@ -64,7 +63,6 @@ as well as XML grammar:
     </body>
 </html>
 ```
-[](http://11011.net/software/vspaste)
 
 ## Language features
 
@@ -80,7 +78,6 @@ Elements like div, li, etc., become more strict. For example, these elements sho
     <p>...</p> 
 </div>
 ```
-[](http://11011.net/software/vspaste)
 
 But the following code is invalid:
 
@@ -90,7 +87,6 @@ But the following code is invalid:
     <p>...</p> 
 </div>
 ```
-[](http://11011.net/software/vspaste)
 
 This is helpful to identify the level the elements.
 

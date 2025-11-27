@@ -79,7 +79,7 @@ internal class Program
     }
 }
 ```
-[](http://11011.net/software/vspaste)[](http://11011.net/software/vspaste)
+
 
 Both of the above variance code cannot be compiled in C# 2.0 / 3.0 / 4.0. The reason is, on the virtual machine described by CLI, function with return value and function without return value work differently. If the variant is allowed, according to [Eric Lippert](http://blogs.msdn.com/ericlippert/archive/2009/06/29/the-void-is-invariant.aspx):
 
