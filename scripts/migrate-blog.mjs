@@ -30,36 +30,76 @@ const turndownService = new TurndownService({
 // Use GitHub Flavored Markdown plugin
 turndownService.use(gfm);
 
-// Custom rule for code blocks with language detection
-turndownService.addRule('codeBlocks', {
+// Custom rule for "code" elements
+turndownService.addRule('codeElement', {
     filter: function (node) {
-        return (
-            node.nodeName === 'PRE' &&
-            node.querySelector('code')
-        );
+        return node.nodeName === 'CODE';
     },
     replacement: function (content, node) {
-        const codeNode = node.querySelector('code');
-        const language = detectLanguage(codeNode);
-        const code = codeNode.textContent;
-        return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+        // Check if it's inside a PRE (block code) or inline
+        if (node.parentNode && node.parentNode.nodeName === 'PRE') {
+            const language = detectLanguage(node);
+            const code = node.textContent;
+            return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+        }
+        // Inline code
+        return `\`${node.textContent}\``;
     }
 });
 
-// Custom rule for highlighted code (often wrapped in spans)
-turndownService.addRule('highlightedCode', {
+// Custom rule for single "pre" element with class "code"
+turndownService.addRule('preCodeBlock', {
     filter: function (node) {
         return (
-            node.nodeName === 'DIV' &&
-            (node.classList.contains('code') || 
-             node.classList.contains('csharpcode') ||
-             node.querySelector('.csharpcode'))
+            node.nodeName === 'PRE' &&
+            node.classList.contains('code')
         );
     },
     replacement: function (content, node) {
         const text = node.textContent;
         const language = detectLanguageFromContent(text);
         return `\n\`\`\`${language}\n${text.trim()}\n\`\`\`\n`;
+    }
+});
+
+// Custom rule for consecutive "p" elements with class "CodeCxSpMiddle"
+turndownService.addRule('codeCxSpMiddle', {
+    filter: function (node) {
+        return (
+            node.nodeName === 'P' &&
+            node.classList.contains('CodeCxSpMiddle')
+        );
+    },
+    replacement: function (content, node) {
+        // Check if this is the first in a sequence
+        const prevSibling = node.previousElementSibling;
+        const isFirst = !prevSibling || !prevSibling.classList.contains('CodeCxSpMiddle');
+        
+        // Check if this is the last in a sequence
+        const nextSibling = node.nextElementSibling;
+        const isLast = !nextSibling || !nextSibling.classList.contains('CodeCxSpMiddle');
+        
+        const lineText = node.textContent;
+        
+        if (isFirst && isLast) {
+            // Single line code block
+            const language = detectLanguageFromContent(lineText);
+            return `\n\`\`\`${language}\n${lineText}\n\`\`\`\n`;
+        } else if (isFirst) {
+            // First line - collect all consecutive lines
+            let codeLines = [lineText];
+            let current = node.nextElementSibling;
+            while (current && current.classList.contains('CodeCxSpMiddle')) {
+                codeLines.push(current.textContent);
+                current = current.nextElementSibling;
+            }
+            const fullCode = codeLines.join('\n');
+            const language = detectLanguageFromContent(fullCode);
+            return `\n\`\`\`${language}\n${fullCode}\n\`\`\`\n`;
+        } else {
+            // Not the first line - skip (already processed by first line)
+            return '';
+        }
     }
 });
 
@@ -100,12 +140,14 @@ function detectLanguageFromContent(text) {
     return '';
 }
 
-function sanitizeFilename(title) {
-    return title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .substring(0, 100);
+function getFilenameFromUrl(url) {
+    // Extract the last segment of the URL as the filename
+    // e.g., "https://weblogs.asp.net/dixin/entity-framework-and-linq-to-entities-3-logging" 
+    // returns "entity-framework-and-linq-to-entities-3-logging"
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const segments = pathname.split('/').filter(s => s.length > 0);
+    return segments[segments.length - 1] || 'untitled';
 }
 
 async function fetchWithRetry(url, retries = 3) {
@@ -302,7 +344,7 @@ async function migratePostFromUrl(url) {
         return false;
     }
     
-    const filename = sanitizeFilename(postData.title);
+    const filename = getFilenameFromUrl(url);
     const outputPath = path.join(OUTPUT_DIR, `${filename}.md`);
     
     // Skip if file already exists
