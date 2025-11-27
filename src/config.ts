@@ -54,8 +54,8 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/demo-avatar.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "Dixin's blog",
-	bio: "CodingOnWheels.com",
+	name: "Dixin",
+	bio: "Dixin's blog - CodingOnWheels.com",
 	links: [
 		{
 			name: "Microsoft MVP",
@@ -85,7 +85,7 @@ export const profileConfig: ProfileConfig = {
 };
 
 export const licenseConfig: LicenseConfig = {
-	enable: false,
+	enable: true,
 	name: "CC BY-NC-SA 4.0",
 	url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
 };
