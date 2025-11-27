@@ -208,6 +208,47 @@ function normalizeHeaderLevels(doc, contentElement) {
     }
 }
 
+function normalizeLinks(contentElement) {
+    // Find all anchor elements in content
+    const links = contentElement.querySelectorAll('a');
+    
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+        
+        let lastSegment = null;
+        
+        // Check if it's an absolute URL containing weblogs.asp.net/dixin
+        if (href.includes('weblogs.asp.net/dixin')) {
+            // Extract last segment from absolute URL
+            // Handle URLs like "https://weblogs.asp.net/dixin/entity-framework-..." or "http://..." or "weblogs.asp.net/dixin/..."
+            const match = href.match(/weblogs\.asp\.net\/dixin\/([^\/\?#]+)/);
+            if (match) {
+                lastSegment = match[1];
+            }
+        } else if (href.startsWith('/') && !href.startsWith('//')) {
+            // Relative URL starting with /
+            // e.g., "/entity-framework-and-linq-to-entities-3-logging"
+            const segments = href.split('/').filter(s => s.length > 0);
+            if (segments.length > 0) {
+                lastSegment = segments[segments.length - 1].split('?')[0].split('#')[0];
+            }
+        } else if (!href.includes('://') && !href.startsWith('#') && !href.startsWith('mailto:')) {
+            // Relative URL without leading slash
+            // e.g., "entity-framework-and-linq-to-entities-3-logging"
+            const segments = href.split('/').filter(s => s.length > 0);
+            if (segments.length > 0) {
+                lastSegment = segments[segments.length - 1].split('?')[0].split('#')[0];
+            }
+        }
+        
+        // If we found a valid last segment, update the href
+        if (lastSegment && lastSegment.length > 0) {
+            link.setAttribute('href', `/posts/${lastSegment}`);
+        }
+    });
+}
+
 async function fetchWithRetry(url, retries = 3) {
     for (let i = 0; i < retries; i++) {
         try {
@@ -330,6 +371,9 @@ async function fetchPostData(url) {
     
     // Normalize header levels so highest is h2
     normalizeHeaderLevels(doc, content);
+    
+    // Normalize links to point to /posts/slug format
+    normalizeLinks(content);
     
     return {
         title: title || 'Untitled',
