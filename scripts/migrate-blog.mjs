@@ -150,6 +150,64 @@ function getFilenameFromUrl(url) {
     return segments[segments.length - 1] || 'untitled';
 }
 
+function normalizeHeaderLevels(doc, contentElement) {
+    // Get all header elements in content
+    const headers = contentElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    if (headers.length === 0) {
+        return; // No headers, nothing to do
+    }
+    
+    // Find the highest (smallest number) header level present
+    let minLevel = 7;
+    headers.forEach(h => {
+        const level = parseInt(h.tagName.substring(1), 10);
+        if (level < minLevel) {
+            minLevel = level;
+        }
+    });
+    
+    if (minLevel === 2) {
+        return; // Already h2 is the highest, nothing to do
+    }
+    
+    // Calculate the adjustment needed to make highest level = h2
+    const adjustment = 2 - minLevel; // positive = downgrade, negative = upgrade
+    
+    // Process headers from h6 down to h1 if downgrading (adjustment > 0)
+    // Process headers from h1 up to h6 if upgrading (adjustment < 0)
+    if (adjustment > 0) {
+        // Downgrade: process from highest number to lowest to avoid conflicts
+        for (let level = 6; level >= 1; level--) {
+            const headersAtLevel = contentElement.querySelectorAll(`h${level}`);
+            headersAtLevel.forEach(h => {
+                const newLevel = Math.min(level + adjustment, 6); // Cap at h6
+                const newHeader = doc.createElement(`h${newLevel}`);
+                newHeader.innerHTML = h.innerHTML;
+                // Copy attributes
+                for (const attr of h.attributes) {
+                    newHeader.setAttribute(attr.name, attr.value);
+                }
+                h.parentNode.replaceChild(newHeader, h);
+            });
+        }
+    } else if (adjustment < 0) {
+        // Upgrade: process from lowest number to highest to avoid conflicts
+        for (let level = 1; level <= 6; level++) {
+            const headersAtLevel = contentElement.querySelectorAll(`h${level}`);
+            headersAtLevel.forEach(h => {
+                const newLevel = Math.max(level + adjustment, 1); // Floor at h1
+                const newHeader = doc.createElement(`h${newLevel}`);
+                newHeader.innerHTML = h.innerHTML;
+                // Copy attributes
+                for (const attr of h.attributes) {
+                    newHeader.setAttribute(attr.name, attr.value);
+                }
+                h.parentNode.replaceChild(newHeader, h);
+            });
+        }
+    }
+}
+
 async function fetchWithRetry(url, retries = 3) {
     for (let i = 0; i < retries; i++) {
         try {
@@ -269,6 +327,9 @@ async function fetchPostData(url) {
     // Remove unwanted elements
     const elementsToRemove = content.querySelectorAll('script, style, .comments, #comments, .share, .social, .related-posts, .navigation, .nav');
     elementsToRemove.forEach(el => el.remove());
+    
+    // Normalize header levels so highest is h2
+    normalizeHeaderLevels(doc, content);
     
     return {
         title: title || 'Untitled',
