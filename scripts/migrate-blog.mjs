@@ -228,6 +228,18 @@ function normalizeLinks(contentElement) {
                 newHref = `/archive/?tag=${tag}`;
             }
         }
+        // Check if it contains .aspx - ignore .aspx and anything after it, take last segment
+        else if (href.includes('.aspx')) {
+            const aspxIndex = href.indexOf('.aspx');
+            const beforeAspx = href.substring(0, aspxIndex);
+            const segments = beforeAspx.split('/').filter(s => s.length > 0);
+            if (segments.length > 0) {
+                const lastSegment = segments[segments.length - 1];
+                if (lastSegment && lastSegment.length > 0) {
+                    newHref = `/posts/${lastSegment}`;
+                }
+            }
+        }
         // Check if it's an absolute URL containing weblogs.asp.net/dixin
         else if (href.includes('weblogs.asp.net/dixin')) {
             // Extract last segment from absolute URL without regex
@@ -325,9 +337,6 @@ async function fetchAllPostUrls() {
                     allUrls.push(url);
                 }
             });
-            
-            // Rate limiting between page fetches
-            await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
             console.error(`Failed to fetch page ${page}:`, error.message);
         }
@@ -519,9 +528,6 @@ async function main() {
                 console.error(`Failed to migrate "${url}":`, error.message);
                 failed++;
             }
-            
-            // Rate limiting
-            await new Promise(resolve => setTimeout(resolve, 500));
         }
         
         console.log('\n=== Migration Complete ===');
