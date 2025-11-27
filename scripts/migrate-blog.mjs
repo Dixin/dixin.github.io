@@ -216,6 +216,11 @@ function normalizeLinks(contentElement) {
         const href = link.getAttribute('href');
         if (!href) return;
         
+        // Skip external absolute URLs that don't contain weblogs.asp.net/dixin
+        if (href.includes('://') && !href.includes('weblogs.asp.net/dixin')) {
+            return; // Keep external links unchanged
+        }
+        
         let newHref = null;
         
         // Check if it's a Tags link (e.g., "https://weblogs.asp.net/dixin/Tags/Entity%20Framework")
