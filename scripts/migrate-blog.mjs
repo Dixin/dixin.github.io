@@ -216,35 +216,54 @@ function normalizeLinks(contentElement) {
         const href = link.getAttribute('href');
         if (!href) return;
         
-        let lastSegment = null;
+        let newHref = null;
         
+        // Check if it's a Tags link (e.g., "https://weblogs.asp.net/dixin/Tags/Entity%20Framework")
+        if (href.includes('Tags/')) {
+            const tagsIndex = href.indexOf('Tags/');
+            const tagPart = href.substring(tagsIndex + 5); // Get everything after "Tags/"
+            // Remove any trailing path segments, query strings, or hash
+            const tag = tagPart.split('/')[0].split('?')[0].split('#')[0];
+            if (tag && tag.length > 0) {
+                newHref = `/archive/?tag=${tag}`;
+            }
+        }
         // Check if it's an absolute URL containing weblogs.asp.net/dixin
-        if (href.includes('weblogs.asp.net/dixin')) {
-            // Extract last segment from absolute URL
+        else if (href.includes('weblogs.asp.net/dixin')) {
+            // Extract last segment from absolute URL without regex
             // Handle URLs like "https://weblogs.asp.net/dixin/entity-framework-..." or "http://..." or "weblogs.asp.net/dixin/..."
-            const match = href.match(/weblogs\.asp\.net\/dixin\/([^\/\?#]+)/);
-            if (match) {
-                lastSegment = match[1];
+            const dixinIndex = href.indexOf('weblogs.asp.net/dixin/');
+            if (dixinIndex !== -1) {
+                const afterDixin = href.substring(dixinIndex + 'weblogs.asp.net/dixin/'.length);
+                const lastSegment = afterDixin.split('/')[0].split('?')[0].split('#')[0];
+                if (lastSegment && lastSegment.length > 0) {
+                    newHref = `/posts/${lastSegment}`;
+                }
             }
         } else if (href.startsWith('/') && !href.startsWith('//')) {
             // Relative URL starting with /
             // e.g., "/entity-framework-and-linq-to-entities-3-logging"
             const segments = href.split('/').filter(s => s.length > 0);
             if (segments.length > 0) {
-                lastSegment = segments[segments.length - 1].split('?')[0].split('#')[0];
+                const lastSegment = segments[segments.length - 1].split('?')[0].split('#')[0];
+                if (lastSegment && lastSegment.length > 0) {
+                    newHref = `/posts/${lastSegment}`;
+                }
             }
         } else if (!href.includes('://') && !href.startsWith('#') && !href.startsWith('mailto:')) {
             // Relative URL without leading slash
             // e.g., "entity-framework-and-linq-to-entities-3-logging"
             const segments = href.split('/').filter(s => s.length > 0);
             if (segments.length > 0) {
-                lastSegment = segments[segments.length - 1].split('?')[0].split('#')[0];
+                const lastSegment = segments[segments.length - 1].split('?')[0].split('#')[0];
+                if (lastSegment && lastSegment.length > 0) {
+                    newHref = `/posts/${lastSegment}`;
+                }
             }
         }
         
-        // If we found a valid last segment, update the href
-        if (lastSegment && lastSegment.length > 0) {
-            const newHref = `/posts/${lastSegment}`;
+        // If we found a valid new href, update the link
+        if (newHref) {
             console.log(`Old link: ${href}`);
             console.log(`New link: ${newHref}`);
             console.log('');
