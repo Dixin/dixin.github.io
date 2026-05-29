@@ -62,7 +62,7 @@ export const profileConfig: ProfileConfig = {
 			icon: "fa6-brands:microsoft", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
-			url: "https://https://mvp.microsoft.com/en-us/mvp/Dixin Yan-4029229",
+			url: "https://mvp.microsoft.com/en-us/mvp/Dixin Yan-4029229",
 		},
 		{
 			name: "GitHub",
