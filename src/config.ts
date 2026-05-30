@@ -94,5 +94,4 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Note: Some styles (such as background color) are being overridden, see the astro.config.mjs file.
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
-	extractFileNameFromCode: false, // Extract the file name from the first line of the code block if it starts with "// filename.ext"
 };

@@ -98,6 +98,7 @@ export default defineConfig({
 			},
 			frames: {
 				showCopyToClipboardButton: false,
+				extractFileNameFromCode: false,
 			},
 		}),
 		svelte(),
